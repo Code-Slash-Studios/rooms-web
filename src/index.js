@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import './styles.css';
 import App from './App/App';
 
+//https://github.com/docker/awesome-compose/tree/master/react-nginx/src
 
 //initialize React root node
 const domNode = document.getElementById('root');
