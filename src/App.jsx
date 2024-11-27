@@ -8,7 +8,8 @@ export default function App() {
             <header className='App-header'>
                 <nav>
                     <a href="/today">Today</a>
-                    <a href=""></a>
+                    <a href="/you">You</a>
+                    <a href="/backlog">Backlog</a>
                 </nav>
             </header>
             <main>
