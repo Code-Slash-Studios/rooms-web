@@ -1,6 +1,5 @@
 import React from "react";
 import { createRoot } from 'react-dom/client';
-import './styles.css';
 import App from './App';
 
 //https://github.com/docker/awesome-compose/tree/master/react-nginx/src
