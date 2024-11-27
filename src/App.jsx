@@ -1,20 +1,11 @@
-import logo from './logo.svg';
+import React from 'react'
 import './App.css';
+import {Link, Route, Switch } from "wouter";
+//https://github.com/molefrog/wouter/blob/v3/README.md
+const App = () => (
+    <>
+        <Link href="/users/1"></Link>
+    </>
+);
 
-export default function App() {
-    return (
-        <div className='App'>
-            {/**TODO temporary boilerplate */}
-            <header className='App-header'>
-                <nav>
-                    <a href="/today">Today</a>
-                    <a href="/you">You</a>
-                    <a href="/backlog">Backlog</a>
-                </nav>
-            </header>
-            <main>
-                
-            </main>
-        </div>
-    )
-}
+export default App;
