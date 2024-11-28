@@ -3,7 +3,10 @@ init:
 
 run:
 	docker compose build
-	docker compose up -d
+	docker compose up
 
 stop:
 	docker compose down
+
+restart:
+	systemctl restart rooms-web
