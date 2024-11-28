@@ -1,8 +1,9 @@
 init:
 	npm install
 
-open:
+run:
+	docker compose build
 	docker compose up -d
 
-close:
+stop:
 	docker compose down
