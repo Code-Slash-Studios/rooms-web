@@ -15,14 +15,22 @@ export const Nav = () => {
 export const RoutePages = () => (
     <>
         <Switch>
+            <Route path="/login">
+                {/* Should redirect to Azure Auth then -> /today*/}
+                <h1>Login</h1>
+            </Route>
             <Route path="/you">
                 <h2>You are special :)</h2>
             </Route>
-            <Route path="backlog">
+            <Route path="/backlog">
                 <h2>Forever is a very long time</h2>
             </Route>
-            <Route path="/today" component={Today}/>
-            <Route path="/" component={Today}></Route>
+            <Route path="/today">
+                <Today/>
+            </Route>
+            <Route path="/">
+                <Today/>
+            </Route>
             {/* Default route in a switch */}
             <Route><h1 style={{color: 'red'}}>404: route not found</h1></Route>
         </Switch>
