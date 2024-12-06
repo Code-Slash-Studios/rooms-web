@@ -1,0 +1,13 @@
+nav {
+    display: flex;
+    width: "1vw";
+    justify-content: center;
+    align-items: center;
+    background-color: #f8f9fa;
+}
+nav a {
+    text-decoration: none;
+    color: #000;
+    font-size: 1.5rem;
+    margin: 0 1rem;
+}

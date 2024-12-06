@@ -4,6 +4,7 @@ import {
     Outlet,
     Scripts,
   } from "@remix-run/react";
+import Navbar from "./components/Navbar";
   
   export default function App() {
     return (
@@ -17,7 +18,8 @@ import {
           <Links />
         </head>
         <body>
-          <h1>Hello world!</h1>
+          <h1>CIS Rooms - Hello world!</h1>
+          <Navbar />
           <Outlet />
   
           <Scripts />
