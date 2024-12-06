@@ -146,9 +146,6 @@ const route1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProper
   __proto__: null,
   default: Backlog
 }, Symbol.toStringTag, { value: "Module" }));
-const route2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
-  __proto__: null
-}, Symbol.toStringTag, { value: "Module" }));
 const Event = (props) => {
   return /* @__PURE__ */ jsx(Fragment, { children: /* @__PURE__ */ jsxs("div", { className: "event", children: [
     /* @__PURE__ */ jsxs("h1", { children: [
@@ -179,6 +176,17 @@ const route3 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProper
   __proto__: null,
   default: Today$1
 }, Symbol.toStringTag, { value: "Module" }));
+async function loader() {
+  return "{}";
+}
+function Index() {
+  return /* @__PURE__ */ jsx(Today$1, {});
+}
+const route2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  default: Index,
+  loader
+}, Symbol.toStringTag, { value: "Module" }));
 const Today = () => {
   const date = (/* @__PURE__ */ new Date()).toLocaleDateString();
   var events = [Event({ title: "Event 1", room: "W210", start: date, end: date }), Event({ title: "Event 2", room: "W212", start: date, end: date })];
@@ -194,7 +202,7 @@ const route4 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProper
   __proto__: null,
   default: Today
 }, Symbol.toStringTag, { value: "Module" }));
-const serverManifest = { "entry": { "module": "/assets/entry.client-Du0syxaC.js", "imports": ["/assets/jsx-runtime-56DGgGmo.js", "/assets/components-C467GdRT.js"], "css": [] }, "routes": { "root": { "id": "root", "parentId": void 0, "path": "", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/root-B6OGStIP.js", "imports": ["/assets/jsx-runtime-56DGgGmo.js", "/assets/components-C467GdRT.js"], "css": [] }, "routes/Backlog": { "id": "routes/Backlog", "parentId": "root", "path": "Backlog", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/Backlog-D2r13_yR.js", "imports": ["/assets/jsx-runtime-56DGgGmo.js"], "css": [] }, "routes/_index": { "id": "routes/_index", "parentId": "root", "path": void 0, "index": true, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/_index-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/Today": { "id": "routes/Today", "parentId": "root", "path": "Today", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/Today-8iKydMyP.js", "imports": ["/assets/jsx-runtime-56DGgGmo.js", "/assets/Event-DOZJ465C.js"], "css": [] }, "routes/You": { "id": "routes/You", "parentId": "root", "path": "You", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/You-8iKydMyP.js", "imports": ["/assets/jsx-runtime-56DGgGmo.js", "/assets/Event-DOZJ465C.js"], "css": [] } }, "url": "/assets/manifest-72d49fe1.js", "version": "72d49fe1" };
+const serverManifest = { "entry": { "module": "/assets/entry.client-Du0syxaC.js", "imports": ["/assets/jsx-runtime-56DGgGmo.js", "/assets/components-C467GdRT.js"], "css": [] }, "routes": { "root": { "id": "root", "parentId": void 0, "path": "", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/root-B6OGStIP.js", "imports": ["/assets/jsx-runtime-56DGgGmo.js", "/assets/components-C467GdRT.js"], "css": [] }, "routes/Backlog": { "id": "routes/Backlog", "parentId": "root", "path": "Backlog", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/Backlog-D2r13_yR.js", "imports": ["/assets/jsx-runtime-56DGgGmo.js"], "css": [] }, "routes/_index": { "id": "routes/_index", "parentId": "root", "path": void 0, "index": true, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/_index-BCqKqAax.js", "imports": ["/assets/jsx-runtime-56DGgGmo.js", "/assets/Today-8iKydMyP.js", "/assets/Event-DOZJ465C.js"], "css": [] }, "routes/Today": { "id": "routes/Today", "parentId": "root", "path": "Today", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/Today-8iKydMyP.js", "imports": ["/assets/jsx-runtime-56DGgGmo.js", "/assets/Event-DOZJ465C.js"], "css": [] }, "routes/You": { "id": "routes/You", "parentId": "root", "path": "You", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/You-8iKydMyP.js", "imports": ["/assets/jsx-runtime-56DGgGmo.js", "/assets/Event-DOZJ465C.js"], "css": [] } }, "url": "/assets/manifest-d12eb14f.js", "version": "d12eb14f" };
 const mode = "production";
 const assetsBuildDirectory = "build\\client";
 const basename = "/";

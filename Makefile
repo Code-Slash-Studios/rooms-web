@@ -9,12 +9,14 @@ stop:
 	docker compose down
 
 build:
-	npx remix vite:build
+	npm run build
 
 prod:
-	build
-	npm start
+	make build
+	npm run start
+
 dev:
+	make build
 	npm run dev
 
 test:
