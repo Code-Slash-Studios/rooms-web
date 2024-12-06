@@ -1,16 +1,31 @@
 init:
 	npm install
 
-local:
-	docker compose build
-	docker compose up -d
-
 run:
 	docker compose build
-	docker compose up
+	docker compose up -d
 
 stop:
 	docker compose down
 
+build:
+	npm run build
+
+prod:
+	make build
+	npm run start
+
+dev:
+	make build
+	npm run dev
+
+test:
+	npx remix vite:build --dry-run
+
+local:
+	docker compose build
+	docker compose up -d
+
 restart:
 	systemctl restart rooms-web
+

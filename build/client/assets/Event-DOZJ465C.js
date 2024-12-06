@@ -1,0 +1,1 @@
+import{j as e}from"./jsx-runtime-56DGgGmo.js";const r=t=>e.jsx(e.Fragment,{children:e.jsxs("div",{className:"event",children:[e.jsxs("h1",{children:[t.title," in ",t.room]}),e.jsxs("h2",{children:[t.start.toString()," - ",t.end.toString()]}),e.jsx("p",{children:"Referer"})]})});export{r as E};
