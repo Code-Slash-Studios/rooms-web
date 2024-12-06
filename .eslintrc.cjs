@@ -9,7 +9,7 @@ module.exports = {
     ],
     ignorePatterns: ['dist', '.eslintrc.cjs'],
     parserOptions: { ecmaVersion: 'latest', sourceType: 'module', parser: "@babel/eslint-parser" },
-    settings: { react: { version: '18.3' } },
+    settings: { react: { version: '18.3.1' } },
     rules: {
       'no-unused-vars':['warn'],
       'react/jsx-key':['warn'],

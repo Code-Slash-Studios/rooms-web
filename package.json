@@ -1,39 +1,39 @@
 {
-    "name": "rooms-web",
-    "version": "0.1.0",
-    "private": true,
-    "dependencies": {
-        "@testing-library/jest-dom": "^5.11.4",
-        "@testing-library/react": "^11.1.0",
-        "@testing-library/user-event": "^12.1.10",
-        "react": "^18.0.1",
-        "react-dom": "^18.0.1",
-        "react-scripts": "^5.0.0",
-        "web-vitals": "^1.0.1",
-        "wouter": "^3.3.5"
-    },
-    "scripts": {
-        "start": "react-scripts start",
-        "build": "react-scripts build",
-        "test": "react-scripts test",
-        "eject": "react-scripts eject"
-    },
-    "eslintConfig": {
-        "extends": [
-            "react-app",
-            "react-app/jest"
-        ]
-    },
-    "browserslist": {
-        "production": [
-            ">0.2%",
-            "not dead",
-            "not op_mini all"
-        ],
-        "development": [
-            "last 1 chrome version",
-            "last 1 firefox version",
-            "last 1 safari version"
-        ]
-    }
+  "name": "rooms-web",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Read me not written yet... :)",
+  "main": "index.js",
+  "scripts": {
+    "build": "remix vite:build",
+    "dev": "remix vite:dev",
+    "lint": "eslint --ignore-path .gitignore .",
+    "start": "remix-serve ./build/index.js",
+    "typecheck": "tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@remix-run/express": "^2.15.0",
+    "@remix-run/node": "^2.15.0",
+    "@remix-run/react": "^2.15.0",
+    "@remix-run/serve": "^2.15.0",
+    "cross-env": "^7.0.3",
+    "express": "^4.21.2",
+    "isbot": "^4.4.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "devDependencies": {
+    "@remix-run/dev": "^2.15.0",
+    "@types/react": "^18.2.20",
+    "@types/react-dom": "^18.2.7",
+    "eslint": "^8.23.1",
+    "typescript": "^5.1.6",
+    "vite": "^5.4.11"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
 }
