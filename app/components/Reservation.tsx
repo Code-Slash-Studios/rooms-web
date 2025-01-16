@@ -1,12 +1,12 @@
-import "./Event.css";
-interface EventProps {
+import "./Reservation.css";
+interface ReservationProps {
     title: string;
     room: string;
     start: Date;
     end: Date;
 }
 
-const Event = (props: EventProps, timeOnly = false) => {
+const Reservation = (props: ReservationProps, timeOnly = false) => {
     if (timeOnly) {
         //time with hours and minutes (no seconds)
         var start = props.start.toLocaleTimeString("en-US", {hour: 'numeric', minute: '2-digit'});
@@ -24,4 +24,4 @@ const Event = (props: EventProps, timeOnly = false) => {
     </>
 }
 
-export default Event;
+export default Reservation;
