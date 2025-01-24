@@ -1,4 +1,4 @@
-import Reservation from '../../components/Reservation';
+import Reservation from '../components/Reservation';
 
 export default function You() {
     const date = new Date();

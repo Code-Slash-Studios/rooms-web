@@ -17,7 +17,7 @@ const Reservation = (props: ReservationProps, timeOnly = false) => {
         var end = props.end.toLocaleString("en-US", {hour: 'numeric', minute: '2-digit', month: 'short', day: 'numeric', year: 'numeric'});
     }
     return <>
-        <div className="event">
+        <div className="event" key="{props.title}">
             <h1><u>{props.title}</u> in {props.room}</h1>
             <h2>{start} - {end}</h2>
         </div>

@@ -1,4 +1,4 @@
-export default async function getAll() {
+export async function getAll() {
     return JSON.stringify([
         {
             title: "Event 1",
@@ -13,4 +13,10 @@ export default async function getAll() {
             end: new Date()
         }
     ]);
+}
+export async function getById(id: string) {
+    return JSON.stringify({
+        title: "Event 1",
+        room: "W210",
+    });
 }

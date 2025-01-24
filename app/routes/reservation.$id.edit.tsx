@@ -1,8 +1,16 @@
-import { Form } from "@remix-run/react";
+import { Form, useLoaderData } from "@remix-run/react";
 import { useState } from "react";
+import { getById } from "../api/reservation/get";
 
-export default function EditReservation(props:any) {
+export const loader = async ({ params }:any) => {
+  const contact = await getById(params.id);
+  return {reservation: contact};
+};
+
+export default function EditReservation() {
     //displays a react component that allows the user to edit a reservation
+    const {reservation} = useLoaderData<typeof loader>();
+    
     const [title, setTitle] = useState("");
     const [room, setRoom] = useState("");
     const [start, setStart] = useState(new Date());
