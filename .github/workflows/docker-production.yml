@@ -13,4 +13,4 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Build Rooms Web
-      run: make run
+      run: make stop && make run
