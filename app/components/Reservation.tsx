@@ -6,7 +6,26 @@ interface ReservationProps {
     end: Date;
 }
 
-const Reservation = (props: ReservationProps, timeOnly = false) => {
+const Reservation = class {
+    title: string;
+    room: string;
+    start: Date;
+    end: Date;
+    constructor(title: string, room: string, start: Date, end: Date) {
+        this.title = title;
+        this.room = room;
+        this.start = start;
+        this.end = end;
+    }
+    toString() {
+        return `${this.title} in ${this.room} from ${this.start.toLocaleString("en-US", {hour: 'numeric', minute: '2-digit'})} to ${this.end.toLocaleString("en-US", {hour: 'numeric', minute: '2-digit'})}`;
+    }
+    render() {
+        return <ReservationComp title={this.title} room={this.room} start={this.start} end={this.end} />;
+    }
+}
+
+const ReservationComp = (props: ReservationProps, timeOnly = false) => {
     if (timeOnly) {
         //time with hours and minutes (no seconds)
         var start = props.start.toLocaleTimeString("en-US", {hour: 'numeric', minute: '2-digit'});
@@ -24,4 +43,4 @@ const Reservation = (props: ReservationProps, timeOnly = false) => {
     </>
 }
 
-export default Reservation;
+export default ReservationComp;

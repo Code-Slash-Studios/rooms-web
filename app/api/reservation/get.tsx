@@ -1,3 +1,5 @@
+export const url = "https://8a37a0ba-fb47-41c9-8862-8ae909b2a4ed.mock.pstmn.io"
+
 export async function getAll() {
     return JSON.stringify([
         {
@@ -15,8 +17,10 @@ export async function getAll() {
     ]);
 }
 export async function getById(id: string) {
-    return JSON.stringify({
-        title: "Event 1",
-        room: "W210",
-    });
+    fetch(
+        `${url}/reservation/${id}`
+        ).then((response) => {
+            
+        }
+    )
 }
