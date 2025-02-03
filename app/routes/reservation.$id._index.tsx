@@ -1,6 +1,6 @@
 import { useLoaderData } from "@remix-run/react";
 import { useEffect, useState } from "react";
-import { getById } from "~/api/reservation/get";
+import { getById } from "~/api/reservation";
 import { Reservation } from "~/components/Reservation";
 
 //this view is just for looking at details about one reservation
