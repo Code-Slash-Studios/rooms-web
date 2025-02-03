@@ -54,8 +54,8 @@ const ReservationComp = (props: ReservationProps, timeOnly = false) => {
     }
     return <>
         <div className="event" key="{props.title}">
-            <h1><u>{props.title}</u> in {props.room}</h1>
-            <h2>{start} - {end}</h2>
+            <h1 key="title"><u>{props.title}</u> in {props.room}</h1>
+            <h2 key="time">{start} - {end}</h2>
         </div>
     </>
 }
