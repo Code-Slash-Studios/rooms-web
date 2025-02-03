@@ -1,3 +1,4 @@
+import { fromDatetimeLocal } from "~/utils/datetime";
 import "./Reservation.css";
 interface ReservationProps {
     title: string;
@@ -11,24 +12,18 @@ export class Reservation {
     room: string;
     start: Date;
     end: Date;
-    constructor(id: number, title: string, room: string, start: Date | number, end: Date | number) {
+    constructor(id: number, title: string, room: string, start: Date, end: Date) {
         this.id = id;
         this.title = title;
         this.room = room;
-        if (typeof start == "number") {
-            start = new Date(start);
-        }
         this.start = start;
-        if (typeof end == "number") {
-            end = new Date(end);
-        }
         this.end = end;
     }
-    static newBlank = () => new Reservation(-1, "", "", new Date(), new Date());
+    static empty = () => new Reservation(-1, "", "", new Date(), new Date());
 
-    static fromJSON(json: any): Reservation {
+    static fromJSON(json: any): Reservation | null{
         if (json == null) {
-            return this.newBlank();
+            return null;
         }
         if (typeof(json) == "string") {
             json = JSON.parse(json);

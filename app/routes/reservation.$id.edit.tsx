@@ -1,28 +1,36 @@
 import { Form, useLoaderData } from "@remix-run/react";
 import { FormEventHandler, useEffect, useState } from "react";
 import { getById } from "~/api/reservation/get";
+import { post } from "~/api/reservation/post";
 import { Reservation } from "~/components/Reservation";
+import { toDatetimeLocal } from "~/utils/datetime";
 
 export const loader = async ({ params }:any) => {
-  const contact: Reservation | undefined = await getById(params.id);
-  return {"reservation": contact};
+    return getById(params.id).then((res) => {
+        if (res == undefined) {
+            console.error("No reservation found");
+            return {"reservation": undefined, "getError": "No reservation found"};
+        }
+        return {"reservation": res, "getError": undefined};
+    });
+  
 };
 
 export default function EditReservation() {
     //displays a react component that allows the user to edit a reservation
-    const {reservation} = useLoaderData<typeof loader>();
+    const {reservation, getError} = useLoaderData<typeof loader>();
     
     const [title, setTitle] = useState("");
     const [room, setRoom] = useState("");
-    const [start, setStart] = useState(new Date().getTime());
-    const [end, setEnd] = useState(new Date().getTime());
+    const [start, setStart] = useState<Date>(new Date());
+    const [end, setEnd] = useState<Date>(new Date());
 
-    const awaitFetch = useEffect(() => {
-        if (reservation) {
+    useEffect(() => {
+        if (reservation != undefined) {
             setTitle(reservation.title);
             setRoom(reservation.room);
-            setStart(reservation.start.getTime());
-            setEnd(reservation.end.getTime());
+            setStart(reservation.start);
+            setEnd(reservation.end);
         }
     }, [reservation]);
 
@@ -55,28 +63,19 @@ export default function EditReservation() {
             console.error("No reservation found");
             return;
         }
-        //fetch to api/reservation/update/id
-        fetch(`/api/reservation/update/${reservation.id}`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                title,
-                room,
-                start,
-                end
-            }),
+        post(new Reservation(reservation.id, title, room, start, end)).then((res) => {
+            
         });
 
     }
 
     return (
-        <Form method="POST" onChange={handleChange}>
-            <input title="title" name="title" type="text" value={title}/>
-            <input title="room" name="room" type="text" value={room}/>
-            <input title="start" name="start" type="datetime-local" value={start}/>
-            <input title="end" name="end" type="datetime-local" value={end}/>
+        <Form method="POST" onChange={handleChange} onSubmit={handleSubmit}>
+            <input title="title" name="title" type="text" defaultValue={title}/>
+            <input title="room" name="room" type="text" defaultValue={room}/>
+            <input title="start" name="start" type="datetime-local" defaultValue={toDatetimeLocal(start)}/>
+            <input title="end" name="end" type="datetime-local" defaultValue={toDatetimeLocal(end)}/>
+            <button type="submit">Submit</button>
         </Form>
     );
 }
