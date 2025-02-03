@@ -31,7 +31,7 @@ export class Reservation {
                 throw new Error("Invalid JSON: missing required fields");
             }
         }
-        return new Reservation(-1, json.title, json.room, new Date(json.start), new Date(json.end));
+        return new Reservation(json.id, json.title, json.room, new Date(json.start), new Date(json.end));
     }
 
     toString() {
