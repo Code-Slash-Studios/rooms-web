@@ -1,3 +1,5 @@
+import { Reservation } from "~/components/Reservation";
+
 export const url = "https://8a37a0ba-fb47-41c9-8862-8ae909b2a4ed.mock.pstmn.io"
 
 export async function getAll() {
@@ -17,10 +19,10 @@ export async function getAll() {
     ]);
 }
 export async function getById(id: string) {
-    fetch(
+    return fetch(
         `${url}/reservation/${id}`
         ).then((response) => {
-            
+            return Reservation.fromJSON(response.json());
         }
-    )
+    ).catch((error) => {console.error(error); return undefined});
 }

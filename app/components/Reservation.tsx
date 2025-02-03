@@ -5,8 +5,7 @@ interface ReservationProps {
     start: Date;
     end: Date;
 }
-
-const Reservation = class {
+export class Reservation {
     title: string;
     room: string;
     start: Date;
@@ -17,6 +16,19 @@ const Reservation = class {
         this.start = start;
         this.end = end;
     }
+    static fromJSON(json: any): Reservation {
+        if (json == null) {
+            return new Reservation("", "", new Date(), new Date());
+        }
+        if (typeof(json) == "string") {
+            json = JSON.parse(json);
+            if (!json.title || !json.room || !json.start || !json.end) {
+                throw new Error("Invalid JSON: missing required fields");
+            }
+        }
+        return new Reservation(json.title, json.room, new Date(json.start), new Date(json.end));
+    }
+
     toString() {
         return `${this.title} in ${this.room} from ${this.start.toLocaleString("en-US", {hour: 'numeric', minute: '2-digit'})} to ${this.end.toLocaleString("en-US", {hour: 'numeric', minute: '2-digit'})}`;
     }

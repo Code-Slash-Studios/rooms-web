@@ -1,20 +1,30 @@
 import { Form, useLoaderData } from "@remix-run/react";
-import { FormEventHandler, useState } from "react";
+import { FormEventHandler, useEffect, useState } from "react";
 import { getById } from "../api/reservation/get";
+import { Reservation } from "~/components/Reservation";
 
 export const loader = async ({ params }:any) => {
-  const contact = await getById(params.id);
-  return {reservation: contact};
+  const contact: Reservation | undefined = await getById(params.id);
+  return {"reservation": contact};
 };
 
 export default function EditReservation() {
     //displays a react component that allows the user to edit a reservation
     const {reservation} = useLoaderData<typeof loader>();
     
-    const [title, setTitle] = useState(reservation.title);
+    const [title, setTitle] = useState("");
     const [room, setRoom] = useState("");
     const [start, setStart] = useState(new Date().getTime());
     const [end, setEnd] = useState(new Date().getTime());
+
+    const awaitFetch = useEffect(() => {
+        if (reservation) {
+            setTitle(reservation.title);
+            setRoom(reservation.room);
+            setStart(reservation.start.getTime());
+            setEnd(reservation.end.getTime());
+        }
+    }, [reservation]);
 
     const handleChange: FormEventHandler<HTMLFormElement> = (event: any) => {
         switch(event.target.title) {
