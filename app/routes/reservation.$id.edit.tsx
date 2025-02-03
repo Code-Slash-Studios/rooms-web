@@ -1,6 +1,6 @@
 import { Form, useLoaderData } from "@remix-run/react";
 import { FormEventHandler, useEffect, useState } from "react";
-import { getById } from "../api/reservation/get";
+import { getById } from "~/api/reservation/get";
 import { Reservation } from "~/components/Reservation";
 
 export const loader = async ({ params }:any) => {
@@ -51,6 +51,10 @@ export default function EditReservation() {
     const handleSubmit: FormEventHandler<HTMLFormElement> = (event: any) => {
         event.preventDefault();
         console.log(title, room, start, end);
+        if (!reservation) {
+            console.error("No reservation found");
+            return;
+        }
         //fetch to api/reservation/update/id
         fetch(`/api/reservation/update/${reservation.id}`, {
             method: "POST",

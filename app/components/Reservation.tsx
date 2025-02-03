@@ -6,19 +6,29 @@ interface ReservationProps {
     end: Date;
 }
 export class Reservation {
+    id: number;
     title: string;
     room: string;
     start: Date;
     end: Date;
-    constructor(title: string, room: string, start: Date, end: Date) {
+    constructor(id: number, title: string, room: string, start: Date | number, end: Date | number) {
+        this.id = id;
         this.title = title;
         this.room = room;
+        if (typeof start == "number") {
+            start = new Date(start);
+        }
         this.start = start;
+        if (typeof end == "number") {
+            end = new Date(end);
+        }
         this.end = end;
     }
+    static newBlank = () => new Reservation(-1, "", "", new Date(), new Date());
+
     static fromJSON(json: any): Reservation {
         if (json == null) {
-            return new Reservation("", "", new Date(), new Date());
+            return this.newBlank();
         }
         if (typeof(json) == "string") {
             json = JSON.parse(json);
@@ -26,7 +36,7 @@ export class Reservation {
                 throw new Error("Invalid JSON: missing required fields");
             }
         }
-        return new Reservation(json.title, json.room, new Date(json.start), new Date(json.end));
+        return new Reservation(-1, json.title, json.room, new Date(json.start), new Date(json.end));
     }
 
     toString() {

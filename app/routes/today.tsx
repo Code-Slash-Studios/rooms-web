@@ -1,4 +1,4 @@
-import ReservationComp from '../components/Reservation';
+import ReservationComp from '~/components/Reservation';
 
 export default function Today() {
     const time = new Date();
