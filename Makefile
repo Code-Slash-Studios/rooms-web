@@ -2,11 +2,17 @@ init:
 	npm install
 
 run:
-	docker compose build
-	docker compose up -d
+	podman build . -t rooms-web
+	podman run --name rooms-web-container -p 8080:8080 rooms-web
+
+run-prod:
+	podman build . -t rooms-web-prod
+	podman run --name rooms-web-container-prod -p 8080:8080 rooms-web-prod
 
 stop:
-	docker compose down
+	podman stop rooms-web-container
+stop-prod:
+	podman stop rooms-web-container-prod
 
 build:
 	npm run build
@@ -23,9 +29,8 @@ test:
 	npx remix vite:build --dry-run
 
 local:
-	docker compose build
-	docker compose up -d
+	podman build . -t rooms-web
+	podman run -d --name rooms-web-container -p 8080:8080 rooms-web
 
 restart:
 	systemctl restart rooms-web
-

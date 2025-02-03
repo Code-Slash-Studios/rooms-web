@@ -1,4 +1,4 @@
-import Today from "./Today";
+import Today from "./today";
 
 export async function loader() {
     return "{}";
