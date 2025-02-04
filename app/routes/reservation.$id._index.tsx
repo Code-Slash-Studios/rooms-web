@@ -30,8 +30,10 @@ export default function reservationDetail() {
 
 
     return <div>
-        <h1>Reservation Detail</h1>
+        <h1 key="title">Reservation Detail</h1>
         {error && <p>{error}</p>}
-        <p>{reservation.toString()}</p>
+        <div key="content">
+            <p>{reservation.render()}</p>
+        </div>
     </div>
 }

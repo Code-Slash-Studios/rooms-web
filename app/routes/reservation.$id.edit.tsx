@@ -20,7 +20,7 @@ export default function EditReservation() {
     const {reservation, getError} = useLoaderData<typeof loader>();
     
     const [title, setTitle] = useState("");
-    const [room, setRoom] = useState("");
+    const [roomID, setRoomID] = useState(-1);
     const [start, setStart] = useState<Date>(new Date());
     const [end, setEnd] = useState<Date>(new Date());
 
@@ -39,7 +39,7 @@ export default function EditReservation() {
                 setTitle(event.target.value);
                 break;
             case "room":
-                setRoom(event.target.value);
+                setRoomID(event.target.value);
                 break;
             case "start":
                 if (event.target.value > end) {
@@ -62,7 +62,7 @@ export default function EditReservation() {
             console.error("No reservation found");
             return;
         }
-        post(new Reservation(reservation.id, title, room, start, end)).then((res) => {
+        post(new Reservation(reservation.id, title, roomID, room, start, end)).then((res) => {
             
         });
 
@@ -73,7 +73,12 @@ export default function EditReservation() {
             <h1 key="title">Edit Reservation</h1>
             <Form method="PUT" onChange={handleChange} onSubmit={handleSubmit}>
                 <input title="title" name="title" type="text" defaultValue={title}/>
-                <input title="room" name="room" type="text" defaultValue={room}/>
+                <select title="room" name="room" defaultValue={roomID}>
+                    <option value={-1}>Select a room</option>
+                    <option value={1}>W210</option>
+                    <option value={2}>W211</option>
+                    <option value={3}>W212</option>
+                </select>
                 <input title="start" name="start" type="datetime-local" defaultValue={toDatetimeLocal(start)}/>
                 <input title="end" name="end" type="datetime-local" defaultValue={toDatetimeLocal(end)}/>
                 <button type="submit">Submit</button>

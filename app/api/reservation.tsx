@@ -2,9 +2,9 @@ import { Reservation } from "~/components/Reservation";
 
 export const url = "https://de5349bd-1628-4ca3-b667-05d25816b5e5.mock.pstmn.io"
 
-export async function getAll() {
+export async function getAll(): Promise<Reservation[] | undefined> {
     return fetch(
-        `${url}/reservation`,
+        `${url}/reservations`,
         ).then((response) => {
             return response.json().then((json) => {
                 return json.map((r: any) => Reservation.fromJSON(r));
