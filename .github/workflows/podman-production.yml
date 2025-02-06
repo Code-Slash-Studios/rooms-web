@@ -21,8 +21,8 @@ jobs:
   deploy:
     needs: build
     runs-on: self-hosted
+    continue-on-error: true
     steps:
     - uses: actions/checkout@v4
     - name: Deploy/Restart Rooms Web
-    - continue-on-error: true
       run: make run
