@@ -1,4 +1,4 @@
-name: Docker CI
+name: Podman CI
 
 on:
   push:
