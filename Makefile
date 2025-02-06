@@ -13,12 +13,14 @@ build-prod:
 
 run-prod:
 	make build-prod
-	podman run --name rooms-web-container-prod -p 8080:8080 rooms-web-prod
+	podman run --name rooms-web-container-prod -p 8080:8080 rooms-web-prod -d
 
 stop:
 	podman stop rooms-web-container
 stop-prod:
 	podman stop rooms-web-container-prod
+kill-prod:
+	podman rm rooms-web-container-prod
 
 prod:
 	npm run build
