@@ -1,7 +1,7 @@
 import { fromDatetimeLocal, toDatetimeLocal } from "~/utils/datetime";
 import "./Reservation.css";
 import { Form, Link } from "@remix-run/react";
-import { FormEventHandler } from "react";
+import { ChangeEventHandler, FormEventHandler } from "react";
 import { getRooms } from "~/api/room";
 interface ReservationProps {
     id: number;
@@ -40,7 +40,7 @@ export class Reservation {
         if (Array.isArray(json)) {
             return json.map((r: any) => {return Reservation.factory(r)});
         } else {
-            return new Reservation(json.id, json.title, json.room_id, json.room, new Date(json.start), new Date(json.end));
+            return new Reservation(json.id, json.title, json.roomID, json.room, new Date(json.start), new Date(json.end));
         }
     }
 
@@ -105,6 +105,7 @@ interface ReservationFormProps {
     roomID: number;
     start: Date;
     end: Date;
+    onSelect: ChangeEventHandler<HTMLSelectElement>;
     onChange: FormEventHandler<HTMLFormElement>;
     onSubmit: FormEventHandler<HTMLFormElement>;
 }
@@ -112,7 +113,7 @@ interface ReservationFormProps {
 export const ReservationFormComp = (props: ReservationFormProps) => {
     return <Form method="PUT" onChange={props.onChange} onSubmit={props.onSubmit} className="reservationForm">
             <input title="title" name="title" type="text" defaultValue={props.title}/>
-            <select title="room" name="room" defaultValue={props.roomID}>
+            <select title="room" name="room" value={props.roomID} onChange={(e) => {props.onSelect(e)}}>
                 <option value={-1}>Select a room</option>
                 {Array.from(getRooms().entries()).map(([id, room]) => (
                     <option key={id} value={id}>{room}</option>

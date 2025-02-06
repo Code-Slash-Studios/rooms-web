@@ -1,4 +1,4 @@
-import { FormEventHandler, useState } from "react";
+import { ChangeEventHandler, FormEventHandler, useState } from "react";
 import { post } from "~/api/reservation";
 import { getRoom } from "~/api/room";
 import { Reservation, ReservationFormComp } from "~/components/Reservation";
@@ -10,6 +10,9 @@ export default function EditReservation() {
     const [start, setStart] = useState<Date>(new Date());
     const [end, setEnd] = useState<Date>(new Date());
 
+    const handleSelect: ChangeEventHandler<HTMLSelectElement> = (event: any) => {
+        setRoomID(event.target.value);
+    }
     const handleChange: FormEventHandler<HTMLFormElement> = (event: any) => {
         switch(event.target.title) {
             case "title":
@@ -43,11 +46,12 @@ export default function EditReservation() {
         }
 
     }
+    
 
     return (
         <div>
             <h1 key="title">Create Reservation</h1>
-            <ReservationFormComp title={title} roomID={roomID} start={start} end={end} onChange={handleChange} onSubmit={handleSubmit} />
+            <ReservationFormComp title={title} roomID={roomID} start={start} end={end} onSelect={handleSelect} onChange={handleChange} onSubmit={handleSubmit} />
         </div>
     );
 }

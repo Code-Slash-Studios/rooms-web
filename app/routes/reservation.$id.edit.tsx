@@ -1,5 +1,5 @@
 import { useLoaderData } from "@remix-run/react";
-import { FormEventHandler, useEffect, useState } from "react";
+import { ChangeEventHandler, FormEventHandler, useEffect, useState } from "react";
 import { getById, post } from "~/api/reservation";
 import { getRoom } from "~/api/room";
 import { Reservation, ReservationFormComp } from "~/components/Reservation";
@@ -10,6 +10,7 @@ export const loader = async ({ params }:any) => {
             console.error("No reservation found");
             return {"reservation": undefined, "getError": "No reservation found"};
         }
+        console.log(res)
         return {"reservation": res, "getError": undefined};
     });
   
@@ -26,12 +27,14 @@ export default function EditReservation() {
 
     useEffect(() => {
         if (reservation != undefined) {
-            setTitle(reservation.title);
-            setRoomID(reservation.roomID);
-            setStart(reservation.start);
-            setEnd(reservation.end);
+            const res = Reservation.factory(reservation);
+            setTitle(res.title);
+            setRoomID(res.roomID);
+            setStart(res.start);
+            setEnd(res.end);
+            
         }
-    }, [reservation]);
+    }, [reservation, roomID]);
 
     const handleChange: FormEventHandler<HTMLFormElement> = (event: any) => {
         switch(event.target.title) {
@@ -55,6 +58,10 @@ export default function EditReservation() {
                 break;
         }
     }
+    const handleSelect: ChangeEventHandler<HTMLSelectElement> = (event: any) => {
+        setRoomID(event.target.value);
+    }
+
     const handleSubmit: FormEventHandler<HTMLFormElement> = (event: any) => {
         event.preventDefault();
         console.log(title, getRoom(roomID), start, end);
@@ -73,7 +80,7 @@ export default function EditReservation() {
     return (
         <div>
             <h1 key="title">Edit Reservation</h1>
-            <ReservationFormComp title={title} roomID={roomID} start={start} end={end} onChange={handleChange} onSubmit={handleSubmit} />
+            <ReservationFormComp title={title} roomID={roomID} start={start} end={end} onSelect={handleSelect} onChange={handleChange} onSubmit={handleSubmit} />
         </div>
     );
 }
