@@ -134,3 +134,4 @@ dist
 
 #vite builds
 .build/client/assets/*
+.build/server/*
