@@ -27,9 +27,9 @@ export class Reservation {
     }
     static empty = () => new Reservation(-1, "", -1, "", new Date(), new Date());
 
-    static factory(json: any): Reservation | Reservation[] | any { //recursive
+    static factory(json: any): Reservation | Reservation[] | null | any { //recursive
         if (json == null) {
-            throw new Error("Invalid JSON: null or undefined");
+            return null
         }
         if (typeof(json) == "string") {
             json = JSON.parse(json);
