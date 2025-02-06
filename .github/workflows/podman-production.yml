@@ -24,6 +24,4 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Deploy/Restart Rooms Web
-      run: |
-        make kill-prod |
-        make run-prod
+      run: systemctl restart rooms-web
