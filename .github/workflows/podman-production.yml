@@ -25,7 +25,4 @@ jobs:
     - uses: actions/checkout@v4
     - name: Deploy/Restart Rooms Web
       run: |
-        make stop-prod
-    - name: Deploy Rooms Web
-      run: |
-        make run-prod
+        podman restart rooms-web-prod-container
