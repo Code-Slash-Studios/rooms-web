@@ -24,9 +24,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Deploy/Restart Rooms Web
-      run: |
-        try:
-          make run
-        catch error:
-            run: |
-              echo "Build failed with error: ${{ error }}"
+    - continue-on-error: true
+      run:
+       make run
