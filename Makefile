@@ -1,12 +1,18 @@
 init:
 	npm install
 
+build:
+	podman build . t rooms-web
+
 run:
-	podman build . -t rooms-web
+	make build
 	podman run --name rooms-web-container -p 8081:8081 rooms-web
 
-run-prod:
+build-prod:
 	podman build . -t rooms-web-prod
+
+run-prod:
+	make build-prod
 	podman run --name rooms-web-container-prod -p 8080:8080 rooms-web-prod
 
 stop:
@@ -14,15 +20,11 @@ stop:
 stop-prod:
 	podman stop rooms-web-container-prod
 
-build:
-	npm run build
-
 prod:
-	make build
+	npm run build
 	npm run start
-
 dev:
-	make build
+	npm run build
 	npm run dev
 
 test:
