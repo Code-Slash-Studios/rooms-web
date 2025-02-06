@@ -27,13 +27,18 @@ export default function reservationDetail() {
         });
 
     }, [reservationID]);
-
-
-    return <div>
-        <h1 key="title">Reservation Detail</h1>
-        {error && <p>{error}</p>}
-        <div key="content">
-            <p>{reservation.render()}</p>
-        </div>
+    if (timeOnly) {
+        //time with hours and minutes (no seconds)
+        var start = props.start.toLocaleTimeString("en-US", {hour: 'numeric', minute: '2-digit'});
+        var end = props.end.toLocaleTimeString("en-US", {hour: 'numeric', minute: '2-digit'});
+    } else {
+        //full date and time with hours and minutes (no seconds)
+        var start = props.start.toLocaleString("en-US", {hour: 'numeric', minute: '2-digit', month: 'short', day: 'numeric', year: 'numeric'});
+        var end = props.end.toLocaleString("en-US", {hour: 'numeric', minute: '2-digit', month: 'short', day: 'numeric', year: 'numeric'});
+    }
+    return <div className="event" key="{props.title}">
+        <h1 key="title1">Reservation Detail</h1>
+        <h1 key="title"><u>{props.title}</u> in {props.room}</h1>
+        <h2 key="time">{start} - {end}</h2>
     </div>
 }
