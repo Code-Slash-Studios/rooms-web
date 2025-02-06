@@ -3,7 +3,7 @@ init:
 
 run:
 	podman build . -t rooms-web
-	podman run --name rooms-web-container -p 8080:8080 rooms-web
+	podman run --name rooms-web-container -p 8081:8081 rooms-web
 
 run-prod:
 	podman build . -t rooms-web-prod
@@ -30,7 +30,7 @@ test:
 
 local:
 	podman build . -t rooms-web
-	podman run -d --name rooms-web-container -p 8080:8080 rooms-web
+	podman run -d --name rooms-web-container -p 8081:8081 rooms-web
 
 restart:
 	systemctl restart rooms-web
