@@ -6,11 +6,26 @@ on:
 
 jobs:
 
-  build:
-
+  git-pull:
     runs-on: self-hosted
-
+    steps:
+    - name: pull
+      run: git pull
+  build:
+    needs: git-pull
+    runs-on: self-hosted
     steps:
     - uses: actions/checkout@v4
     - name: Build Rooms Web
-      run: make stop && make run
+      run: make build-prod
+  deploy:
+    needs: build
+    runs-on: self-hosted
+    steps:
+    - uses: actions/checkout@v4
+    - name: Deploy/Restart Rooms Web
+      run: |
+        make stop-prod
+    - name: Deploy Rooms Web
+      run: |
+        make run-prod
