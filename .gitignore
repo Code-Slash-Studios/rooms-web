@@ -134,6 +134,6 @@ dist
 
 #vite builds
 #ignore ./build/client/assets
-.build/client/assets/*.*
-.build/client/assets/
-.build/server/*
+build/client/assets/*.*
+build/client/assets/*
+build/server/*
