@@ -1,7 +1,7 @@
 import { fromDatetimeLocal, toDatetimeLocal } from "~/utils/datetime";
 import "./Reservation.css";
 import { Form, Link } from "@remix-run/react";
-import { FormEventHandler } from "react";
+import { ChangeEventHandler, FormEventHandler } from "react";
 import { getRooms } from "~/api/room";
 interface ReservationProps {
     id: number;
@@ -40,16 +40,26 @@ export class Reservation {
         if (Array.isArray(json)) {
             return json.map((r: any) => {return Reservation.factory(r)});
         } else {
-            return new Reservation(json.id, json.title, json.room_id, json.room, new Date(json.start), new Date(json.end));
+            return new Reservation(json.id, json.title, json.roomID, json.room, new Date(json.start), new Date(json.end));
         }
     }
 
     toString() {
         return `${this.title} in ${this.room} from ${this.start.toLocaleString("en-US", {hour: 'numeric', minute: '2-digit'})} to ${this.end.toLocaleString("en-US", {hour: 'numeric', minute: '2-digit'})}`;
     }
-    render() {
-        return <ReservationComp id={this.id} title={this.title} room={this.room} start={this.start} end={this.end} />;
+    render(timeOnly = true, showDetailButton = true) {
+        return ReservationComp(this.toProps(), timeOnly, showDetailButton);
     }
+    toProps(): ReservationProps {
+        return {
+            id: this.id,
+            title: this.title,
+            room: this.room,
+            start: this.start,
+            end: this.end
+        }
+    }
+
     isValid() {
         let valid = true;
         if (this.title == "") {
@@ -71,7 +81,7 @@ export class Reservation {
     }
 }
 
-const ReservationComp = (props: ReservationProps, timeOnly = false) => {
+const ReservationComp = (props: ReservationProps, timeOnly = false, showDetailButton = false) => {
     if (timeOnly) {
         //time with hours and minutes (no seconds)
         var start = props.start.toLocaleTimeString("en-US", {hour: 'numeric', minute: '2-digit'});
@@ -81,12 +91,13 @@ const ReservationComp = (props: ReservationProps, timeOnly = false) => {
         var start = props.start.toLocaleString("en-US", {hour: 'numeric', minute: '2-digit', month: 'short', day: 'numeric', year: 'numeric'});
         var end = props.end.toLocaleString("en-US", {hour: 'numeric', minute: '2-digit', month: 'short', day: 'numeric', year: 'numeric'});
     }
-    return <div className="event" key="{props.title}">
+    const linkto = "/reservation/" + props.id;
+    return <Link to={linkto} key="{props.title}" style={{textDecoration:"none",color:"inherit"}}><div className="event" key="{props.title}">
         <h1 key="title"><u>{props.title}</u> in {props.room}</h1>
         <h2 key="time">{start} - {end}</h2>
-        <Link to={`/reservation/${props.id}`}><button>Details</button></Link>
-        <Link to={`/reservation/${props.id}/edit`}><button>Edit</button></Link>
-    </div>
+        {showDetailButton && <Link key="detail" to={`/reservation/${props.id}`}><button>Details</button></Link>}
+        <Link key="edit" to={`/reservation/${props.id}/edit`}><button>Edit</button></Link>
+    </div></Link>
 }
 
 interface ReservationFormProps {
@@ -94,6 +105,7 @@ interface ReservationFormProps {
     roomID: number;
     start: Date;
     end: Date;
+    onSelect: ChangeEventHandler<HTMLSelectElement>;
     onChange: FormEventHandler<HTMLFormElement>;
     onSubmit: FormEventHandler<HTMLFormElement>;
 }
@@ -101,7 +113,7 @@ interface ReservationFormProps {
 export const ReservationFormComp = (props: ReservationFormProps) => {
     return <Form method="PUT" onChange={props.onChange} onSubmit={props.onSubmit} className="reservationForm">
             <input title="title" name="title" type="text" defaultValue={props.title}/>
-            <select title="room" name="room" defaultValue={props.roomID}>
+            <select title="room" name="room" value={props.roomID} onChange={(e) => {props.onSelect(e)}}>
                 <option value={-1}>Select a room</option>
                 {Array.from(getRooms().entries()).map(([id, room]) => (
                     <option key={id} value={id}>{room}</option>
