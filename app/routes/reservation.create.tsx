@@ -1,13 +1,14 @@
 import { Form, useLoaderData } from "@remix-run/react";
 import { FormEventHandler, useEffect, useState } from "react";
 import { post } from "~/api/reservation";
-import { Reservation } from "~/components/Reservation";
+import { getRoom, getRooms } from "~/api/room";
+import { Reservation, ReservationFormComp } from "~/components/Reservation";
 import { toDatetimeLocal } from "~/utils/datetime";
 
 export default function EditReservation() {
     //displays a react component that allows the user to edit a reservation
     const [title, setTitle] = useState("");
-    const [room, setRoom] = useState("");
+    const [roomID, setRoomID] = useState(-1);
     const [start, setStart] = useState<Date>(new Date());
     const [end, setEnd] = useState<Date>(new Date());
 
@@ -17,7 +18,7 @@ export default function EditReservation() {
                 setTitle(event.target.value);
                 break;
             case "room":
-                setRoom(event.target.value);
+                setRoomID(event.target.value);
                 break;
             case "start":
                 if (event.target.value > end) {
@@ -35,8 +36,8 @@ export default function EditReservation() {
     }
     const handleSubmit: FormEventHandler<HTMLFormElement> = (event: any) => {
         event.preventDefault();
-        console.log(title, room, start, end);
-        post(new Reservation(-1, title, room, start, end)).then((res) => {
+        console.log(title, getRoom(roomID), start, end);
+        post(new Reservation(-1, title, roomID, getRoom(roomID), start, end)).then((res) => {
             
         });
 
@@ -45,13 +46,7 @@ export default function EditReservation() {
     return (
         <div>
             <h1 key="title">Create Reservation</h1>
-            <Form method="POST" onChange={handleChange} onSubmit={handleSubmit}>
-                <input title="title" name="title" type="text" defaultValue={title}/>
-                <input title="room" name="room" type="text" defaultValue={room}/>
-                <input title="start" name="start" type="datetime-local" defaultValue={toDatetimeLocal(start)}/>
-                <input title="end" name="end" type="datetime-local" defaultValue={toDatetimeLocal(end)}/>
-                <button type="submit">Submit</button>
-            </Form>
+            <ReservationFormComp title={title} roomID={roomID} start={start} end={end} onChange={handleChange} onSubmit={handleSubmit} />
         </div>
     );
 }

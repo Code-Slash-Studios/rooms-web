@@ -1,6 +1,8 @@
-import { fromDatetimeLocal } from "~/utils/datetime";
+import { fromDatetimeLocal, toDatetimeLocal } from "~/utils/datetime";
 import "./Reservation.css";
-import { Link } from "@remix-run/react";
+import { Form, Link } from "@remix-run/react";
+import { FormEventHandler } from "react";
+import { getRooms } from "~/api/room";
 interface ReservationProps {
     id: number;
     title: string;
@@ -64,4 +66,28 @@ const ReservationComp = (props: ReservationProps, timeOnly = false) => {
             <Link to={`/reservation/${props.id}/edit`}>Edit</Link>
         </div>
     </>
+}
+
+interface ReservationFormProps {
+    title: string;
+    roomID: number;
+    start: Date;
+    end: Date;
+    onChange: FormEventHandler<HTMLFormElement>;
+    onSubmit: FormEventHandler<HTMLFormElement>;
+}
+
+export const ReservationFormComp = (props: ReservationFormProps) => {
+    return <Form method="PUT" onChange={props.onChange} onSubmit={props.onSubmit} className="reservationForm">
+            <input title="title" name="title" type="text" defaultValue={props.title}/>
+            <select title="room" name="room" defaultValue={props.roomID}>
+                <option value={-1}>Select a room</option>
+                {Array.from(getRooms().entries()).map(([id, room]) => (
+                    <option key={id} value={id}>{room}</option>
+                ))}
+            </select>
+            <input title="start" name="start" type="datetime-local" defaultValue={toDatetimeLocal(props.start)}/>
+            <input title="end" name="end" type="datetime-local" defaultValue={toDatetimeLocal(props.end)}/>
+            <button type="submit">Submit</button>
+        </Form>
 }
