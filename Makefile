@@ -6,14 +6,14 @@ build:
 
 run:
 	make build
-	podman run --name rooms-web-container -p 8081:8081 rooms-web
+	podman run --name rooms-web-container -p 8081:8081 -d rooms-web
 
 build-prod:
 	podman build . -t rooms-web-prod
 
 run-prod:
 	make build-prod
-	podman run --name rooms-web-container-prod -p 8080:8080 rooms-web-prod -d
+	podman run --name rooms-web-container-prod -p 8080:8080 -d rooms-web-prod
 
 stop:
 	podman stop rooms-web-container
