@@ -10,7 +10,6 @@ export const loader = async ({ params }:any) => {
             console.error("No reservation found");
             return {"reservation": undefined, "getError": "No reservation found"};
         }
-        console.log(res)
         return {"reservation": res, "getError": undefined};
     });
   
