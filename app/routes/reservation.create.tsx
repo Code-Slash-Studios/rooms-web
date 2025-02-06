@@ -1,9 +1,7 @@
-import { Form, useLoaderData } from "@remix-run/react";
-import { FormEventHandler, useEffect, useState } from "react";
+import { FormEventHandler, useState } from "react";
 import { post } from "~/api/reservation";
-import { getRoom, getRooms } from "~/api/room";
+import { getRoom } from "~/api/room";
 import { Reservation, ReservationFormComp } from "~/components/Reservation";
-import { toDatetimeLocal } from "~/utils/datetime";
 
 export default function EditReservation() {
     //displays a react component that allows the user to edit a reservation

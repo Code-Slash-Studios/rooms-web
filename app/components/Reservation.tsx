@@ -47,9 +47,19 @@ export class Reservation {
     toString() {
         return `${this.title} in ${this.room} from ${this.start.toLocaleString("en-US", {hour: 'numeric', minute: '2-digit'})} to ${this.end.toLocaleString("en-US", {hour: 'numeric', minute: '2-digit'})}`;
     }
-    render() {
-        return <ReservationComp id={this.id} title={this.title} room={this.room} start={this.start} end={this.end} />;
+    render(timeOnly = true, showDetailButton = true) {
+        return ReservationComp(this.toProps(), timeOnly, showDetailButton);
     }
+    toProps(): ReservationProps {
+        return {
+            id: this.id,
+            title: this.title,
+            room: this.room,
+            start: this.start,
+            end: this.end
+        }
+    }
+
     isValid() {
         let valid = true;
         if (this.title == "") {
@@ -71,7 +81,7 @@ export class Reservation {
     }
 }
 
-const ReservationComp = (props: ReservationProps, timeOnly = false) => {
+const ReservationComp = (props: ReservationProps, timeOnly = false, showDetailButton = false) => {
     if (timeOnly) {
         //time with hours and minutes (no seconds)
         var start = props.start.toLocaleTimeString("en-US", {hour: 'numeric', minute: '2-digit'});
@@ -81,12 +91,13 @@ const ReservationComp = (props: ReservationProps, timeOnly = false) => {
         var start = props.start.toLocaleString("en-US", {hour: 'numeric', minute: '2-digit', month: 'short', day: 'numeric', year: 'numeric'});
         var end = props.end.toLocaleString("en-US", {hour: 'numeric', minute: '2-digit', month: 'short', day: 'numeric', year: 'numeric'});
     }
-    return <div className="event" key="{props.title}">
+    const linkto = "/reservation/" + props.id;
+    return <Link to={linkto} key="{props.title}" style={{textDecoration:"none",color:"inherit"}}><div className="event" key="{props.title}">
         <h1 key="title"><u>{props.title}</u> in {props.room}</h1>
         <h2 key="time">{start} - {end}</h2>
-        <Link to={`/reservation/${props.id}`}><button>Details</button></Link>
-        <Link to={`/reservation/${props.id}/edit`}><button>Edit</button></Link>
-    </div>
+        {showDetailButton && <Link key="detail" to={`/reservation/${props.id}`}><button>Details</button></Link>}
+        <Link key="edit" to={`/reservation/${props.id}/edit`}><button>Edit</button></Link>
+    </div></Link>
 }
 
 interface ReservationFormProps {

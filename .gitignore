@@ -133,5 +133,7 @@ dist
 .history
 
 #vite builds
-.build/client/assets/*
+#ignore ./build/client/assets
+.build/client/assets/*.*
+.build/client/assets/
 .build/server/*
