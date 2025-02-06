@@ -37,9 +37,12 @@ export default function EditReservation() {
     const handleSubmit: FormEventHandler<HTMLFormElement> = (event: any) => {
         event.preventDefault();
         console.log(title, getRoom(roomID), start, end);
-        post(new Reservation(-1, title, roomID, getRoom(roomID), start, end)).then((res) => {
-            
-        });
+        let save = new Reservation(-1, title, roomID, getRoom(roomID), start, end)
+        if (save.isValid()) {
+            post(save).then((res) => {
+                alert(res)
+            });
+        }
 
     }
 

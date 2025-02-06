@@ -7,7 +7,7 @@ export async function getAll(): Promise<Reservation[] | undefined> {
         `${url}/reservations`,
         ).then((response) => {
             return response.json().then((json) => {
-                return json.map((r: any) => Reservation.fromJSON(r));
+                return json.map((r: any) => Reservation.factory(r));
             })
         }
     ).catch((error) => {console.error(error); return undefined});
@@ -18,7 +18,7 @@ export async function getById(id: string) {
         `${url}/reservation/${id}`,
         ).then((response) => {
             return response.json().then((json) => {
-                return Reservation.fromJSON(json);
+                return Reservation.factory(json);
             })
         }
     ).catch((error) => {console.error(error); return undefined});

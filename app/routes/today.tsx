@@ -1,6 +1,7 @@
 import { getAll } from '~/api/reservation';
 import { Reservation } from '~/components/Reservation';
 import { useLoaderData } from '@remix-run/react';
+import { useEffect, useState } from 'react';
 
 export const loader = async ({ params }:any) => {
     return getAll().then((res) => {
@@ -8,20 +9,27 @@ export const loader = async ({ params }:any) => {
             console.error("No reservations found");
             return {"reservations": undefined, "getError": "No reservations found"};
         }
-        return {"reservations": res, "getError": undefined};
+        return {"reservationData": res, "getError": undefined};
     });
 };
 
 export default function Today() {
-    const {reservations, getError} = useLoaderData<typeof loader>();
+    const {reservationData, getError} = useLoaderData<typeof loader>();
+
+    const [reservations, setReservations] = useState<Reservation[] | undefined>(undefined);
 
     const time = new Date();
-    const time2 = new Date(time.getFullYear(), time.getMonth(), time.getDate(), time.getHours() + 2, time.getMinutes(), time.getSeconds());
+
+    useEffect(() => {
+        setReservations(Reservation.factory(reservationData));
+    }, [reservationData]);
+
+    console.log(reservations)
     return <>
         <h1 key="title">Welcome to Today! {time.toLocaleDateString("en-US", {month: "long", day:"numeric"})}</h1>
         {getError && <p key="error">{getError}</p>}
         <ul key="reservations">
-            {reservations != undefined && reservations.map((r: Reservation) => r.render())}
+            {reservations != undefined && reservations.map((r) => r.render())}
         </ul>
     </>
 }

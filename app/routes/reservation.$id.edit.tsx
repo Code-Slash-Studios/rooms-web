@@ -62,10 +62,12 @@ export default function EditReservation() {
             console.error("No reservation found");
             return;
         }
-        post(new Reservation(reservation.id, title, roomID, getRoom(roomID), start, end)).then((res) => {
-            
-        });
-
+        let save = new Reservation(reservation.id, title, roomID, getRoom(roomID), start, end)
+        if (save.isValid()) {
+            post(save).then((res) => {
+                alert(res)
+            });
+        }
     }
 
     return (

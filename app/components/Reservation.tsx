@@ -27,9 +27,9 @@ export class Reservation {
     }
     static empty = () => new Reservation(-1, "", -1, "", new Date(), new Date());
 
-    static fromJSON(json: any): Reservation | null{
+    static factory(json: any): Reservation | Reservation[] | any { //recursive
         if (json == null) {
-            return null;
+            throw new Error("Invalid JSON: null or undefined");
         }
         if (typeof(json) == "string") {
             json = JSON.parse(json);
@@ -37,7 +37,11 @@ export class Reservation {
                 throw new Error("Invalid JSON: missing required fields");
             }
         }
-        return new Reservation(json.id, json.title, json.room_id, json.room, new Date(json.start), new Date(json.end));
+        if (Array.isArray(json)) {
+            return json.map((r: any) => {return Reservation.factory(r)});
+        } else {
+            return new Reservation(json.id, json.title, json.room_id, json.room, new Date(json.start), new Date(json.end));
+        }
     }
 
     toString() {
@@ -45,6 +49,25 @@ export class Reservation {
     }
     render() {
         return <ReservationComp id={this.id} title={this.title} room={this.room} start={this.start} end={this.end} />;
+    }
+    isValid() {
+        let valid = true;
+        if (this.title == "") {
+            valid = false;
+        }
+        if (this.roomID == -1) {
+            valid = false;
+        }
+        if (this.start == null) {
+            valid = false;
+        }
+        if (this.end == null) {
+            valid = false;
+        }
+        if (this.start >= this.end) {
+            valid = false;
+        }
+        return valid;
     }
 }
 
@@ -58,14 +81,12 @@ const ReservationComp = (props: ReservationProps, timeOnly = false) => {
         var start = props.start.toLocaleString("en-US", {hour: 'numeric', minute: '2-digit', month: 'short', day: 'numeric', year: 'numeric'});
         var end = props.end.toLocaleString("en-US", {hour: 'numeric', minute: '2-digit', month: 'short', day: 'numeric', year: 'numeric'});
     }
-    return <>
-        <div className="event" key="{props.title}">
-            <h1 key="title"><u>{props.title}</u> in {props.room}</h1>
-            <h2 key="time">{start} - {end}</h2>
-            <Link to={`/reservation/${props.id}`}>Details</Link>
-            <Link to={`/reservation/${props.id}/edit`}>Edit</Link>
-        </div>
-    </>
+    return <div className="event" key="{props.title}">
+        <h1 key="title"><u>{props.title}</u> in {props.room}</h1>
+        <h2 key="time">{start} - {end}</h2>
+        <Link to={`/reservation/${props.id}`}><button>Details</button></Link>
+        <Link to={`/reservation/${props.id}/edit`}><button>Edit</button></Link>
+    </div>
 }
 
 interface ReservationFormProps {
