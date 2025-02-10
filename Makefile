@@ -2,7 +2,7 @@ init:
 	npm install
 
 build:
-	podman build . t rooms-web
+	podman build . -t rooms-web
 
 run:
 	make build
