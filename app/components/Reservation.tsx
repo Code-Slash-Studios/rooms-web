@@ -123,7 +123,7 @@ export const ReservationFormComp = (props: ReservationFormProps) => {
             </select>
             <input title="start-date" name="start-date" type="date" defaultValue={toDatetimeLocal(props.start).split("T")[0]}/>
             <input title="start-time" name="start-time" type="time" defaultValue={toDatetimeLocal(props.start).split("T")[1]}/>
-            <input title="duration" name="duration" type="number" max={240} defaultValue={props.duration}/>
+            <input title="duration" name="duration" type="number" max={240} min={15} defaultValue={props.duration}/>
             <button type="submit">Submit</button>
         </Form>
 }
