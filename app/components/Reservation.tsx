@@ -105,10 +105,12 @@ interface ReservationFormProps {
     roomID: number;
     start: Date;
     end: Date;
+    duration: number;
     onSelect: ChangeEventHandler<HTMLSelectElement>;
     onChange: FormEventHandler<HTMLFormElement>;
     onSubmit: FormEventHandler<HTMLFormElement>;
 }
+
 
 export const ReservationFormComp = (props: ReservationFormProps) => {
     return <Form method="PUT" onChange={props.onChange} onSubmit={props.onSubmit} className="reservationForm">
@@ -119,8 +121,9 @@ export const ReservationFormComp = (props: ReservationFormProps) => {
                     <option key={id} value={id}>{room}</option>
                 ))}
             </select>
-            <input title="start" name="start" type="datetime-local" defaultValue={toDatetimeLocal(props.start)}/>
-            <input title="end" name="end" type="datetime-local" defaultValue={toDatetimeLocal(props.end)}/>
+            <input title="start-date" name="start-date" type="date" defaultValue={toDatetimeLocal(props.start).split("T")[0]}/>
+            <input title="start-time" name="start-time" type="time" defaultValue={toDatetimeLocal(props.start).split("T")[1]}/>
+            <input title="duration" name="duration" type="number" max={240} min={15} defaultValue={props.duration}/>
             <button type="submit">Submit</button>
         </Form>
 }
