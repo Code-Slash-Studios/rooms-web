@@ -1,5 +1,5 @@
 import { getAll } from '~/api/reservation';
-import { Reservation } from '~/components/Reservation';
+import { Reservation } from '~/models/reservation';
 import { useLoaderData } from '@remix-run/react';
 import { useEffect, useState } from 'react';
 

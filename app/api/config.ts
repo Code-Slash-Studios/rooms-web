@@ -1,0 +1,1 @@
+export const apiURL = "cisrooms.stvincent.edu/api"

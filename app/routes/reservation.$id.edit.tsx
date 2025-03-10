@@ -2,7 +2,8 @@ import { useLoaderData } from "@remix-run/react";
 import { ChangeEventHandler, FormEventHandler, useEffect, useState } from "react";
 import { getById, post } from "~/api/reservation";
 import { getRoom } from "~/api/room";
-import { Reservation, ReservationFormComp } from "~/components/Reservation";
+import { Reservation } from "~/models/reservation";
+import { ReservationFormComp } from "~/components/Reservation";
 
 export const loader = async ({ params }:any) => {
     return getById(params.id).then((res) => {

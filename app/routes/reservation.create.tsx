@@ -1,7 +1,8 @@
 import { ChangeEventHandler, FormEventHandler, useState } from "react";
 import { post } from "~/api/reservation";
 import { getRoom } from "~/api/room";
-import { Reservation, ReservationFormComp } from "~/components/Reservation";
+import { Reservation } from "~/models/reservation";
+import { ReservationFormComp } from "~/components/Reservation";
 
 export default function EditReservation() {
     //displays a react component that allows the user to edit a reservation

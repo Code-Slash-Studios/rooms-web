@@ -1,7 +1,8 @@
 import { Link, useLoaderData } from "@remix-run/react";
 import { useEffect, useState } from "react";
 import { getById } from "~/api/reservation";
-import { Reservation } from "~/components/Reservation";
+import { Reservation } from "~/models/reservation";
+
 
 //this view is just for looking at details about one reservation
 //it should have a button to edit the reservation
