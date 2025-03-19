@@ -1,15 +1,16 @@
-import { MicrosoftStrategy } from "remix-auth-microsoft";
+import { MicrosoftProfile, MicrosoftStrategy } from "remix-auth-microsoft";
 import { Authenticator } from "remix-auth";
 import { User } from "~/models/auth";
 
-export let authenticator = new Authenticator<string>(); //User is a custom user types you can define as you want
+
+export let authenticator = new Authenticator<MicrosoftProfile>(); //User is a custom user types you can define as you want
 
 let microsoftStrategy = new MicrosoftStrategy(
   {
-    clientId: "YOUR_CLIENT_ID",
-    clientSecret: "YOUR_CLIENT_SECRET",
-    redirectURI: "https://example.com/auth/microsoft/callback",
-    tenantId: "YOUR_TENANT_ID", // optional - necessary for organization without multitenant (see below)
+    clientId: "6b863eae-d882-4d70-89b9-67abd3bc1c6e",
+    clientSecret: process.env.REACT_APP_MSAL!,
+    tenantId: "57cc97f0-039b-48f4-80a1-f40341889c0b",
+    redirectURI: "http://cisrooms.stvincent.edu/login/sso-complete",
     scopes: ["openid", "profile", "email"], // optional
     prompt: "login", // optional
   },
@@ -30,8 +31,8 @@ let microsoftStrategy = new MicrosoftStrategy(
     // The email address received from Microsoft Entra ID is not validated and can be changed to anything from Azure Portal.
     // If you use the email address to identify users and allow signing in from any tenant (`tenantId` is not set)
     // it opens up a possibility of spoofing users!
-
-    return idToken;
+    console.log(profile)
+    return profile;
   }
 );
 
