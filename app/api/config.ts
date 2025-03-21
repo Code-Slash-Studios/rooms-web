@@ -1,1 +1,1 @@
-export const apiURL = "cisrooms.stvincent.edu/api"
+export const apiURL = "http://cisrooms.stvincent.edu/api"
