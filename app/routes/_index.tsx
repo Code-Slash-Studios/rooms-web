@@ -1,9 +1,11 @@
-import Today from "./today";
+import { getRooms } from "~/api/room";
+import Rooms from "./rooms";
 
 export async function loader() {
-    return "{}";
+    let rooms = getRooms();
+    return {"rooms": rooms};
 }
 
 export default function Index() {
-    return <Today></Today>
+    return <Rooms></Rooms>
 }

@@ -1,13 +1,33 @@
 nav {
-    display: flex;
-    width: "1vw";
-    justify-content: center;
-    align-items: center;
-    background-color: #f8f9fa;
+    width: 100%;
+    background-color: #004781;
 }
-nav a {
+
+.navbar {
+    display: flex;
+    justify-content: right;
+    align-items: center;
+    padding: 10px 20px;
+    box-sizing: border-box;
+}
+
+.navbar-links {
+    list-style-type: none;
+    margin-top: 10px;
+    padding: 0;
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.navbar-links li a {
+    color: white;
     text-decoration: none;
-    color: #000;
-    font-size: 1.5rem;
-    margin: 0 1rem;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.navbar-links li a:hover {
+    color: #c9d2d4;
 }
