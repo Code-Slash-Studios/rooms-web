@@ -1,4 +1,4 @@
-import { useLoaderData } from "@remix-run/react";
+import { Link, useLoaderData } from "@remix-run/react";
 import { useEffect, useState } from "react";
 import { getById } from "~/api/reservation";
 import { Reservation } from "~/components/Reservation";
@@ -21,24 +21,13 @@ export default function reservationDetail() {
                 setError("No reservation found");
                 console.error("No reservation found");
                 return;
+            } else {
+                console.log(res)
+                setReservation(res);
             }
-            console.log(res)
-            setReservation(res);
         });
 
     }, [reservationID]);
-    if (timeOnly) {
-        //time with hours and minutes (no seconds)
-        var start = props.start.toLocaleTimeString("en-US", {hour: 'numeric', minute: '2-digit'});
-        var end = props.end.toLocaleTimeString("en-US", {hour: 'numeric', minute: '2-digit'});
-    } else {
-        //full date and time with hours and minutes (no seconds)
-        var start = props.start.toLocaleString("en-US", {hour: 'numeric', minute: '2-digit', month: 'short', day: 'numeric', year: 'numeric'});
-        var end = props.end.toLocaleString("en-US", {hour: 'numeric', minute: '2-digit', month: 'short', day: 'numeric', year: 'numeric'});
-    }
-    return <div className="event" key="{props.title}">
-        <h1 key="title1">Reservation Detail</h1>
-        <h1 key="title"><u>{props.title}</u> in {props.room}</h1>
-        <h2 key="time">{start} - {end}</h2>
-    </div>
+    //full date and time with hours and minutes (no seconds)
+    return reservation.render(false, false);
 }

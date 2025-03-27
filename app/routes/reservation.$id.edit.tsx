@@ -1,5 +1,5 @@
 import { useLoaderData } from "@remix-run/react";
-import { FormEventHandler, useEffect, useState } from "react";
+import { ChangeEventHandler, FormEventHandler, useEffect, useState } from "react";
 import { getById, post } from "~/api/reservation";
 import { getRoom } from "~/api/room";
 import { Reservation, ReservationFormComp } from "~/components/Reservation";
@@ -23,38 +23,55 @@ export default function EditReservation() {
     const [roomID, setRoomID] = useState(-1);
     const [start, setStart] = useState<Date>(new Date());
     const [end, setEnd] = useState<Date>(new Date());
+    const [duration, setDuration] = useState(60); //in minutes
 
     useEffect(() => {
         if (reservation != undefined) {
-            setTitle(reservation.title);
-            setRoomID(reservation.roomID);
-            setStart(reservation.start);
-            setEnd(reservation.end);
+            const res = Reservation.factory(reservation);
+            setTitle(res.title);
+            setRoomID(res.roomID);
+            setStart(res.start);
+            setEnd(res.end);
+            setDuration((res.end.getTime() - res.start.getTime()) / (60 * 1000));
         }
-    }, [reservation]);
+    }, [reservation, roomID]);
 
     const handleChange: FormEventHandler<HTMLFormElement> = (event: any) => {
+        const val = event.target.value;
+        let new_start = new Date(start.getFullYear(), start.getMonth(), start.getDate(), start.getHours(), start.getMinutes());
         switch(event.target.title) {
             case "title":
-                setTitle(event.target.value);
+                setTitle(val);
                 break;
             case "room":
-                setRoomID(event.target.value);
+                setRoomID(val);
                 break;
-            case "start":
-                if (event.target.value > end) {
-                    setEnd(start);
-                }
-                setStart(event.target.value);
+            case "start-date":
+                new_start = new Date(val.split("-")[0], val.split("-")[1], val.split("-")[2], start.getHours(), start.getMinutes());
+                setEnd(new Date(new_start.getTime() + (duration * 60 * 1000)));
+                setStart(new_start);
                 break;
-            case "end":
-                if (event.target.value < start) {
-                    setEnd(start);
+            case "start-time":
+                new_start = new Date(start.getFullYear(), start.getMonth(), start.getDate(), event.target.value.split(":")[0], event.target.value.split(":")[1]);
+                setEnd(new Date(new_start.getTime() + (duration * 60 * 1000)));
+                setStart(new_start);
+                break;
+            case "duration":
+                if (parseInt(val) < 15) {
+                    alert("Duration must be at least 15 minutes");
+                    return;
                 }
-                setEnd(event.target.value);
+                setEnd(new Date(start.getTime() + (parseInt(val) * 60 * 1000)));
+                setDuration(parseInt(val));
+                break;
+            default:
                 break;
         }
     }
+    const handleSelect: ChangeEventHandler<HTMLSelectElement> = (event: any) => {
+        setRoomID(event.target.value);
+    }
+
     const handleSubmit: FormEventHandler<HTMLFormElement> = (event: any) => {
         event.preventDefault();
         console.log(title, getRoom(roomID), start, end);
@@ -73,7 +90,7 @@ export default function EditReservation() {
     return (
         <div>
             <h1 key="title">Edit Reservation</h1>
-            <ReservationFormComp title={title} roomID={roomID} start={start} end={end} onChange={handleChange} onSubmit={handleSubmit} />
+            <ReservationFormComp title={title} roomID={roomID} start={start} end={end} duration={duration} onSelect={handleSelect} onChange={handleChange} onSubmit={handleSubmit} />
         </div>
     );
 }

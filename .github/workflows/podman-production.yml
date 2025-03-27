@@ -17,7 +17,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Build Rooms Web
-      run: make build
+      run: make build-prod
   deploy:
     needs: build
     runs-on: self-hosted
@@ -25,4 +25,4 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Deploy/Restart Rooms Web
-      run: make run
+      run: podman container restart --all
