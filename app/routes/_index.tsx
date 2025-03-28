@@ -1,9 +1,11 @@
-import Today, { loader as tloader} from "./today";
+import { getRooms } from "~/api/room";
+import Rooms from "./rooms";
 
-export async function loader({params}: any) {
-    return tloader(params);
+export async function loader() {
+    let rooms = getRooms();
+    return {"rooms": rooms};
 }
 
 export default function Index() {
-    return <Today></Today>
+    return <Rooms></Rooms>
 }
