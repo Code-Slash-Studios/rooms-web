@@ -6,7 +6,7 @@ build:
 
 run:
 	make build
-	podman run --name rooms-web-container -p 8081:8081 -d rooms-web
+	podman run --name rooms-web-container -p 8081:8080 -d rooms-web
 
 build-prod:
 	podman build . -t rooms-web-prod
@@ -20,6 +20,7 @@ stop:
 stop-prod:
 	podman stop rooms-web-container-prod
 kill-prod:
+	podman stop rooms-web-container-prod
 	podman rm rooms-web-container-prod
 
 prod:
@@ -31,10 +32,3 @@ dev:
 
 test:
 	npx remix vite:build --dry-run
-
-local:
-	podman build . -t rooms-web
-	podman run -d --name rooms-web-container -p 8081:8081 rooms-web
-
-restart:
-	systemctl restart rooms-web

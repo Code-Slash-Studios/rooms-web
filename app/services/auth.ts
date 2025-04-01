@@ -8,7 +8,7 @@ export let authenticator = new Authenticator<MicrosoftProfile>(); //User is a cu
 let microsoftStrategy = new MicrosoftStrategy(
   {
     clientId: "6b863eae-d882-4d70-89b9-67abd3bc1c6e",
-    clientSecret: process.env.REACT_APP_MSAL!,
+    clientSecret: process.env.REACT_APP_MSAL_SECRET!,
     tenantId: "57cc97f0-039b-48f4-80a1-f40341889c0b",
     redirectURI: "http://cisrooms.stvincent.edu/login/sso-complete",
     scopes: ["openid", "profile", "email"], // optional
