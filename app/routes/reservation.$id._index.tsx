@@ -23,7 +23,6 @@ export default function reservationDetail() {
                 console.error("No reservation found");
                 return;
             } else {
-                console.log(res)
                 setReservation(res);
             }
         });

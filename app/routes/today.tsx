@@ -23,8 +23,6 @@ export default function Today() {
     useEffect(() => {
         setReservations(Reservation.factory(reservationData));
     }, [reservationData]);
-
-    console.log(reservations)
     return <>
         <h1 key="title">Welcome to Today! {time.toLocaleDateString("en-US", {month: "long", day:"numeric"})}</h1>
         {getError && <p key="error">{getError}</p>}

@@ -1,13 +1,18 @@
-import { useLoaderData } from "@remix-run/react";
+import { ClientLoaderFunctionArgs, useLoaderData } from "@remix-run/react";
 import { useEffect, useState } from "react";
 import { getRoom } from "~/api/room";
 import { loginRequired } from "~/services/auth";
+import { sessionStorage } from "~/services/session";
 
 
-export const loader = async ({ params }:any) => {
-    const user = loginRequired({request: params.request});   
+export const loader = async ({ params, request }: ClientLoaderFunctionArgs) => {
+    const session = await sessionStorage.getSession(request.headers.get("Cookie"));
+    const user = session.get("user");   
     console.log(user)
     const roomID = params.rid
+    if (!roomID) {
+        throw new Response("Room ID not found", {status: 404});
+    }
     const room = await getRoom(roomID);
     return {"room": room};
   };
@@ -54,10 +59,10 @@ export default function ScheduleRoom() {
             <div className="calendar-container">
                 <div className="calendar">
                     <div className={"calendar-header " + (inThePast? "past" : "")}>
-                        <button className="prev" onClick={e => backWeek() /** go back week // TODO make not show when in current week*/}>❮</button>
+                        <button className="prev" onClick={e => backWeek() /** go back week // TODO make not show when in current week*/}>&#x276E;</button>
                         <span id="calendar-week">Week of {weekStart.toLocaleDateString("en-US", {"month":"long","day":"numeric", "year":isEndOfYear?"numeric":undefined})} - {endOfWeek.toLocaleDateString("en-US", {"month":isEndOfMonth? "long" : undefined,"day":"numeric","year":isEndOfYear? "numeric" : undefined})} 
                         </span>
-                        <button className="next" onClick={e => nextWeek() /** advance week // TODO restrict to only some number of weeks? */}>❯</button>
+                        <button className="next" onClick={e => nextWeek() /** advance week // TODO restrict to only some number of weeks? */}>&#x276F;</button>
                     </div>
                     <div className="calendar-grid" id="calendar-days">
                         {currentWeek.map(({past, date}) => {

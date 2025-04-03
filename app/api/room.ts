@@ -14,6 +14,5 @@ export function getRooms () {
 }
 
 export function getRoom (id: string) {
-    console.log(id)
     return rooms.find((value) => value.name === id)
 }
