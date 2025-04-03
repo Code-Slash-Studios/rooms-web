@@ -1,9 +1,12 @@
 import { useLoaderData } from "@remix-run/react";
 import { useEffect, useState } from "react";
 import { getRoom } from "~/api/room";
+import { loginRequired } from "~/services/auth";
 
 
 export const loader = async ({ params }:any) => {
+    const user = loginRequired({request: params.request});   
+    console.log(user)
     const roomID = params.rid
     const room = await getRoom(roomID);
     return {"room": room};
