@@ -7,7 +7,7 @@ export let loader = () => {
     const params = new URLSearchParams({
         client_id: process.env.CLIENT_ID!,
         response_type: "code",
-        redirect_uri: "http://cisrooms.stvincent.edu/login/sso-complete",
+        redirect_uri: process.env.REDIRECT_URI!,
         scope: "openid profile email",
         response_mode: "query",
     })
