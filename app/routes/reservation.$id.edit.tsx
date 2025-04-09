@@ -1,6 +1,6 @@
 import { useLoaderData } from "@remix-run/react";
 import { ChangeEventHandler, FormEventHandler, useEffect, useState } from "react";
-import { getById, post } from "~/api/reservation";
+import { getById, CreateReservation } from "~/api/reservation";
 import { getRoom } from "~/api/room";
 import { Reservation } from "~/models/reservation";
 import { ReservationFormComp } from "~/components/Reservation";
@@ -82,7 +82,7 @@ export default function EditReservation() {
         }
         let save = new Reservation(reservation.id, title, roomID, getRoom(roomID), start, end)
         if (save.isValid()) {
-            post(save).then((res) => {
+            CreateReservation(save).then((res) => {
                 alert(res)
             });
         }

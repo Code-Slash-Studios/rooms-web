@@ -17,21 +17,22 @@ export class Reservation {
     }
     static empty = () => new Reservation(-1, "", -1, "", new Date(), new Date());
 
-    static factory(json: any): Reservation | Reservation[] | null | any { //recursive
+    isEmpty() {
+        return this.id == -1 && this.title == "" && this.roomID == -1 && this.room == "" && this.start == null && this.end == null;
+    }
+
+    static factory(json: any): Reservation {
         if (json == null) {
-            return null
+            return Reservation.empty();
         }
+        
         if (typeof(json) == "string") {
             json = JSON.parse(json);
-            if (!json.title || !json.room || !json.start || !json.end) {
+            if (!json.title || !json.roomID || !json.room || !json.start || !json.end) {
                 throw new Error("Invalid JSON: missing required fields");
             }
         }
-        if (Array.isArray(json)) {
-            return json.map((r: any) => {return Reservation.factory(r)});
-        } else {
-            return new Reservation(json.id, json.title, json.roomID, json.room, new Date(json.start), new Date(json.end));
-        }
+        return new Reservation(json.id, json.title, json.roomID, json.room, new Date(json.start), new Date(json.end));
     }
 
     toString() {

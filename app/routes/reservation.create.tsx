@@ -1,5 +1,5 @@
 import { ChangeEventHandler, FormEventHandler, useState } from "react";
-import { post } from "~/api/reservation";
+import { CreateReservation } from "~/api/reservation";
 import { getRoom } from "~/api/room";
 import { Reservation } from "~/models/reservation";
 import { ReservationFormComp } from "~/components/Reservation";
@@ -52,7 +52,7 @@ export default function EditReservation() {
         console.log(title, getRoom(roomID), start, end);
         let save = new Reservation(-1, title, roomID, getRoom(roomID), start, end)
         if (save.isValid()) {
-            post(save).then((res) => {
+            CreateReservation(save).then((res) => {
                 alert(res)
             });
         }
