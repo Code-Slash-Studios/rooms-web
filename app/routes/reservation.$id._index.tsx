@@ -1,6 +1,6 @@
 import { Link, useLoaderData } from "@remix-run/react";
 import { useEffect, useState } from "react";
-import { getById } from "~/api/reservation";
+import { getReservationById } from "~/api/reservation";
 import { Reservation } from "~/models/reservation";
 
 
@@ -17,7 +17,7 @@ export default function reservationDetail() {
     const [error, setError] = useState<string | undefined>();
     //get the reservation with the id reservationID
     useEffect(() => {
-        getById(reservationID).then((res) => {
+        getReservationById(reservationID).then((res) => {
             if (res == undefined) {
                 setError("No reservation found");
                 console.error("No reservation found");

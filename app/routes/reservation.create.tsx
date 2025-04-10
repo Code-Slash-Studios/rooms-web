@@ -1,16 +1,43 @@
-import { ChangeEventHandler, FormEventHandler, useState } from "react";
-import { CreateReservation } from "~/api/reservation";
-import { getRoom } from "~/api/room";
+import { ChangeEventHandler, FormEventHandler, useEffect, useState } from "react";
+
+import { createReservation } from "~/api/reservation";
+import { getRooms } from "~/api/room";
 import { Reservation } from "~/models/reservation";
 import { ReservationFormComp } from "~/components/Reservation";
+import { useLoaderData } from "@remix-run/react";
+import { Room } from "~/models/room";
+import { loginRequired } from "~/services/auth";
+import { LoaderFunctionArgs } from "@remix-run/node";
+
+export const loader = async ({request}: LoaderFunctionArgs) => {
+    const user = await loginRequired(request);
+    console.log(user);
+    return getRooms().then((res) => {
+        if (res == undefined) {
+            console.error("No rooms found");
+            return {"roomData": [], user: user, "getError": "No rooms found"};
+        }
+        return {"roomData": res, user: user, "getError": undefined};
+    });
+}
 
 export default function EditReservation() {
     //displays a react component that allows the user to edit a reservation
+    const {roomData, user} = useLoaderData<typeof loader>();
+    const [rooms, setRooms] = useState<Room[]>([]);
     const [title, setTitle] = useState("");
-    const [roomID, setRoomID] = useState(-1);
+    const [roomID, setRoomID] = useState<string>("0");
     const [start, setStart] = useState<Date>(new Date());
     const [end, setEnd] = useState<Date>(new Date(new Date().getTime() + (60 * 1000)));
     const [duration, setDuration] = useState(60); //in minutes
+
+    useEffect(() => {
+        setRooms(
+            roomData.map((r: any) => {
+                return new Room(r.id, r.name, r.building);
+            }),
+        );
+    }, [roomData]);
 
     const handleSelect: ChangeEventHandler<HTMLSelectElement> = (event: any) => {
         setRoomID(event.target.value);
@@ -49,10 +76,10 @@ export default function EditReservation() {
     }
     const handleSubmit: FormEventHandler<HTMLFormElement> = (event: any) => {
         event.preventDefault();
-        console.log(title, getRoom(roomID), start, end);
-        let save = new Reservation(-1, title, roomID, getRoom(roomID), start, end)
+        console.log(title, roomData, start, end);
+        let save = new Reservation(-1, title, roomID, user?.user_id || "tempUserID", start, end)
         if (save.isValid()) {
-            CreateReservation(save).then((res) => {
+            createReservation(save).then((res) => {
                 alert(res)
             });
         }
@@ -61,7 +88,7 @@ export default function EditReservation() {
     return (
         <div>
             <h1 key="title">Create Reservation</h1>
-            <ReservationFormComp title={title} roomID={roomID} start={start} end={end} duration={duration} onSelect={handleSelect} onChange={handleChange} onSubmit={handleSubmit} />
+            <ReservationFormComp rooms={rooms} title={title} roomID={roomID} start={start} end={end} duration={duration} onSelect={handleSelect} onChange={handleChange} onSubmit={handleSubmit} />
         </div>
     );
 }

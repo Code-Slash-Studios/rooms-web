@@ -23,7 +23,7 @@ export async function getRoom (id: string) {
         `${process.env.apiURL!}/reservations/${id}`,
         ).then((response) => {
             return response.json().then((json) => {
-                return Room.factory(json) 
+                return Room.factory(json)
             })
         }
     ).catch((error) => {

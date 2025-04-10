@@ -1,10 +1,10 @@
-import { getAll } from '~/api/reservation';
+import { getAllReservations } from '~/api/reservation';
 import { Reservation } from '~/models/reservation';
 import { useLoaderData } from '@remix-run/react';
 import { useEffect, useState } from 'react';
 
 export const loader = async ({ params }:any) => {
-    return getAll().then((res) => {
+    return getAllReservations().then((res) => {
         if (res == undefined) {
             console.error("No reservations found");
             return {"reservations": undefined, "getError": "No reservations found"};

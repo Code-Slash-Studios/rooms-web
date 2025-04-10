@@ -3,6 +3,7 @@ import "./Reservation.css";
 import { Form, Link } from "@remix-run/react";
 import { ChangeEventHandler, FormEventHandler } from "react";
 import { getRooms } from "~/api/room";
+import { Room } from "~/models/room";
 export interface ReservationProps {
     id: number;
     title: string;
@@ -31,8 +32,9 @@ export const ReservationComp = (props: ReservationProps, timeOnly = false, showD
 }
 
 interface ReservationFormProps {
+    rooms: Room[];
     title: string;
-    roomID: number;
+    roomID: string;
     start: Date;
     end: Date;
     duration: number;
@@ -47,8 +49,8 @@ export const ReservationFormComp = (props: ReservationFormProps) => {
             <input title="title" name="title" type="text" defaultValue={props.title}/>
             <select title="room" name="room" value={props.roomID} onChange={(e) => {props.onSelect(e)}}>
                 <option value={-1}>Select a room</option>
-                {Array.from(getRooms().entries()).map(([id, room]) => (
-                    <option key={id} value={id}>{room}</option>
+                {props.rooms.map((room) => (
+                    <option key={room.id} value={room.id}>{room.name} ({room.department})</option>
                 ))}
             </select>
             <input title="start-date" name="start-date" type="date" defaultValue={toDatetimeLocal(props.start).split("T")[0]}/>

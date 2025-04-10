@@ -27,6 +27,7 @@ export const action = async ({ request } : { request: Request }) => {
             body: tokenParams.toString(),
         }
     )
+    //https://learn.microsoft.com/en-us/windows/windows-app-sdk/api/winrt/microsoft.security.authentication.oauth.tokenresponse?view=windows-app-sdk-1.7
     let tokenData = await tokenResponse.json();
     
     if (tokenResponse.status !== 200) {
@@ -36,12 +37,23 @@ export const action = async ({ request } : { request: Request }) => {
     const session = await sessionStorage.getSession(request.headers.get("Cookie"));
     
     session.set("user", {
+        openid: tokenData.openid,
+        profile: tokenData.profile,
+        email: tokenData.email,
         accessToken: tokenData.access_token,
         refreshToken: tokenData.refresh_token,
         idToken: tokenData.id_token,
         expiresAt: Date.now() + tokenData.expires_in * 1000,
     });
-
+    console.log({
+        openid: tokenData.openid,
+        profile: tokenData.profile,
+        email: tokenData.email,
+        accessToken: tokenData.access_token,
+        refreshToken: tokenData.refresh_token,
+        idToken: tokenData.id_token,
+        expiresAt: Date.now() + tokenData.expires_in * 1000,
+    })
     return redirect("/", {headers: {"Set-Cookie": await sessionStorage.commitSession(session)}});
 }
 

@@ -1,19 +1,18 @@
 import { useLoaderData } from "@remix-run/react";
 import { ChangeEventHandler, FormEventHandler, useEffect, useState } from "react";
-import { getById, CreateReservation } from "~/api/reservation";
+import { getReservationById, createReservation } from "~/api/reservation";
 import { getRoom } from "~/api/room";
 import { Reservation } from "~/models/reservation";
 import { ReservationFormComp } from "~/components/Reservation";
 
 export const loader = async ({ params }:any) => {
-    return getById(params.id).then((res) => {
+    let data = await getReservationById(params.id).then((res) => {
         if (res == undefined) {
             console.error("No reservation found");
             return {"reservation": undefined, "getError": "No reservation found"};
         }
         return {"reservation": res, "getError": undefined};
     });
-  
 };
 
 export default function EditReservation() {
@@ -21,7 +20,7 @@ export default function EditReservation() {
     const {reservation, getError} = useLoaderData<typeof loader>();
     
     const [title, setTitle] = useState("");
-    const [roomID, setRoomID] = useState(-1);
+    const [roomID, setRoomID] = useState("");
     const [start, setStart] = useState<Date>(new Date());
     const [end, setEnd] = useState<Date>(new Date());
     const [duration, setDuration] = useState(60); //in minutes
@@ -29,7 +28,7 @@ export default function EditReservation() {
     useEffect(() => {
         if (reservation != undefined) {
             const res = Reservation.factory(reservation);
-            setTitle(res.title);
+            setTitle(res.name);
             setRoomID(res.roomID);
             setStart(res.start);
             setEnd(res.end);
@@ -80,7 +79,7 @@ export default function EditReservation() {
             console.error("No reservation found");
             return;
         }
-        let save = new Reservation(reservation.id, title, roomID, getRoom(roomID), start, end)
+        let save = new Reservation(reservation.id, title, roomID, start, end)
         if (save.isValid()) {
             CreateReservation(save).then((res) => {
                 alert(res)
