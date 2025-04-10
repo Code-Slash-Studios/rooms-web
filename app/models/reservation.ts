@@ -1,6 +1,14 @@
 import { ReservationComp, ReservationProps } from "~/components/Reservation";
 
 /**
+ * Defines a reservation object.
+ * @param id - The ID of the reservation
+ * @param name - The name of the reservation
+ * @param roomID - The ID of the room reserved
+ * @param userID - The ID of the user who made the reservation
+ * @param start - The start time of the reservation
+ * @param end - The end time of the reservation
+ * 
  * Current API output
  * [
   {
@@ -34,19 +42,33 @@ export class Reservation {
     isEmpty() {
         return this.id == -1 && this.name == "" && this.roomID == "" && this.start == null && this.end == null;
     }
-
-    static factory(json: any): Reservation {
-        if (json == null) {
-            return Reservation.empty();
-        }
-        
-        if (typeof(json) == "string") {
-            json = JSON.parse(json);
-            if (!json.name || !json.room_id || !json.start || !json.end || !json.user_id) {
-                throw new Error("Invalid JSON: missing required fields");
+    static fromJSON(json: {id:number, name:string, room_id:string, user_id:string, start:Date, end:Date} | string): Reservation {
+        //for processing single reservation
+        if (typeof json === "string") {
+            const parse = JSON.parse(json);
+            //check if the parsed json is an array
+            if (Array.isArray(parse)) {
+                throw new Error("Expected a single reservation object, but got an array");
             }
+            if (!parse.id || !parse.name || !parse.room_id || !parse.user_id || !parse.start || !parse.end) {
+                throw new Error("Invalid reservation data");
+            }
+            const data: {id:number, name:string, room_id:string, user_id:string, start:Date, end:Date} = parse;
+            json = data;
         }
         return new Reservation(json.id, json.name, json.room_id, json.user_id, new Date(json.start), new Date(json.end));
+    }
+
+    static factory(json: string[]): Reservation[] {
+        //for processing multiple reservations
+        const reservations = json.map((reservation) => {
+            const r = JSON.parse(reservation);
+            if (!r.id || !r.name || !(r.room_id || r.roomID) || !(r.user_id || r.roomID) || !r.start || !r.end) {
+                throw new Error("Invalid reservation data");
+            }
+            return new Reservation(r.id, r.name, r.room_id || r.roomID, r.user_id || r.userID, new Date(r.start), new Date(r.end));
+        })
+        return reservations;
     }
 
     toJSON() {

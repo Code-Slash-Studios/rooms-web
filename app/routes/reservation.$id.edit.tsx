@@ -1,23 +1,25 @@
 import { useLoaderData } from "@remix-run/react";
 import { ChangeEventHandler, FormEventHandler, useEffect, useState } from "react";
 import { getReservationById, createReservation } from "~/api/reservation";
-import { getRoom } from "~/api/room";
+import { getRoom, getRooms } from "~/api/room";
 import { Reservation } from "~/models/reservation";
 import { ReservationFormComp } from "~/components/Reservation";
 
 export const loader = async ({ params }:any) => {
+    const rooms = await getRooms()
     let data = await getReservationById(params.id).then((res) => {
         if (res == undefined) {
             console.error("No reservation found");
-            return {"reservation": undefined, "getError": "No reservation found"};
+            return {"reservation": undefined, "getError": "No reservation found", "rooms": rooms};
         }
-        return {"reservation": res, "getError": undefined};
+        return {"reservation": res, "getError": undefined, "rooms": rooms};
     });
+    return data;
 };
 
 export default function EditReservation() {
     //displays a react component that allows the user to edit a reservation
-    const {reservation, getError} = useLoaderData<typeof loader>();
+    const {reservation, getError, rooms} = useLoaderData<typeof loader>();
     
     const [title, setTitle] = useState("");
     const [roomID, setRoomID] = useState("");
@@ -27,12 +29,11 @@ export default function EditReservation() {
 
     useEffect(() => {
         if (reservation != undefined) {
-            const res = Reservation.factory(reservation);
-            setTitle(res.name);
-            setRoomID(res.roomID);
-            setStart(res.start);
-            setEnd(res.end);
-            setDuration((res.end.getTime() - res.start.getTime()) / (60 * 1000));
+            setTitle(reservation.name);
+            setRoomID(reservation.roomID);
+            setStart(reservation.start);
+            setEnd(reservation.end);
+            setDuration((reservation.end.getTime() - reservation.start.getTime()) / (60 * 1000));
         }
     }, [reservation, roomID]);
 
@@ -74,14 +75,14 @@ export default function EditReservation() {
 
     const handleSubmit: FormEventHandler<HTMLFormElement> = (event: any) => {
         event.preventDefault();
-        console.log(title, getRoom(roomID), start, end);
+        console.log(title, rooms.find((r) => r.id === roomID), start, end);
         if (!reservation) {
             console.error("No reservation found");
             return;
         }
-        let save = new Reservation(reservation.id, title, roomID, start, end)
+        let save = new Reservation(reservation.id, title, roomID, "caldweln", start, end)
         if (save.isValid()) {
-            CreateReservation(save).then((res) => {
+            createReservation(save).then((res) => {
                 alert(res)
             });
         }
@@ -90,7 +91,7 @@ export default function EditReservation() {
     return (
         <div>
             <h1 key="title">Edit Reservation</h1>
-            <ReservationFormComp title={title} roomID={roomID} start={start} end={end} duration={duration} onSelect={handleSelect} onChange={handleChange} onSubmit={handleSubmit} />
+            <ReservationFormComp rooms={rooms} title={title} roomID={roomID} start={start} end={end} duration={duration} onSelect={handleSelect} onChange={handleChange} onSubmit={handleSubmit} />
         </div>
     );
 }

@@ -5,15 +5,16 @@ import { Room } from "~/models/room"
 //     {id: 3, name: "WCC",  building: "Dupre", title:"CIS Conference Room"},
 // ]
 export async function getRooms () {
-    const rooms: Room[] | [] = await fetch(
+    const rooms: Room[] = await fetch(
         `${process.env.apiURL!}/reservations`,
         ).then((response) => {
-            return response.json().then((json: Array<any>) => {
-                return json.map((r: any) => Room.factory(r));
+            return response.json().then((json) => {
+                return Room.factory(json);
             })
         }
     ).catch((error) => {
-        console.error(error); return []
+        console.error(error);
+        throw error
     });
     return rooms
 }
@@ -23,7 +24,7 @@ export async function getRoom (id: string) {
         `${process.env.apiURL!}/reservations/${id}`,
         ).then((response) => {
             return response.json().then((json) => {
-                return Room.factory(json)
+                return Room.fromJSON(json);
             })
         }
     ).catch((error) => {

@@ -24,12 +24,12 @@ export async function getAllReservations() {
     return reservations
 }
 
-export async function getReservationById(id: string) {
+export async function getReservationById(id: string): Promise<Reservation | undefined> {
     const reservation: Reservation | undefined = await fetch(
         `${process.env.apiURL!}/reservations/${id}`,
         ).then((response) => {
             return response.json().then((json) => {
-                return Reservation.factory(json);
+                return Reservation.fromJSON(json);
             })
         }
     ).catch((error) => {

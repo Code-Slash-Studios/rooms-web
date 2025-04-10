@@ -12,13 +12,9 @@ import { LoaderFunctionArgs } from "@remix-run/node";
 export const loader = async ({request}: LoaderFunctionArgs) => {
     const user = await loginRequired(request);
     console.log(user);
-    return getRooms().then((res) => {
-        if (res == undefined) {
-            console.error("No rooms found");
-            return {"roomData": [], user: user, "getError": "No rooms found"};
-        }
-        return {"roomData": res, user: user, "getError": undefined};
-    });
+    const roomData = await getRooms();
+
+    return {roomData, user};
 }
 
 export default function EditReservation() {
