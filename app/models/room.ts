@@ -30,10 +30,9 @@ export class Room {
         return new Room(json.id, json.name, json.department);
     }
 
-    static factory(json: string[]): Room[] {
+    static factory(json: any): Room[] {
         //for processing multiple rooms
-        const rooms = json.map((room) => {
-            const r = JSON.parse(room);
+        const rooms = json.map((r: any) => {
             if (!r.id || !r.name || !r.department) {
                 throw new Error("Invalid room data");
             }

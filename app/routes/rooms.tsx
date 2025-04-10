@@ -5,7 +5,7 @@ import { Room } from "~/models/room";
 
 export const loader = async function() {
     //get rooms from the api
-    let roomsData = await getRooms();
+    const roomsData = await getRooms();
     return {"roomsData": roomsData};
 }
 
@@ -14,7 +14,14 @@ export default function Rooms() {
     const [rooms, setRooms] = useState<Room[]>([]);
     useEffect(() => {
         // set rooms data to the state
-        setRooms(Room.factory(roomsData));
+        if (roomsData != undefined) {
+            setRooms(
+                roomsData.map((r: any) => {
+                    r = JSON.parse(r);
+                    return new Room(r.id, r.name, r.building);
+                }),
+            );
+        }
     }
     , [roomsData]);
 
