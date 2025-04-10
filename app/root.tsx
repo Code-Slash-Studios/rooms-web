@@ -20,10 +20,8 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <h1>CIS Rooms - Hello world!</h1>
         <Navbar />
         <Outlet />
-
         <Scripts />
       </body>
     </html>

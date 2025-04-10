@@ -6,7 +6,7 @@ import { Room } from "~/models/room"
 // ]
 export async function getRooms () {
     const rooms: Room[] = await fetch(
-        `${process.env.apiURL!}/reservations`,
+        `${process.env.API_URL!}/reservations`,
         ).then((response) => {
             return response.json().then((json) => {
                 return Room.factory(json);
@@ -21,7 +21,7 @@ export async function getRooms () {
 
 export async function getRoom (id: string) {
     const room: Room | undefined = await fetch(
-        `${process.env.apiURL!}/reservations/${id}`,
+        `${process.env.API_URL!}/reservations/${id}`,
         ).then((response) => {
             return response.json().then((json) => {
                 return Room.fromJSON(json);

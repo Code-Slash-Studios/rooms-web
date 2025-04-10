@@ -12,7 +12,7 @@ import { Reservation } from "~/models/reservation";
 
 export async function getAllReservations() {
     const reservations: Reservation[] | [] = await fetch(
-        `${process.env.apiURL!}/reservations`,
+        `${process.env.API_URL!}/reservations`,
         ).then((response) => {
             return response.json().then((json) => {
                 return json.map((r: any) => Reservation.factory(r));
@@ -26,7 +26,7 @@ export async function getAllReservations() {
 
 export async function getReservationById(id: string): Promise<Reservation | undefined> {
     const reservation: Reservation | undefined = await fetch(
-        `${process.env.apiURL!}/reservations/${id}`,
+        `${process.env.API_URL!}/reservations/${id}`,
         ).then((response) => {
             return response.json().then((json) => {
                 return Reservation.fromJSON(json);
@@ -40,7 +40,7 @@ export async function getReservationById(id: string): Promise<Reservation | unde
 
 export async function createReservation(reservation: Reservation) {
     const resp: JSON | undefined = await fetch(
-        `${process.env.apiURL!}/reservations`,
+        `${process.env.API_URL!}/reservations`,
         {
             method: "POST",
             headers: {
@@ -58,7 +58,7 @@ export async function createReservation(reservation: Reservation) {
 
 export async function updateReservation(reservation: Reservation) {
     const resp: JSON | undefined = await fetch(
-        `${process.env.apiURL!}/reservations/${reservation.id}`,
+        `${process.env.API_URL!}/reservations/${reservation.id}`,
         {
             method: "PUT",
             headers: {
@@ -76,7 +76,7 @@ export async function updateReservation(reservation: Reservation) {
 
 export async function deleteReservation(id: string) {
     const resp: JSON | undefined = await fetch(
-        `${process.env.apiURL!}/reservations/${id}`,
+        `${process.env.API_URL!}/reservations/${id}`,
         {
             method: "DELETE",
             headers: {
@@ -93,7 +93,7 @@ export async function deleteReservation(id: string) {
 
 export async function getReservationsByRoomId(room_id: string) {
     const reservations: Reservation[] | [] = await fetch(
-        `${process.env.apiURL!}/reservations/room/${room_id}`,
+        `${process.env.API_URL!}/reservations/room/${room_id}`,
         ).then((response) => {
             return response.json().then((json) => {
                 return json.map((r: any) => Reservation.factory(r));
@@ -107,7 +107,7 @@ export async function getReservationsByRoomId(room_id: string) {
 
 export async function getReservationsByUserId(user_id: string) {
     const reservations: Reservation[] | [] = await fetch(
-        `${process.env.apiURL!}/reservations/user/${user_id}`,
+        `${process.env.API_URL!}/reservations/user/${user_id}`,
         ).then((response) => {
             return response.json().then((json) => {
                 return json.map((r: any) => Reservation.factory(r));
