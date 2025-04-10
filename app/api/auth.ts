@@ -1,10 +1,5 @@
-import https from "https";
-import fetch from "node-fetch";
 import { User } from "~/models/auth";
 
-const httpsAgent = new https.Agent({
-    rejectUnauthorized: false
-});
 
 export async function getOrCreateUser(user: User) {
     return fetch(
@@ -15,7 +10,7 @@ export async function getOrCreateUser(user: User) {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify(user),
-            agent: httpsAgent,
+            ,
         }
         ).then((response) => {
             return response.json().then((json) => {

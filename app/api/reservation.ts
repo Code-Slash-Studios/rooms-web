@@ -1,10 +1,5 @@
-import fetch from "node-fetch";
-import https from "https";
 import { Reservation } from "~/models/reservation";
 // disable https cert warning as we are using a self-signed cert in development
-const httpsAgent = new https.Agent({
-    rejectUnauthorized: false
-});
 
 /**
  * "/reservations"      # GET all reservations
@@ -23,8 +18,7 @@ export async function getAllReservations() {
             method: "GET",
             headers: {
                 'Content-Type': 'application/json'
-            },
-            agent: httpsAgent
+            }
         }
         ).then((response) => {
             return response.json().then((data:any) => {
@@ -44,8 +38,7 @@ export async function getReservationById(id: string): Promise<Reservation | unde
             method: "GET",
             headers: {
                 'Content-Type': 'application/json'
-            },
-            agent: httpsAgent
+            }
         }
         ).then((response) => {
             return response.json().then((data:any) => {
@@ -119,11 +112,10 @@ export async function getReservationsByRoomId(room_id: string) {
             headers: {
                 'Content-Type': 'application/json'
             },
-            agent: httpsAgent
         }
         ).then((response) => {
             return response.json().then((json:any) => {
-                return json.map((r: any) => Reservation.factory(r));
+                return Reservation.factory(json);
             })
         }
     ).catch((error) => {
@@ -136,8 +128,8 @@ export async function getReservationsByUserId(user_id: string) {
     const reservations: Reservation[] | [] = await fetch(
         `${process.env.API_URL!}/reservations/user/${user_id}`,
         ).then((response) => {
-            return response.json().then((json: any) => {
-                return json.map((r: any) => Reservation.factory(r));
+            return response.json().then((json:any) => {
+                return Reservation.factory(json);
             })
         }
     ).catch((error) => {
