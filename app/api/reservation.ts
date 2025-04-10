@@ -22,8 +22,8 @@ export async function getAllReservations() {
             }
         }
         ).then((response) => {
-            return response.json().then((data:any) => {
-                return JSON.parse(data).map((r: any) => Reservation.factory(r));
+            return response.json().then((json:any) => {
+                return json.map((r: any) => Reservation.factory(r));
             })
         }
     ).catch((error) => {
@@ -42,8 +42,8 @@ export async function getReservationById(id: string): Promise<Reservation | unde
             }
         }
         ).then((response) => {
-            return response.json().then((data:any) => {
-                return Reservation.fromJSON(data);
+            return response.json().then((json:any) => {
+                return Reservation.fromJSON(json);
             })
         }
     ).catch((error) => {

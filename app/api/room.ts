@@ -16,8 +16,8 @@ export async function getRooms () {
             
         },
         ).then((response) => {
-            return response.json().then((data:any) => {
-                return JSON.parse(data).map((r: any) => Room.factory(r));
+            return response.json().then((json:any) => {
+                return json.map((r: any) => Room.factory(r));
             })
         }
     ).catch((error) => {
@@ -34,8 +34,8 @@ export async function getRoom (id: string) {
             method: "GET",
         },
         ).then((response) => {
-            return response.json().then((data: any) => {
-                return Room.fromJSON(data);
+            return response.json().then((json: any) => {
+                return Room.fromJSON(json);
             })
         }
     ).catch((error) => {
