@@ -1,4 +1,10 @@
+import fetch from "node-fetch";
+import https from "https";
 import { Reservation } from "~/models/reservation";
+// disable https cert warning as we are using a self-signed cert in development
+const httpsAgent = new https.Agent({
+    rejectUnauthorized: false
+});
 
 /**
  * "/reservations"      # GET all reservations
@@ -13,9 +19,16 @@ import { Reservation } from "~/models/reservation";
 export async function getAllReservations() {
     const reservations: Reservation[] | [] = await fetch(
         `${process.env.API_URL!}/reservations`,
+        {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            agent: httpsAgent
+        }
         ).then((response) => {
-            return response.json().then((json) => {
-                return json.map((r: any) => Reservation.factory(r));
+            return response.json().then((data:any) => {
+                return JSON.parse(data).map((r: any) => Reservation.factory(r));
             })
         }
     ).catch((error) => {
@@ -27,9 +40,16 @@ export async function getAllReservations() {
 export async function getReservationById(id: string): Promise<Reservation | undefined> {
     const reservation: Reservation | undefined = await fetch(
         `${process.env.API_URL!}/reservations/${id}`,
+        {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            agent: httpsAgent
+        }
         ).then((response) => {
-            return response.json().then((json) => {
-                return Reservation.fromJSON(json);
+            return response.json().then((data:any) => {
+                return Reservation.fromJSON(data);
             })
         }
     ).catch((error) => {
@@ -39,7 +59,7 @@ export async function getReservationById(id: string): Promise<Reservation | unde
 }
 
 export async function createReservation(reservation: Reservation) {
-    const resp: JSON | undefined = await fetch(
+    const resp: any | undefined = await fetch(
         `${process.env.API_URL!}/reservations`,
         {
             method: "POST",
@@ -57,7 +77,7 @@ export async function createReservation(reservation: Reservation) {
 }
 
 export async function updateReservation(reservation: Reservation) {
-    const resp: JSON | undefined = await fetch(
+    const resp: any | undefined = await fetch(
         `${process.env.API_URL!}/reservations/${reservation.id}`,
         {
             method: "PUT",
@@ -75,7 +95,7 @@ export async function updateReservation(reservation: Reservation) {
 }
 
 export async function deleteReservation(id: string) {
-    const resp: JSON | undefined = await fetch(
+    const resp: any | undefined = await fetch(
         `${process.env.API_URL!}/reservations/${id}`,
         {
             method: "DELETE",
@@ -94,8 +114,15 @@ export async function deleteReservation(id: string) {
 export async function getReservationsByRoomId(room_id: string) {
     const reservations: Reservation[] | [] = await fetch(
         `${process.env.API_URL!}/reservations/room/${room_id}`,
+        {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            agent: httpsAgent
+        }
         ).then((response) => {
-            return response.json().then((json) => {
+            return response.json().then((json:any) => {
                 return json.map((r: any) => Reservation.factory(r));
             })
         }
@@ -109,7 +136,7 @@ export async function getReservationsByUserId(user_id: string) {
     const reservations: Reservation[] | [] = await fetch(
         `${process.env.API_URL!}/reservations/user/${user_id}`,
         ).then((response) => {
-            return response.json().then((json) => {
+            return response.json().then((json: any) => {
                 return json.map((r: any) => Reservation.factory(r));
             })
         }

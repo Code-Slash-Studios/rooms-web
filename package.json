@@ -24,6 +24,7 @@
     "cross-env": "^7.0.3",
     "express": "^4.21.2",
     "isbot": "^4.4.0",
+    "node-fetch": "^3.3.2",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "remix-auth": "^4.1.0",
