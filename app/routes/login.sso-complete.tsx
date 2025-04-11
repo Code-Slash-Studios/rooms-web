@@ -31,7 +31,9 @@ export const loader = async ({ request } : { request: Request }) => {
     let tokenData = await tokenResponse.json();
     
     if (tokenResponse.status !== 200) {
-        throw new Response("Error getting token", { status: 403 });
+        console.error(tokenData);
+        console.error(tokenResponse.statusText);
+        throw new Response(`403: Error getting token ${tokenResponse.statusText}`, { status: 403 });
     }
 
     const session = await sessionStorage.getSession(request.headers.get("Cookie"));
