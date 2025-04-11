@@ -14,7 +14,7 @@ export const loader = async ({request}: ClientLoaderFunctionArgs) => {
             console.error("No reservations found");
             return {"reservations": undefined, "getError": "No reservations found"};
         }
-        console.log(res);
+        console.log("Fetched Reservation Index",res);
         return {"reservationData": res, "getError": undefined};
     });
 };
@@ -29,7 +29,16 @@ export default function ReservationIndex() {
     useEffect(() => {
         if (reservationData != undefined) {
             setReservations(
-                reservationData
+                reservationData.map((r: any) => {
+                    return new Reservation(
+                        r.id,
+                        r.name,
+                        r.roomID,
+                        r.userID,
+                        new Date(r.start),
+                        new Date(r.end),
+                    );
+                })
             );
         }
     }, [reservationData]);
