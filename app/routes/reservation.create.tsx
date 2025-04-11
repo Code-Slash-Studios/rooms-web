@@ -12,7 +12,7 @@ export const action = async ({request}: LoaderFunctionArgs) => {
     //TODO once user is available, use userID instead of hardcoded "caldweln"
     const formData = await request.formData();
     const title = formData.get("title")?.toString() || "";
-    const roomID = formData.get("roomID")?.toString() || "";
+    const roomID = formData.get("room")?.toString() || "";
     const start = new Date(formData.get("start-date") + "T" + formData.get("start-time"));
     const duration: number = parseInt(formData.get("duration")?.toString() || "60");
     const end = new Date(start.getTime() + (duration * 60 * 1000));
