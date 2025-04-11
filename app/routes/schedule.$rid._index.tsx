@@ -102,6 +102,7 @@ export default function ScheduleRoom() {
                     </div>
                 </div>
             <div className="time-slots-container">
+                <h3>Selected: {currentDate.toLocaleDateString("en-US", {"timeZone":"EST", "month":"short","day":"numeric","year":isEndOfYear? "numeric" : undefined})}</h3>
                 <h4>Available Time Slots:</h4>
                 <div id="time-slots">
 
@@ -112,7 +113,7 @@ export default function ScheduleRoom() {
                     {reservations.filter((r) => r.start < endOfWeek && r.end > startOfWeek || true).map((r) => {
                         return <div className="reservation" key={r.id}>
                             <p>{r.name}</p>
-                            <p>{r.start.toLocaleTimeString("en-US", {hour: "2-digit", minute: "2-digit"})} - {r.end.toLocaleTimeString("en-US", {hour: "2-digit", minute: "2-digit"})}</p>
+                            <p>{r.start.toLocaleTimeString("en-US", {hour: "2-digit", minute: "2-digit"})} - {r.end.toLocaleTimeString("en-US", {hour: "2-digit", minute: "2-digit",})}</p>
                         </div>
                     })}
                 </div>
