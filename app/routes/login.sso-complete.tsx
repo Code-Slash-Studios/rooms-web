@@ -57,6 +57,17 @@ export const action = async ({ request } : { request: Request }) => {
     return redirect("/", {headers: {"Set-Cookie": await sessionStorage.commitSession(session)}});
 }
 
-export async function SSOComplete() {
-    return <p>Processing authentication...</p>
+export const loader = async ({ request } : { request: Request }) => {
+    const session = await sessionStorage.getSession(request.headers.get("Cookie"));
+    const user = session.get("user");
+    // Check if user is logged in and the token is not expired
+    if (!user || user.expiresAt < Date.now()) {
+        throw redirect("/login/sso-out");
+    }
+    return redirect("/");
+}
+
+
+export function SSOComplete() {
+    return <p>Processing authentication... (If you are seeing this, something has probably gone wrong :)</p>
 }
