@@ -8,7 +8,7 @@ export let loader = () => {
         client_id: process.env.CLIENT_ID!,
         response_type: "code",
         redirect_uri: process.env.REDIRECT_URI!,
-        scope: " email",
+        scope: "openid profile email",
         response_mode: "query",
     })
 
