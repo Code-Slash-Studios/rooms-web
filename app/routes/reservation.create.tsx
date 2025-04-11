@@ -29,9 +29,7 @@ export default function EditReservation() {
 
     useEffect(() => {
         setRooms(
-            roomData.map((r: any) => {
-                return new Room(r.id, r.name, r.building);
-            }),
+            Room.factory(roomData)
         );
     }, [roomData]);
 

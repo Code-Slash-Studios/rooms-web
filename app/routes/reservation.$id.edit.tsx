@@ -4,23 +4,31 @@ import { getReservationById, createReservation } from "~/api/reservation";
 import { getRoom, getRooms } from "~/api/room";
 import { Reservation } from "~/models/reservation";
 import { ReservationFormComp } from "~/components/Reservation";
+import { Room } from "~/models/room";
 
 export const loader = async ({ params }:any) => {
     const rooms = await getRooms()
     let data = await getReservationById(params.id).then((res) => {
         if (res == undefined) {
             console.error("No reservation found");
-            return {"reservation": undefined, "getError": "No reservation found", "rooms": rooms};
+            return {"reservationData": undefined, "getError": "No reservation found", "roomsData": rooms.map((r) => r.toJSON())};
         }
-        return {"reservation": res, "getError": undefined, "rooms": rooms};
+        return {"reservationData": res.toJSON(), "getError": undefined, "roomsData": rooms.map((r) => r.toJSON())};
     });
+    //Side note, the above code is a bit absurd.
+    //Reservation is returned from Fetch as a JSON object, it is then converted into a Reservation in /api/reservation.ts
+    //and then converted back into JSON string to be sent to the client from this Loader function.
+    //Then it is converted back into a Reservation in the EditReservation component.
+    // One plus of this absurity is that we can catch errors serverside. 
     return data;
 };
 
 export default function EditReservation() {
     //displays a react component that allows the user to edit a reservation
-    const {reservation, getError, rooms} = useLoaderData<typeof loader>();
+    const {reservationData, getError, roomsData} = useLoaderData<typeof loader>();
     
+    const [reservation, setReservation] = useState<Reservation>(Reservation.empty());
+    const [rooms, setRooms] = useState<Room[]>([]);
     const [title, setTitle] = useState("");
     const [roomID, setRoomID] = useState("");
     const [start, setStart] = useState<Date>(new Date());
@@ -28,14 +36,21 @@ export default function EditReservation() {
     const [duration, setDuration] = useState(60); //in minutes
 
     useEffect(() => {
-        if (reservation != undefined) {
-            setTitle(reservation.name);
-            setRoomID(reservation.roomID);
-            setStart(reservation.start);
-            setEnd(reservation.end);
-            setDuration((reservation.end.getTime() - reservation.start.getTime()) / (60 * 1000));
+        if (roomsData != undefined) {
+            setRooms(
+                Room.factory(roomsData),
+            );
         }
-    }, [reservation, roomID]);
+        if (reservationData != undefined) {
+            const r = Reservation.fromJSON(reservationData);
+            setReservation(r);
+            setTitle(r.name);
+            setRoomID(r.roomID);
+            setStart(r.start);
+            setEnd(r.end);
+            setDuration((r.end.getTime() - r.start.getTime()) / (60 * 1000));
+        }
+    }, [reservationData, roomID, rooms]);
 
     const handleChange: FormEventHandler<HTMLFormElement> = (event: any) => {
         const val = event.target.value;
@@ -76,7 +91,7 @@ export default function EditReservation() {
     const handleSubmit: FormEventHandler<HTMLFormElement> = (event: any) => {
         event.preventDefault();
         console.log(title, rooms.find((r) => r.id === roomID), start, end);
-        if (!reservation) {
+        if (!reservationData) {
             console.error("No reservation found");
             return;
         }

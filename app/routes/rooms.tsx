@@ -16,10 +16,7 @@ export default function Rooms() {
         // set rooms data to the state
         if (roomsData != undefined) {
             setRooms(
-                roomsData.map((r: any) => {
-                    r = JSON.parse(r);
-                    return new Room(r.id, r.name, r.building);
-                }),
+                Room.factory(roomsData),
             );
         }
     }

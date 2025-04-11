@@ -42,29 +42,27 @@ export class Reservation {
     isEmpty() {
         return this.id == -1 && this.name == "" && this.roomID == "" && this.start == null && this.end == null;
     }
-    static fromJSON(json: {id:number, name:string, room_id:string, user_id:string, start:Date, end:Date} | string): Reservation {
+    static fromJSON(json: any): Reservation {
         //for processing single reservation
         if (typeof json === "string") {
-            const parse = JSON.parse(json);
-            //check if the parsed json is an array
-            if (Array.isArray(parse)) {
-                throw new Error("Expected a single reservation object, but got an array");
-            }
-            if (!parse.id || !parse.name || !parse.room_id || !parse.user_id || !parse.start || !parse.end) {
-                throw new Error("Invalid reservation data");
-            }
-            const data: {id:number, name:string, room_id:string, user_id:string, start:Date, end:Date} = parse;
-            json = data;
+            json = JSON.parse(json);
         }
+        //check if the parsed json is an array
+        if (Array.isArray(json)) {
+            throw new Error("Expected a single reservation object, but got an array");
+        }
+        this.validateObject(json);
+
         return new Reservation(json.id, json.name, json.room_id, json.user_id, new Date(json.start), new Date(json.end));
     }
 
-    static factory(json: string[]): Reservation[] {
+    static factory(json: any[]): Reservation[] {
         //for processing multiple reservations
-        const reservations = json.map((r: any) => {;
-            if (!r.id || !r.name || !(r.room_id || r.roomID) || !(r.user_id || r.roomID) || !r.start || !r.end) {
-                throw new Error("Invalid reservation data");
+        const reservations = json.map((r: any) => {
+            if (typeof r === "string") {
+                r = JSON.parse(r);
             }
+            this.validateObject(r);
             return new Reservation(r.id, r.name, r.room_id || r.roomID, r.user_id || r.userID, new Date(r.start), new Date(r.end));
         })
         return reservations;
@@ -102,7 +100,11 @@ export class Reservation {
             end: this.end
         }
     }
-
+    static validateObject(obj: any) {
+        if (!obj.id || !obj.name || !obj.room_id || !obj.user_id || !obj.start || !obj.end) {
+            throw new Error("Invalid reservation data");
+        }
+    }
     isValid() {
         let valid = true;
         if (this.name == "") {

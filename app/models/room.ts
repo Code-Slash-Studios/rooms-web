@@ -13,27 +13,25 @@ export class Room {
         return this.id == "" && this.name == "" && this.department == "";
     }
 
-    static fromJSON(json: {id:string, name:string, department:string} | string): Room {
+    static fromJSON(json: any | string | {id: string, name:string, department:string}): Room {
         //for processing single room
-        console.log("fromJSON", json);
         if (typeof json === "string") {
-            const parse = json;
-            //check if the parsed json is an array
-            if (Array.isArray(parse)) {
-                throw new Error("Expected a single room object, but got an array");
-            }
-            if (!parse.id || !parse.name || !parse.department) {
-                throw new Error("Invalid room data");
-            }
-            const data: {id:string, name:string, department:string} = parse;
-            json = data;
+            json = JSON.parse(json);
         }
+        //check if the parsed json is an array
+        if (Array.isArray(json)) {
+            throw new Error("Expected a single room object, but got an array");
+        }
+        this.validateObject(json)
         return new Room(json.id, json.name, json.department);
     }
 
-    static factory(json: any): Room[] {
+    static factory(json: any[]): Room[] {
         //for processing multiple rooms
         const rooms = json.map((r: any) => {
+            if (typeof r === "string") {
+                r = JSON.parse(r);
+            }
             if (!r.id || !r.name || !r.department) {
                 throw new Error("Invalid room data");
             }
@@ -47,5 +45,13 @@ export class Room {
             name: this.name,
             department: this.department
         });
+    }
+    static validateObject(json: any) {
+        if (typeof json !== "object" || json === null) {
+            throw new Error("Invalid room data: not an object");
+        }
+        if (!json.id || !json.name || !json.department) {
+            throw new Error("Invalid room data: missing fields");
+        }
     }
 }
