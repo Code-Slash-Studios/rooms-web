@@ -28,7 +28,6 @@ export class Room {
 
     static factory(json: any[]): Room[] {
         //for processing multiple rooms
-        console.log("RoomsFactory", json);
         const rooms = json.map((r: any) => {
             if (typeof r === "string") {
                 r = JSON.parse(r);

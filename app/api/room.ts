@@ -17,7 +17,6 @@ export async function getRooms () {
         },
         ).then((response) => {
             return response.json().then((json:any) => {
-                console.log("Rooms", json);
                 return Room.factory(json);
             })
         }

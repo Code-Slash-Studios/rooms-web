@@ -6,6 +6,7 @@ import { Room } from "~/models/room";
 export const loader = async function() {
     //get rooms from the api
     const roomsData = await getRooms();
+    console.log("Rooms", roomsData);
     return {roomsData: roomsData.map((r) => r.toJSON()), getError: undefined};
 }
 
