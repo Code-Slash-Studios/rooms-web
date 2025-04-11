@@ -1,6 +1,4 @@
 import { Reservation } from "~/models/reservation";
-// disable https cert warning as we are using a self-signed cert in development
-process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
 
 /**
  * "/reservations"      # GET all reservations

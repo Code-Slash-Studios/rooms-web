@@ -17,7 +17,7 @@ export const loader = async ({request}: LoaderFunctionArgs) => {
     return {roomData};
 }
 
-export default function EditReservation() {
+export default function CreateReservation() {
     //displays a react component that allows the user to edit a reservation
     const {roomData} = useLoaderData<typeof loader>();
     const [rooms, setRooms] = useState<Room[]>([]);
@@ -28,9 +28,13 @@ export default function EditReservation() {
     const [duration, setDuration] = useState(60); //in minutes
 
     useEffect(() => {
-        setRooms(
-            Room.factory(roomData)
-        );
+        if (roomData != undefined) {
+            setRooms(
+                Room.factory(roomData),
+            );
+        }
+        console.log("Room Data", roomData);
+        console.log(Room.factory(roomData));
     }, [roomData]);
 
     const handleSelect: ChangeEventHandler<HTMLSelectElement> = (event: any) => {
