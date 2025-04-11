@@ -4,6 +4,10 @@ import { useEffect } from "react";
 import { useLoaderData } from "@remix-run/react";
 
 export const action = async ({ request } : { request: Request }) => {
+    console.log("SSO Complete POST", request)
+}
+
+export const loader = async ({ request } : { request: Request }) => {
     let url = new URL(request.url);
     let code = url.searchParams.get("code");
     console.log(url)
@@ -16,7 +20,8 @@ export const action = async ({ request } : { request: Request }) => {
         code: code,
         redirect_uri: "http://cisrooms.stvincent.edu/login/sso-complete",
         grant_type: "authorization_code",
-        client_secret: process.env.CLIENT_SECRET!,
+        client_assertion: process.env.CLIENT_SECRET!,
+        client_assertion_type: "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
     })
 
     let tokenResponse = await fetch(
@@ -58,15 +63,6 @@ export const action = async ({ request } : { request: Request }) => {
         expiresAt: Date.now() + tokenData.expires_in * 1000,
     })
     return redirect("/", {headers: {"Set-Cookie": await sessionStorage.commitSession(session)}});
-}
-
-export const loader = async ({ request } : { request: Request }) => {
-    const session = await sessionStorage.getSession(request.headers.get("Cookie"));
-    const user = session.get("user");
-    if (user) {
-        return redirect("/");
-    }
-    return {user}
 }
 
 export default function SSOComplete() {
