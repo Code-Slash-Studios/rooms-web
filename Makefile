@@ -1,11 +1,11 @@
 init:
 	npm install
 
-build:
+build-l:
 	podman build . -t rooms-web
 
-run:
-	make build
+run-l:
+	make build-l
 	podman run --name rooms-web-container -p 8081:8080 -d rooms-web
 
 build-prod:
