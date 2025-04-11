@@ -8,7 +8,7 @@ export const loader = async ({ request } : { request: Request }) => {
     if (!code) {
         throw new Response("Missing Authorization code", { status: 403 });
     }
-    
+    console.log("clientSecret", process.env.CLIENT_SECRET);
     const tokenParams = new URLSearchParams({
         client_id: process.env.CLIENT_ID!,
         scope: "openid profile email",
