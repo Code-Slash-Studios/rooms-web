@@ -21,8 +21,14 @@ export default function Rooms() {
         }
     }
     , [roomsData]);
-
+    if (roomsData == undefined) {
+        return <p>Loading...</p>;
+    }
+    if (rooms.length == 0) {
+        return <p>No rooms found</p>;
+    }
     return (
+        <main>
         <section className="rooms">
             {rooms.map((room) =>
                 <div className="room" key={room.id}>
@@ -32,5 +38,6 @@ export default function Rooms() {
                 </div>
             )}
         </section>
+        </main>
     );
 }
