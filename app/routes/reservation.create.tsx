@@ -2,7 +2,7 @@ import { ChangeEventHandler, FormEventHandler, useEffect, useState } from "react
 import { createReservation } from "~/api/reservation";
 import { getRooms } from "~/api/room";
 import { Reservation } from "~/models/reservation";
-import { Form, useLoaderData, useActionData } from "@remix-run/react";
+import { Form, useLoaderData, useActionData, Link } from "@remix-run/react";
 import { Room } from "~/models/room";
 import { loginRequired } from "~/services/auth";
 import { LoaderFunctionArgs } from "@remix-run/node";
@@ -23,6 +23,7 @@ export const action = async ({request}: LoaderFunctionArgs) => {
             return res;
         });
     } else {
+        console.log("save", save)
         return "Invalid reservation data:" + isValid.message;
     }
 }
@@ -89,14 +90,11 @@ export default function CreateReservation() {
                 break;
         }
     }
-    if (response != undefined) {
-        console.log("Response", response);
-        return <main><p>Hopefully Successful...</p><p>{response}</p></main>
-    }
     return (
         <main>
+            {response != undefined ? <p className="Error">{response}</p> : <></>}
             <h1 key="title">Create Reservation</h1>
-            <Form method="post" onChange={handleChange} className="reservationForm">
+            <Form method="post" onChange={handleChange} className="reservationForm" onSubmit={(e) => {console.log(roomID)}}>
                 <input title="title" name="title" type="text" defaultValue={title}/>
                 <select title="room" name="room" value={roomID} onChange={(e) => {handleSelect(e)}}>
                     <option value={-1}>Select a room</option>
