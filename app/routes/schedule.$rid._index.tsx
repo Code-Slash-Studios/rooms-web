@@ -37,6 +37,11 @@ export default function ScheduleRoom() {
     const currentDate = new Date();
     currentDate.setHours(0,0,0,0);
     const [selectedDate, setSelectedDate] = useState(new Date());
+    // selectedDate.setHours(0,0,0,0);
+    const startOfSelected = new Date(selectedDate.getTime());
+    startOfSelected.setHours(0,0,0,0);
+    const endOfSelected = new Date(selectedDate.getTime());
+    endOfSelected.setHours(23,59,59,999);
     const [startOfWeek, setWeekStart] = useState(new Date(selectedDate.getTime() - selectedDate.getDay() * MILLIS_IN_DAY));
     let currentWeek = Array.from({length: 7}, (v, i) => {
         const date = new Date(startOfWeek.getTime() + i * MILLIS_IN_DAY);
@@ -102,15 +107,14 @@ export default function ScheduleRoom() {
                     </div>
                 </div>
             <div className="time-slots-container">
-                <h3>Selected: {currentDate.toLocaleDateString("en-US", {"timeZone":"EST", "month":"short","day":"numeric","year":isEndOfYear? "numeric" : undefined})}</h3>
+                <h3>Selected: {selectedDate.toLocaleDateString("en-US", {"timeZone":"EST", "month":"short","day":"numeric","year":isEndOfYear? "numeric" : undefined})}</h3>
                 <h4>Available Time Slots:</h4>
                 <div id="time-slots">
 
                 </div>
                 <h4>Current Reservations:</h4>
-                {/** TODO REMOVE || true, currently we want all reservations for testing purposes */}
                 <div id="reservations">
-                    {reservations.filter((r) => r.start < endOfWeek && r.end > startOfWeek || true).map((r) => {
+                    {reservations.filter((r) => r.start < endOfSelected && r.end > startOfSelected).map((r) => {
                         return <div className="reservation" key={r.id}>
                             <p>{r.name}</p>
                             <p>{r.start.toLocaleTimeString("en-US", {hour: "2-digit", minute: "2-digit"})} - {r.end.toLocaleTimeString("en-US", {hour: "2-digit", minute: "2-digit",})}</p>
