@@ -1,5 +1,7 @@
 import { redirect } from "@remix-run/node";
 import { sessionStorage } from "~/services/session";
+import { useEffect } from "react";
+import { useLoaderData } from "@remix-run/react";
 
 export const action = async ({ request } : { request: Request }) => {
     let url = new URL(request.url);
@@ -67,6 +69,15 @@ export const loader = async ({ request } : { request: Request }) => {
     return {user}
 }
 
-export function SSOComplete() {
+export default function SSOComplete() {
+    const {user} = useLoaderData<typeof loader>();
+    useEffect(() => {
+        if (user) {
+            console.log("User already logged in", user);
+            redirect("/");
+        } else {
+            console.log("User not logged in", user);
+        }
+    }, )
     return <p>Processing authentication... (If you are seeing this, something has probably gone wrong :)</p>
 }
