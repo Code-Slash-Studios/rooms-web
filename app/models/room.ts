@@ -15,8 +15,9 @@ export class Room {
 
     static fromJSON(json: {id:string, name:string, department:string} | string): Room {
         //for processing single room
+        console.log("fromJSON", json);
         if (typeof json === "string") {
-            const parse = JSON.parse(json);
+            const parse = json;
             //check if the parsed json is an array
             if (Array.isArray(parse)) {
                 throw new Error("Expected a single room object, but got an array");

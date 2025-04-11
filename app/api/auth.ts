@@ -10,7 +10,6 @@ export async function getOrCreateUser(user: User) {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify(user),
-            ,
         }
         ).then((response) => {
             return response.json().then((json) => {

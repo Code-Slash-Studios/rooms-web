@@ -61,8 +61,7 @@ export class Reservation {
 
     static factory(json: string[]): Reservation[] {
         //for processing multiple reservations
-        const reservations = json.map((reservation) => {
-            const r = JSON.parse(reservation);
+        const reservations = json.map((r: any) => {;
             if (!r.id || !r.name || !(r.room_id || r.roomID) || !(r.user_id || r.roomID) || !r.start || !r.end) {
                 throw new Error("Invalid reservation data");
             }
