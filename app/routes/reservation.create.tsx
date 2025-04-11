@@ -10,17 +10,20 @@ import { toDatetimeLocal } from "~/utils/datetime";
 
 export const action = async ({request}: LoaderFunctionArgs) => {
     //TODO once user is available, use userID instead of hardcoded "caldweln"
-    const formData = new URLSearchParams(await request.text());
-    const title = formData.get("title") || "";
-    const roomID = formData.get("roomID") || "0";
+    const formData = await request.formData();
+    const title = formData.get("title")?.toString() || "";
+    const roomID = formData.get("roomID")?.toString() || "";
     const start = new Date(formData.get("start-date") + "T" + formData.get("start-time"));
-    const duration = parseInt(formData.get("duration") || "60");
+    const duration: number = parseInt(formData.get("duration")?.toString() || "60");
     const end = new Date(start.getTime() + (duration * 60 * 1000));
     let save = new Reservation(-1, title, roomID, "caldweln", start, end)
-    if (save.isValid()) {
+    const isValid = save.isValid();
+    if (isValid.valid) {
         return createReservation(save).then((res) => {
             return res;
         });
+    } else {
+        return "Invalid reservation data:" + isValid.message;
     }
 }
 
@@ -93,19 +96,19 @@ export default function CreateReservation() {
     return (
         <main>
             <h1 key="title">Create Reservation</h1>
-            <Form method="POST" onChange={handleChange} className="reservationForm">
-            <input title="title" name="title" type="text" defaultValue={title}/>
-            <select title="room" name="room" value={roomID} onChange={(e) => {handleSelect(e)}}>
-                <option value={-1}>Select a room</option>
-                {rooms.map((room) => (
-                    <option key={room.id} value={room.id}>{room.name} ({room.department})</option>
-                ))}
-            </select>
-            <input title="start-date" name="start-date" type="date" defaultValue={toDatetimeLocal(start).split("T")[0]}/>
-            <input title="start-time" name="start-time" type="time" defaultValue={toDatetimeLocal(start).split("T")[1]}/>
-            <input title="duration" name="duration" type="number" max={240} min={15} defaultValue={duration}/>
-            <button type="submit">Submit</button>
-        </Form>
+            <Form method="post" onChange={handleChange} className="reservationForm">
+                <input title="title" name="title" type="text" defaultValue={title}/>
+                <select title="room" name="room" value={roomID} onChange={(e) => {handleSelect(e)}}>
+                    <option value={-1}>Select a room</option>
+                    {rooms.map((room) => (
+                        <option key={room.id} value={room.id}>{room.name} ({room.department})</option>
+                    ))}
+                </select>
+                <input title="start-date" name="start-date" type="date" defaultValue={toDatetimeLocal(start).split("T")[0]}/>
+                <input title="start-time" name="start-time" type="time" defaultValue={toDatetimeLocal(start).split("T")[1]}/>
+                <input title="duration" name="duration" type="number" max={240} min={15} defaultValue={duration}/>
+                <button type="submit">Submit</button>
+            </Form>
         </main>
     );
 }

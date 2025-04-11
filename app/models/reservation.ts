@@ -107,21 +107,27 @@ export class Reservation {
     }
     isValid() {
         let valid = true;
+        let message = "Reservation is valid";
         if (this.name == "") {
             valid = false;
+            message = "Name is required";
         }
-        if (this.roomID == "") {
+        else if (this.roomID == "") {
             valid = false;
+            message = "Room is required";
         }
-        if (this.start == null) {
+        else if (this.start == null) {
             valid = false;
+            message = "Start time is required";
         }
-        if (this.end == null) {
+        else if (this.end == null) {
             valid = false;
+            message = "End time is required";
         }
-        if (this.start >= this.end) {
+        else if (this.start >= this.end) {
             valid = false;
+            message = "Start time must be before end time";
         }
-        return valid;
+        return {valid, message: message};
     }
 }
