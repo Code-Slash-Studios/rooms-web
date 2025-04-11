@@ -1,15 +1,58 @@
-import { ChangeEventHandler, FormEventHandler, useState } from "react";
-import { post } from "~/api/reservation";
-import { getRoom } from "~/api/room";
-import { Reservation, ReservationFormComp } from "~/components/Reservation";
+import { ChangeEventHandler, FormEventHandler, useEffect, useState } from "react";
+import { createReservation } from "~/api/reservation";
+import { getRooms } from "~/api/room";
+import { Reservation } from "~/models/reservation";
+import { Form, useLoaderData, useActionData, Link } from "@remix-run/react";
+import { Room } from "~/models/room";
+import { loginRequired } from "~/services/auth";
+import { LoaderFunctionArgs } from "@remix-run/node";
+import { toDatetimeLocal } from "~/utils/datetime";
 
-export default function EditReservation() {
+export const action = async ({request}: LoaderFunctionArgs) => {
+    //TODO once user is available, use userID instead of hardcoded "caldweln"
+    const formData = await request.formData();
+    const title = formData.get("title")?.toString() || "";
+    const roomID = formData.get("room")?.toString() || "";
+    const start = new Date(formData.get("start-date") + "T" + formData.get("start-time"));
+    const duration: number = parseInt(formData.get("duration")?.toString() || "60");
+    const end = new Date(start.getTime() + (duration * 60 * 1000));
+    let save = new Reservation(-1, title, roomID, "caldweln", start, end)
+    const isValid = save.isValid();
+    if (isValid.valid) {
+        return createReservation(save).then((res) => {
+            return res;
+        });
+    } else {
+        return "Invalid reservation data:" + isValid.message;
+    }
+}
+
+export const loader = async ({request}: LoaderFunctionArgs) => {
+    //const user = await loginRequired(request);
+    //console.log(user);
+    const roomData = await getRooms();
+
+    return {roomData: roomData, getError: undefined};
+}
+
+export default function CreateReservation() {
     //displays a react component that allows the user to edit a reservation
+    const {roomData} = useLoaderData<typeof loader>();
+    const response = useActionData<typeof action>();
+    const [rooms, setRooms] = useState<Room[]>([]);
     const [title, setTitle] = useState("");
-    const [roomID, setRoomID] = useState(-1);
+    const [roomID, setRoomID] = useState<string>("0");
     const [start, setStart] = useState<Date>(new Date());
     const [end, setEnd] = useState<Date>(new Date(new Date().getTime() + (60 * 1000)));
     const [duration, setDuration] = useState(60); //in minutes
+
+    useEffect(() => {
+        if (roomData != undefined) {
+            setRooms(
+                Room.factory(roomData),
+            );
+        }
+    }, [roomData]);
 
     const handleSelect: ChangeEventHandler<HTMLSelectElement> = (event: any) => {
         setRoomID(event.target.value);
@@ -46,21 +89,23 @@ export default function EditReservation() {
                 break;
         }
     }
-    const handleSubmit: FormEventHandler<HTMLFormElement> = (event: any) => {
-        event.preventDefault();
-        console.log(title, getRoom(roomID), start, end);
-        let save = new Reservation(-1, title, roomID, getRoom(roomID), start, end)
-        if (save.isValid()) {
-            post(save).then((res) => {
-                alert(res)
-            });
-        }
-
-    }
     return (
-        <div>
+        <main>
+            {response != undefined ? <p className="Error">{response.id}</p> : <></>}
             <h1 key="title">Create Reservation</h1>
-            <ReservationFormComp title={title} roomID={roomID} start={start} end={end} duration={duration} onSelect={handleSelect} onChange={handleChange} onSubmit={handleSubmit} />
-        </div>
+            <Form method="post" onChange={handleChange} className="reservationForm" onSubmit={(e) => {console.log(roomID)}}>
+                <input title="title" name="title" type="text" defaultValue={title}/>
+                <select title="room" name="room" onChange={(e) => {handleSelect(e)}}>
+                    <option value={-1}>Select a room</option>
+                    {rooms.map((room) => (
+                        <option key={room.id} value={room.id}>{room.name} ({room.department})</option>
+                    ))}
+                </select>
+                <input title="start-date" name="start-date" type="date" defaultValue={toDatetimeLocal(start).split("T")[0]}/>
+                <input title="start-time" name="start-time" type="time" defaultValue={toDatetimeLocal(start).split("T")[1]}/>
+                <input title="duration" name="duration" type="number" max={240} min={15} defaultValue={duration}/>
+                <button type="submit">Submit</button>
+            </Form>
+        </main>
     );
 }

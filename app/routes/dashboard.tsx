@@ -1,0 +1,1 @@
+//this will be the view that can be accessed by the user after login

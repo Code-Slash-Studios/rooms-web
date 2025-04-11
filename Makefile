@@ -1,12 +1,12 @@
 init:
 	npm install
 
-build:
+build-l:
 	podman build . -t rooms-web
 
-run:
-	make build
-	podman run --name rooms-web-container -p 8081:8081 -d rooms-web
+run-l:
+	make build-l
+	podman run --name rooms-web-container -p 8081:8080 -d rooms-web
 
 build-prod:
 	podman build . -t rooms-web-prod
@@ -17,9 +17,13 @@ run-prod:
 
 stop:
 	podman stop rooms-web-container
+kill:
+	podman stop rooms-web-container
+	podman rm rooms-web-container
 stop-prod:
 	podman stop rooms-web-container-prod
 kill-prod:
+	podman stop rooms-web-container-prod
 	podman rm rooms-web-container-prod
 
 prod:
@@ -31,10 +35,3 @@ dev:
 
 test:
 	npx remix vite:build --dry-run
-
-local:
-	podman build . -t rooms-web
-	podman run -d --name rooms-web-container -p 8081:8081 rooms-web
-
-restart:
-	systemctl restart rooms-web

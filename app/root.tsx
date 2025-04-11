@@ -14,16 +14,14 @@ export default function App() {
       <head>
         <link
           rel="icon"
-          href="./favicon.ico"
+          href="/favicon.ico"
         />
         <Meta />
         <Links />
       </head>
       <body>
-        <h1>CIS Rooms - Hello world!</h1>
         <Navbar />
         <Outlet />
-
         <Scripts />
       </body>
     </html>

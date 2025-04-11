@@ -18,11 +18,18 @@ jobs:
     - uses: actions/checkout@v4
     - name: Build Rooms Web
       run: make build-prod
-  deploy:
+  kill:
     needs: build
     runs-on: self-hosted
     continue-on-error: true
     steps:
     - uses: actions/checkout@v4
+    - name: Stop Rooms Web
+      run: podman container kill rooms-web-container-prod || true && podman container rm rooms-web-container-prod
+  deploy:
+    needs: kill
+    runs-on: self-hosted
+    steps:
+    - uses: actions/checkout@v4
     - name: Deploy/Restart Rooms Web
-      run: podman container restart --all
+      run: podman run --name rooms-web-container-prod -d -p 80:80 -v /home/rooms-web:/usr/src/app/rooms-web rooms-web-prod:latest

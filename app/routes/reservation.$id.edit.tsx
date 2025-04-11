@@ -1,40 +1,56 @@
 import { useLoaderData } from "@remix-run/react";
 import { ChangeEventHandler, FormEventHandler, useEffect, useState } from "react";
-import { getById, post } from "~/api/reservation";
-import { getRoom } from "~/api/room";
-import { Reservation, ReservationFormComp } from "~/components/Reservation";
+import { getReservationById, createReservation } from "~/api/reservation";
+import { getRoom, getRooms } from "~/api/room";
+import { Reservation } from "~/models/reservation";
+import { ReservationFormComp } from "~/components/Reservation";
+import { Room } from "~/models/room";
 
 export const loader = async ({ params }:any) => {
-    return getById(params.id).then((res) => {
+    const rooms = await getRooms()
+    let data = await getReservationById(params.id).then((res) => {
         if (res == undefined) {
             console.error("No reservation found");
-            return {"reservation": undefined, "getError": "No reservation found"};
+            return {"reservationData": undefined, "getError": "No reservation found", "roomsData": rooms.map((r) => r.toJSON())};
         }
-        return {"reservation": res, "getError": undefined};
+        return {"reservationData": res.toJSON(), "getError": undefined, "roomsData": rooms.map((r) => r.toJSON())};
     });
-  
+    //Side note, the above code is a bit absurd.
+    //Reservation is returned from Fetch as a JSON object, it is then converted into a Reservation in /api/reservation.ts
+    //and then converted back into JSON string to be sent to the client from this Loader function.
+    //Then it is converted back into a Reservation in the EditReservation component.
+    // One plus of this absurity is that we can catch errors serverside. 
+    return data;
 };
 
 export default function EditReservation() {
     //displays a react component that allows the user to edit a reservation
-    const {reservation, getError} = useLoaderData<typeof loader>();
+    const {reservationData, getError, roomsData} = useLoaderData<typeof loader>();
     
+    const [reservation, setReservation] = useState<Reservation>(Reservation.empty());
+    const [rooms, setRooms] = useState<Room[]>([]);
     const [title, setTitle] = useState("");
-    const [roomID, setRoomID] = useState(-1);
+    const [roomID, setRoomID] = useState("");
     const [start, setStart] = useState<Date>(new Date());
     const [end, setEnd] = useState<Date>(new Date());
     const [duration, setDuration] = useState(60); //in minutes
 
     useEffect(() => {
-        if (reservation != undefined) {
-            const res = Reservation.factory(reservation);
-            setTitle(res.title);
-            setRoomID(res.roomID);
-            setStart(res.start);
-            setEnd(res.end);
-            setDuration((res.end.getTime() - res.start.getTime()) / (60 * 1000));
+        if (roomsData != undefined) {
+            setRooms(
+                Room.factory(roomsData),
+            );
         }
-    }, [reservation, roomID]);
+        if (reservationData != undefined) {
+            const r = Reservation.fromJSON(reservationData);
+            setReservation(r);
+            setTitle(r.name);
+            setRoomID(r.roomID);
+            setStart(r.start);
+            setEnd(r.end);
+            setDuration((r.end.getTime() - r.start.getTime()) / (60 * 1000));
+        }
+    }, [reservationData, roomID, rooms]);
 
     const handleChange: FormEventHandler<HTMLFormElement> = (event: any) => {
         const val = event.target.value;
@@ -74,14 +90,14 @@ export default function EditReservation() {
 
     const handleSubmit: FormEventHandler<HTMLFormElement> = (event: any) => {
         event.preventDefault();
-        console.log(title, getRoom(roomID), start, end);
-        if (!reservation) {
+        console.log(title, rooms.find((r) => r.id === roomID), start, end);
+        if (!reservationData) {
             console.error("No reservation found");
             return;
         }
-        let save = new Reservation(reservation.id, title, roomID, getRoom(roomID), start, end)
+        let save = new Reservation(reservation.id, title, roomID, "caldweln", start, end)
         if (save.isValid()) {
-            post(save).then((res) => {
+            createReservation(save).then((res) => {
                 alert(res)
             });
         }
@@ -90,7 +106,7 @@ export default function EditReservation() {
     return (
         <div>
             <h1 key="title">Edit Reservation</h1>
-            <ReservationFormComp title={title} roomID={roomID} start={start} end={end} duration={duration} onSelect={handleSelect} onChange={handleChange} onSubmit={handleSubmit} />
+            <ReservationFormComp rooms={rooms} title={title} roomID={roomID} start={start} end={end} duration={duration} onSelect={handleSelect} onChange={handleChange} onSubmit={handleSubmit} />
         </div>
     );
 }
