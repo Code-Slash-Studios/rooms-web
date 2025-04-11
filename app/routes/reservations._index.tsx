@@ -45,7 +45,15 @@ export default function ReservationIndex() {
     return <>
         <h1 key="title">All Reservations</h1>
         <ul key="reservations">
-            {reservations != undefined && reservations.map((r) => r.render())}
+            {reservations != undefined && reservations.map((r) => 
+                <li key={r.id}>
+                    <h2>{r.name}</h2>
+                    <p>Room: {r.roomID}</p>
+                    <p>User: {r.userID}</p>
+                    <p>Start: {r.start.toLocaleString()}</p>
+                    <p>End: {r.end.toLocaleString()}</p>
+                    <p>Duration: {(r.end.getTime() - r.start.getTime()) / (60 * 1000)} minutes</p>
+                </li>)}
         </ul>
     </>
 }
