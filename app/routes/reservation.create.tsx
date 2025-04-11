@@ -10,16 +10,16 @@ import { loginRequired } from "~/services/auth";
 import { LoaderFunctionArgs } from "@remix-run/node";
 
 export const loader = async ({request}: LoaderFunctionArgs) => {
-    const user = await loginRequired(request);
-    console.log(user);
+    //const user = await loginRequired(request);
+    //console.log(user);
     const roomData = await getRooms();
 
-    return {roomData, user};
+    return {roomData};
 }
 
 export default function EditReservation() {
     //displays a react component that allows the user to edit a reservation
-    const {roomData, user} = useLoaderData<typeof loader>();
+    const {roomData} = useLoaderData<typeof loader>();
     const [rooms, setRooms] = useState<Room[]>([]);
     const [title, setTitle] = useState("");
     const [roomID, setRoomID] = useState<string>("0");
@@ -71,7 +71,8 @@ export default function EditReservation() {
     const handleSubmit: FormEventHandler<HTMLFormElement> = (event: any) => {
         event.preventDefault();
         console.log(title, roomData, start, end);
-        let save = new Reservation(-1, title, roomID, user?.user_id || "tempUserID", start, end)
+        //TODO once user is available, use userID instead of hardcoded "caldweln"
+        let save = new Reservation(-1, title, roomID, "caldweln", start, end)
         if (save.isValid()) {
             createReservation(save).then((res) => {
                 alert(res)
