@@ -1,7 +1,7 @@
 import { redirect } from "@remix-run/node";
 import { sessionStorage } from "~/services/session";
 
-export const action = async ({ request } : { request: Request }) => {
+export const loader = async ({ request } : { request: Request }) => {
     let url = new URL(request.url);
     let code = url.searchParams.get("code");
 
@@ -55,16 +55,6 @@ export const action = async ({ request } : { request: Request }) => {
         expiresAt: Date.now() + tokenData.expires_in * 1000,
     })
     return redirect("/", {headers: {"Set-Cookie": await sessionStorage.commitSession(session)}});
-}
-
-export const loader = async ({ request } : { request: Request }) => {
-    const session = await sessionStorage.getSession(request.headers.get("Cookie"));
-    const user = session.get("user");
-    // Check if user is logged in and the token is not expired
-    if (!user || user.expiresAt < Date.now()) {
-        throw redirect("/login/sso-out");
-    }
-    return redirect("/");
 }
 
 
