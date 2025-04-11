@@ -15,7 +15,7 @@ export const loader = async ({request}: ClientLoaderFunctionArgs) => {
             return {"reservations": undefined, "getError": "No reservations found"};
         }
         console.log("Fetched Reservation Index",res);
-        return {"reservationData": res, "getError": undefined};
+        return {"reservationData": res.map((r) => r.toJSON()), "getError": undefined};
     });
 };
 
@@ -31,14 +31,7 @@ export default function ReservationIndex() {
         if (reservationData != undefined) {
             setReservations(
                 reservationData.map((r: any) => {
-                    return new Reservation(
-                        r.id,
-                        r.name,
-                        r.roomID,
-                        r.userID,
-                        new Date(r.start),
-                        new Date(r.end),
-                    );
+                    return Reservation.fromJSON(r);
                 })
             );
         }
