@@ -3,11 +3,10 @@ import { useEffect, useState } from "react";
 import { getRooms } from "~/api/room";
 import { Room } from "~/models/room";
 
-export const loader = async function() {
-    //get rooms from the api
-    const roomsData = await getRooms();
-    console.log("Rooms", roomsData);
-    return {roomsData: roomsData.map((r) => r.toJSON()), getError: undefined};
+export const loader = async () => {
+    const roomData = await getRooms();
+    console.log(roomData)
+    return {roomsData: roomData.map((r) => r.toJSON()), getError: undefined};
 }
 
 export default function Rooms() {
