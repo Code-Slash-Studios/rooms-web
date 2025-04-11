@@ -2,6 +2,9 @@ import { ClientLoaderFunctionArgs, useLoaderData } from "@remix-run/react";
 import { useEffect, useState } from "react";
 import { getReservationsByRoomId } from "~/api/reservation";
 import { getRoom } from "~/api/room";
+import { SessionUser } from "~/models/auth";
+import { Reservation } from "~/models/reservation";
+import { Room } from "~/models/room";
 import { loginRequired } from "~/services/auth";
 import { sessionStorage } from "~/services/session";
 
@@ -19,13 +22,18 @@ export const loader = async ({ params, request }: ClientLoaderFunctionArgs) => {
     if (!room) {
         throw new Response("Room not found", {status: 404});
     }
-    return {"room": room, "user": user, "reservations": reservations};
+    return {"roomData": room, "user": user, "reservationsData": reservations};
   };
 
 const MILLIS_IN_DAY = 86400000;
 
 export default function ScheduleRoom() {
-    const {room, reservations} = useLoaderData<typeof loader>();
+    const {roomData, reservationsData} = useLoaderData<typeof loader>();
+
+    const [room, setRoom] = useState<Room | undefined>(undefined);
+    const [user, setUser] = useState<SessionUser | undefined>(undefined);
+    const [reservations, setReservations] = useState<Reservation[]>([]);
+
     const currentDate = new Date();
     currentDate.setHours(0,0,0,0);
     const [selectedDate, setSelectedDate] = useState(new Date());
@@ -39,6 +47,23 @@ export default function ScheduleRoom() {
     const isEndOfMonth = startOfWeek.getMonth() != endOfWeek.getMonth();
     const isEndOfYear = startOfWeek.getFullYear() != endOfWeek.getFullYear();
 
+    useEffect(() => {
+        // set room data to the state
+        if (roomData != undefined) {
+            setRoom(
+                Room.fromJSON(roomData),
+            );
+        }
+        if (reservations != undefined) {
+            setReservations(
+                reservations.map((r: any) => {
+                    return Reservation.fromJSON(r);
+                })
+            );
+        }
+
+    }, [roomData, reservations]);
+
     const selectDate = (date: Date) => {
         setSelectedDate(date);
     }
@@ -50,9 +75,12 @@ export default function ScheduleRoom() {
         setWeekStart(new Date(startOfWeek.getTime() + 7 * MILLIS_IN_DAY));
     }
 
-    if (!room || room === undefined) {
-        console.log(room)
-        return <main><div>Room not found</div></main>
+    if (!roomData || roomData === undefined) {
+        console.log(roomData)
+        return <main><div>Room not found or Loading...</div></main>
+    }
+    if (room == undefined) {
+        return <main><div>Loading...</div></main>
     }
     return <main>
         <h2>{room.department} - {room.name}</h2>
