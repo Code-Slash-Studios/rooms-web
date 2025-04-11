@@ -22,7 +22,7 @@ export const loader = async ({ params, request }: ClientLoaderFunctionArgs) => {
     if (!room) {
         throw new Response("Room not found", {status: 404});
     }
-    return {"roomData": room, "user": user, "reservationsData": reservations};
+    return {"roomData": room.toJSON(), "user": user, "reservationsData": reservations.map((r) => r.toJSON())};
   };
 
 const MILLIS_IN_DAY = 86400000;
@@ -56,9 +56,7 @@ export default function ScheduleRoom() {
         }
         if (reservations != undefined) {
             setReservations(
-                reservations.map((r: any) => {
-                    return Reservation.fromJSON(r);
-                })
+                Reservation.factory(reservationsData),
             );
         }
 
