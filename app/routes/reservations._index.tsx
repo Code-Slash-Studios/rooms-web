@@ -5,14 +5,12 @@ import { useEffect, useState } from 'react';
 import { loginRequired } from '~/services/auth';
 
 export const loader = async ({request}: ClientLoaderFunctionArgs) => {
-    const user = await loginRequired(request);
-    console.log(user);
     return getAllReservations().then((res) => {
         if (res == undefined) {
             console.error("No reservations found");
-            return {"reservations": undefined, "getError": "No reservations found", "user":user};
+            return {"reservations": undefined, "getError": "No reservations found"};
         }
-        return {"reservationData": res, "getError": undefined, "user": user};
+        return {"reservationData": res, "getError": undefined};
     });
 };
 
