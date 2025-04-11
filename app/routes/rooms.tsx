@@ -34,7 +34,7 @@ export default function Rooms() {
                 <div className="room" key={room.id}>
                     <h2>Dupre - {room.name}</h2>
                     <p>Placeholder for status integration</p>
-                    <a href={"schedule/" + room.name}><button>Schedule</button></a>
+                    <a href={"schedule/" + room.id}><button>Schedule</button></a>
                 </div>
             )}
         </section>
