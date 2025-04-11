@@ -1,10 +1,10 @@
 import { redirect } from "@remix-run/node";
 import { sessionStorage } from "~/services/session";
 
-export const loader = async ({ request } : { request: Request }) => {
+export const action = async ({ request } : { request: Request }) => {
     let url = new URL(request.url);
     let code = url.searchParams.get("code");
-
+    console.log(url)
     if (!code) {
         throw new Response("Missing Authorization code", { status: 403 });
     }
@@ -58,6 +58,14 @@ export const loader = async ({ request } : { request: Request }) => {
     return redirect("/", {headers: {"Set-Cookie": await sessionStorage.commitSession(session)}});
 }
 
+export const loader = async ({ request } : { request: Request }) => {
+    const session = await sessionStorage.getSession(request.headers.get("Cookie"));
+    const user = session.get("user");
+    if (user) {
+        return redirect("/");
+    }
+    return {user}
+}
 
 export function SSOComplete() {
     return <p>Processing authentication... (If you are seeing this, something has probably gone wrong :)</p>
