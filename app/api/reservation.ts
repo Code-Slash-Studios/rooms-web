@@ -23,7 +23,7 @@ export async function getAllReservations() {
         }
         ).then((response) => {
             return response.json().then((json:any) => {
-                return json.map((r: any) => Reservation.factory(r));
+                return Reservation.factory(json);
             })
         }
     ).catch((error) => {

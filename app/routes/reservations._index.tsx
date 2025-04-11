@@ -10,6 +10,11 @@ export const loader = async ({request}: ClientLoaderFunctionArgs) => {
             console.error("No reservations found");
             return {"reservations": undefined, "getError": "No reservations found"};
         }
+        if (res.length == 0) {
+            console.error("No reservations found");
+            return {"reservations": undefined, "getError": "No reservations found"};
+        }
+        console.log(res);
         return {"reservationData": res, "getError": undefined};
     });
 };
@@ -38,7 +43,7 @@ export default function ReservationIndex() {
     }
 
     return <>
-        <h1 key="title">All Reservations. Your time: {time.toLocaleDateString("en-US", {month: "long", day:"numeric"})}</h1>
+        <h1 key="title">All Reservations</h1>
         <ul key="reservations">
             {reservations != undefined && reservations.map((r) => r.render())}
         </ul>
