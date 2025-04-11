@@ -19,8 +19,6 @@ export default function Rooms() {
                 Room.factory(roomsData),
             );
         }
-        console.log("Rooms Data", roomsData);
-        console.log("Rooms", rooms);
     }
     , [roomsData]);
     if (roomsData == undefined) {
