@@ -27,6 +27,7 @@ export default function ReservationIndex() {
     const time = new Date();
 
     useEffect(() => {
+        console.log("Reservation Data", reservationData);
         if (reservationData != undefined) {
             setReservations(
                 reservationData.map((r: any) => {
