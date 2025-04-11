@@ -60,7 +60,7 @@ export default function ScheduleRoom() {
             );
         }
 
-    }, [roomData, reservations]);
+    }, [roomData, reservationsData]);
 
     const selectDate = (date: Date) => {
         setSelectedDate(date);

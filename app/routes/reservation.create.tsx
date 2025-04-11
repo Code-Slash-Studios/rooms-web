@@ -23,7 +23,6 @@ export const action = async ({request}: LoaderFunctionArgs) => {
             return res;
         });
     } else {
-        console.log("save", save)
         return "Invalid reservation data:" + isValid.message;
     }
 }
@@ -92,7 +91,7 @@ export default function CreateReservation() {
     }
     return (
         <main>
-            {response != undefined ? <p className="Error">{response}</p> : <></>}
+            {response != undefined ? <p className="Error">{response.id}</p> : <></>}
             <h1 key="title">Create Reservation</h1>
             <Form method="post" onChange={handleChange} className="reservationForm" onSubmit={(e) => {console.log(roomID)}}>
                 <input title="title" name="title" type="text" defaultValue={title}/>

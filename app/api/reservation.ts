@@ -61,6 +61,7 @@ export async function createReservation(reservation: Reservation) {
             body: reservation.toJSON()
         }
     ).then((response) => {
+        console.log(response)
         return response.json();
     }).catch((error) => {
         console.error(error); return undefined
