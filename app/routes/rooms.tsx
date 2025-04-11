@@ -6,7 +6,7 @@ import { Room } from "~/models/room";
 export const loader = async function() {
     //get rooms from the api
     const roomsData = await getRooms();
-    return {"roomsData": roomsData};
+    return {roomsData: roomsData.map((r) => r.toJSON()), getError: undefined};
 }
 
 export default function Rooms() {
@@ -19,6 +19,8 @@ export default function Rooms() {
                 Room.factory(roomsData),
             );
         }
+        console.log("Rooms Data", roomsData);
+        console.log("Rooms", rooms);
     }
     , [roomsData]);
     if (roomsData == undefined) {
