@@ -25,7 +25,7 @@ export default function Rooms() {
         return <p>Loading...</p>;
     }
     if (rooms.length == 0) {
-        return <p>No rooms found</p>;
+        return <p>Loading... No rooms found yet...</p>;
     }
     return (
         <main>
