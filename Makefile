@@ -17,6 +17,9 @@ run-prod:
 
 stop:
 	podman stop rooms-web-container
+kill:
+	podman stop rooms-web-container
+	podman rm rooms-web-container
 stop-prod:
 	podman stop rooms-web-container-prod
 kill-prod:
