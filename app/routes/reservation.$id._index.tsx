@@ -37,8 +37,8 @@ export default function reservationDetail() {
             setReservation(r);
         }
         if (roomData != undefined) {
-            const r = Reservation.fromJSON(roomData);
-            setReservation(r);
+            const r = Room.fromJSON(roomData);
+            setRoom(r);
         }
 
     }, [reservationID, reservationData, roomData]);
