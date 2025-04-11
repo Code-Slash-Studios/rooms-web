@@ -1,25 +1,41 @@
 import { ChangeEventHandler, FormEventHandler, useEffect, useState } from "react";
-
 import { createReservation } from "~/api/reservation";
 import { getRooms } from "~/api/room";
 import { Reservation } from "~/models/reservation";
-import { ReservationFormComp } from "~/components/Reservation";
-import { useLoaderData } from "@remix-run/react";
+import { Form, useLoaderData, useActionData } from "@remix-run/react";
 import { Room } from "~/models/room";
 import { loginRequired } from "~/services/auth";
 import { LoaderFunctionArgs } from "@remix-run/node";
+import { toDatetimeLocal } from "~/utils/datetime";
+
+export const action = async ({request}: LoaderFunctionArgs) => {
+    //TODO once user is available, use userID instead of hardcoded "caldweln"
+    const formData = new URLSearchParams(await request.text());
+    const title = formData.get("title") || "";
+    const roomID = formData.get("roomID") || "0";
+    const start = new Date(formData.get("start-date") + "T" + formData.get("start-time"));
+    const duration = parseInt(formData.get("duration") || "60");
+    const end = new Date(start.getTime() + (duration * 60 * 1000));
+    let save = new Reservation(-1, title, roomID, "caldweln", start, end)
+    if (save.isValid()) {
+        return createReservation(save).then((res) => {
+            return res;
+        });
+    }
+}
 
 export const loader = async ({request}: LoaderFunctionArgs) => {
     //const user = await loginRequired(request);
     //console.log(user);
     const roomData = await getRooms();
 
-    return {roomData};
+    return {roomData: roomData, getError: undefined};
 }
 
 export default function CreateReservation() {
     //displays a react component that allows the user to edit a reservation
     const {roomData} = useLoaderData<typeof loader>();
+    const response = useActionData<typeof action>();
     const [rooms, setRooms] = useState<Room[]>([]);
     const [title, setTitle] = useState("");
     const [roomID, setRoomID] = useState<string>("0");
@@ -33,8 +49,6 @@ export default function CreateReservation() {
                 Room.factory(roomData),
             );
         }
-        console.log("Room Data", roomData);
-        console.log(Room.factory(roomData));
     }, [roomData]);
 
     const handleSelect: ChangeEventHandler<HTMLSelectElement> = (event: any) => {
@@ -72,22 +86,26 @@ export default function CreateReservation() {
                 break;
         }
     }
-    const handleSubmit: FormEventHandler<HTMLFormElement> = (event: any) => {
-        event.preventDefault();
-        console.log(title, roomData, start, end);
-        //TODO once user is available, use userID instead of hardcoded "caldweln"
-        let save = new Reservation(-1, title, roomID, "caldweln", start, end)
-        if (save.isValid()) {
-            createReservation(save).then((res) => {
-                alert(res)
-            });
-        }
-
+    if (response != undefined) {
+        console.log("Response", response);
+        return <main><p>Hopefully Successful...</p><p>{response}</p></main>
     }
     return (
-        <div>
+        <main>
             <h1 key="title">Create Reservation</h1>
-            <ReservationFormComp rooms={rooms} title={title} roomID={roomID} start={start} end={end} duration={duration} onSelect={handleSelect} onChange={handleChange} onSubmit={handleSubmit} />
-        </div>
+            <Form method="POST" onChange={handleChange} className="reservationForm">
+            <input title="title" name="title" type="text" defaultValue={title}/>
+            <select title="room" name="room" value={roomID} onChange={(e) => {handleSelect(e)}}>
+                <option value={-1}>Select a room</option>
+                {rooms.map((room) => (
+                    <option key={room.id} value={room.id}>{room.name} ({room.department})</option>
+                ))}
+            </select>
+            <input title="start-date" name="start-date" type="date" defaultValue={toDatetimeLocal(start).split("T")[0]}/>
+            <input title="start-time" name="start-time" type="time" defaultValue={toDatetimeLocal(start).split("T")[1]}/>
+            <input title="duration" name="duration" type="number" max={240} min={15} defaultValue={duration}/>
+            <button type="submit">Submit</button>
+        </Form>
+        </main>
     );
 }
