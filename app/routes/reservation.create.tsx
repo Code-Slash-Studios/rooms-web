@@ -96,7 +96,7 @@ export default function CreateReservation() {
             <h1 key="title">Create Reservation</h1>
             <Form method="post" onChange={handleChange} className="reservationForm" onSubmit={(e) => {console.log(roomID)}}>
                 <input title="title" name="title" type="text" defaultValue={title}/>
-                <select title="room" name="room" value={roomID} onChange={(e) => {handleSelect(e)}}>
+                <select title="room" name="room" onChange={(e) => {handleSelect(e)}}>
                     <option value={-1}>Select a room</option>
                     {rooms.map((room) => (
                         <option key={room.id} value={room.id}>{room.name} ({room.department})</option>
