@@ -1,7 +1,3 @@
-
-You will have to insert the MSAL Secret into the .env file at the base directory.
-REACT_APP_MSAL_SECRET = "-----BEGIN CERTIFICATE-----   //...
-
 The purpose of this repository is to run the web application side of CIS Rooms. 
 
 All style design files and logos are for the specific use of this website and cannot be changed or altered without consulting Code Slash Studios.
@@ -13,3 +9,8 @@ Under the app directory, the api is for api routing, components is for reused vi
 Under the public directory, there are files for the index page and styling.
 
 In the root directory, there are various files for the container, web page runner, and json backend pieces.
+
+***Note***
+
+You will have to insert the MSAL Secret into the .env file at the base directory.
+REACT_APP_MSAL_SECRET = "-----BEGIN CERTIFICATE-----   //...
