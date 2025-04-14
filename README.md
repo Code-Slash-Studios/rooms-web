@@ -8,7 +8,7 @@ All style design files and logos are for the specific use of this website and ca
 
 An API backend must be connected to this application so that communication between the database, web application, and Raspberry Pi can flow.
 
-Under the app directory, the api is for api routing, components is for reused visual element pieces, routes is also for api routing, utils is for utility functions, and the three files in the root are for webpage styling.
+Under the app directory, the api is for api routing, components is for reused visual element pieces, routes is also for api routing, utils is for utility functions, and the files in the root are for webpage styling.
 
 Under the public directory, there are files for the index page and styling.
 
