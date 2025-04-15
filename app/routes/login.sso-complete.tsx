@@ -10,7 +10,7 @@ export const action = async ({ request } : { request: Request }) => {
 export const loader = async ({ request } : { request: Request }) => {
     let url = new URL(request.url);
     let code = url.searchParams.get("code");
-    console.log(url)
+    console.log("Request",request)
     if (!code) {
         throw new Response("Missing Authorization code", { status: 403 });
     }
