@@ -7,6 +7,7 @@ import {
 import Navbar from "./components/Navbar";
 import "./style.css";
 import "./favicon.ico";
+import { sessionStorage } from "./services/session";
 
 export const loader = async ({ request }: { request: Request }) => {
     //load user from session
