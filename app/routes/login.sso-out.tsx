@@ -7,7 +7,7 @@ import { redirect } from "@remix-run/node";
 export let loader = () => {
     const params = new URLSearchParams({
         client_id: process.env.CLIENT_ID!,
-        response_type: "code token",
+        response_type: "code id_token",
         redirect_uri: process.env.REDIRECT_URI!,
         scope: "openid profile email",
         response_mode: "form_post",
