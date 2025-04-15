@@ -9,7 +9,7 @@ export const loader = async ({request}: ClientLoaderFunctionArgs) => {
 }
 
 export default function Navbar() {
-    const { user } = useLoaderData<typeof loader>();
+    const { user } = useLoaderData<any>();
     let userData = {name: ""};
     if (user !== "") {
         userData = JSON.parse(user);
