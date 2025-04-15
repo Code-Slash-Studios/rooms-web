@@ -60,7 +60,7 @@ export const action = async ({ request } : { request: Request }) => {
         expiresAt: Date.now() + tokenData.expires_in * 1000,
     })
     return redirect("/", {headers: {"Set-Cookie": await sessionStorage.commitSession(session)}});
-    
+}    
 
 export const loader = async ({ request } : { request: Request }) => {
     console.log("Loader", request)
