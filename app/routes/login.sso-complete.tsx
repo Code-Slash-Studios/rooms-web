@@ -4,12 +4,9 @@ import { useEffect } from "react";
 import { useLoaderData } from "@remix-run/react";
 
 export const action = async ({ request } : { request: Request }) => {
-    console.log("SSO Complete POST", request)
-}
-
-export const loader = async ({ request } : { request: Request }) => {
-    let url = new URL(request.url);
-    let code = url.searchParams.get("code");
+    //get form data
+    const formData = await request.formData();
+    const code = formData.get("code") as string;
     console.log("Request",request)
     if (!code) {
         throw new Response("Missing Authorization code", { status: 403 });
@@ -63,6 +60,10 @@ export const loader = async ({ request } : { request: Request }) => {
         expiresAt: Date.now() + tokenData.expires_in * 1000,
     })
     return redirect("/", {headers: {"Set-Cookie": await sessionStorage.commitSession(session)}});
+    
+
+export const loader = async ({ request } : { request: Request }) => {
+    console.log("Loader", request)
 }
 
 export default function SSOComplete() {
