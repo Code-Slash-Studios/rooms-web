@@ -18,7 +18,7 @@ export const action = async ({ request } : { request: Request }) => {
     const token = JSON.parse(atob(encoded_token.split(".")[1]));
     console.log("Login from", token.name, token.email, token.sub);
     
-    if (token.nonce !== `CisRooms</>`) { //TODO make an algorithm for securing nonce
+    if (token.nonce !== `CisRooms`) { //TODO make an algorithm for securing nonce
         console.log("Nonce does not match");
         return redirect("/login/error?e=nonce_mismatch;d=Nonce does not match;");
     }

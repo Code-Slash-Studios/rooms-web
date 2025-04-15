@@ -11,7 +11,7 @@ export let loader = () => {
         redirect_uri: process.env.REDIRECT_URI!,
         scope: "openid profile email",
         response_mode: "form_post",
-        nonce: `CisRooms</>`,// SHOULD BE CHECKED ?? NOT CHECKED FOR TESTING PURPOSES
+        nonce: `CisRooms`,// SHOULD BE CHECKED ?? NOT CHECKED FOR TESTING PURPOSES
     })
 
     return redirect(
