@@ -12,7 +12,7 @@ export default function Navbar() {
     const data = useLoaderData<any>();
     let userData = {name: ""};
     if (data?.user) {
-        userData = JSON.parse(data.user);
+        userData = data.user;
     }
     return <nav className="navbar">
         <div className="navbar-logo">
