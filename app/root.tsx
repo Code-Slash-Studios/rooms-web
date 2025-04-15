@@ -8,6 +8,13 @@ import Navbar from "./components/Navbar";
 import "./style.css";
 import "./favicon.ico";
 
+export const loader = async ({ request }: { request: Request }) => {
+    //load user from session
+    const session = await sessionStorage.getSession(request.headers.get("Cookie"));
+    const user = session.get("user") || "";
+    return { "user": user };
+}
+
 export default function App() {
   return (
     <html>
