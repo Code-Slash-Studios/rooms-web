@@ -24,6 +24,9 @@ nav {
 .navbar-links li a {
     color: white;
     text-decoration: none;
+}
+.navbar-links li {
+    color: white;
     font-weight: bold;
     font-size: 18px;
 }
