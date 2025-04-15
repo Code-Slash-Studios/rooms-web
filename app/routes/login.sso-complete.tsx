@@ -8,13 +8,10 @@ export const action = async ({ request } : { request: Request }) => {
     const formData = await request.formData();
     console.log("FormData", formData)
     console.log("Request",request)
-    
-    // if (tokenResponse.status !== 200) {
-    //     console.error(tokenData);
-    //     console.error(tokenResponse.statusText);
-    //     throw new Response(`403: Error getting token ${tokenResponse.statusText}`, { status: 403 });
-    // }
-
+    //decode token_id
+    const encoded_token = formData.get("id_token") as string;
+    const token = JSON.parse(atob(encoded_token.split(".")[1]));
+    console.log("Token", token)
     // const session = await sessionStorage.getSession(request.headers.get("Cookie"));
     
     // session.set("user", {
