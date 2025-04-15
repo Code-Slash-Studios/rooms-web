@@ -6,34 +6,48 @@ import { useLoaderData } from "@remix-run/react";
 export const action = async ({ request } : { request: Request }) => {
     //get form data
     const formData = await request.formData();
-    console.log("FormData", formData)
-    console.log("Request",request)
+    //check for errors
+    const error = formData.get("error") as string;
+    if (error) {
+        console.log("Error", error);
+        return redirect("/login/error?e=" + error);
+    }
     //decode token_id
+    // see https://learn.microsoft.com/en-us/entra/identity-platform/id-token-claims-reference for refrence of fields
     const encoded_token = formData.get("id_token") as string;
     const token = JSON.parse(atob(encoded_token.split(".")[1]));
-    console.log("Token", token)
-    // const session = await sessionStorage.getSession(request.headers.get("Cookie"));
+    console.log("Login from", token.name, token.email, token.sub);
     
-    // session.set("user", {
-    //     openid: tokenData.openid,
-    //     profile: tokenData.profile,
-    //     email: tokenData.email,
-    //     accessToken: tokenData.access_token,
-    //     refreshToken: tokenData.refresh_token,
-    //     idToken: tokenData.id_token,
-    //     expiresAt: Date.now() + tokenData.expires_in * 1000,
-    // });
-    // console.log({
-    //     openid: tokenData.openid,
-    //     profile: tokenData.profile,
-    //     email: tokenData.email,
-    //     accessToken: tokenData.access_token,
-    //     refreshToken: tokenData.refresh_token,
-    //     idToken: tokenData.id_token,
-    //     expiresAt: Date.now() + tokenData.expires_in * 1000,
-    // })
-    return redirect("/")
-    //return redirect("/", {headers: {"Set-Cookie": await sessionStorage.commitSession(session)}});
+    if (token.nonce !== `CisRooms</>`) { //TODO make an algorithm for securing nonce
+        console.log("Nonce does not match");
+        return redirect("/login/error?e=nonce_mismatch;d=Nonce does not match;");
+    }
+
+    const session = await sessionStorage.getSession(request.headers.get("Cookie"));
+    
+    session.set("user", {
+        openid: token.oid,
+        first_name: token.name.split(", ")[0],
+        last_name: token.name.split(", ")[1],
+        name: token.name,
+        username: token.prefered_username,
+        email: token.email,
+        idToken: token,
+        authenticated: token.iat,
+        expiresAt: token.exp,
+    });
+    console.log({
+        openid: token.oid,
+        first_name: token.name.split(", ")[0],
+        last_name: token.name.split(", ")[1],
+        name: token.name,
+        username: token.prefered_username,
+        email: token.email,
+        idToken: token,
+        authenticated: token.iat,
+        expiresAt: token.exp,
+    })
+    return redirect("/", {headers: {"Set-Cookie": await sessionStorage.commitSession(session)}});
 }    
 
 export const loader = async ({ request } : { request: Request }) => {
