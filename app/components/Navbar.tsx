@@ -4,14 +4,14 @@ import "./Navbar.css";
 export const loader = async ({request}: ClientLoaderFunctionArgs) => {
     //load user from session
     const session = await sessionStorage.getSession(request.headers.get("Cookie"));
-    const user = session.get("user") || null;
-    return { user };
+    const user = session.get("user") || "";
+    return { "user": user };
 }
 
 export default function Navbar() {
     const { user } = useLoaderData<typeof loader>();
     let userData = {name: ""};
-    if (user) {
+    if (user !== "") {
         userData = JSON.parse(user);
     }
     return <nav className="navbar">
