@@ -9,11 +9,7 @@ import "./Navbar.css";
 // }
 
 export default function Navbar() {
-    const data = useLoaderData<any>();
-    let userData = {name: ""};
-    if (data?.user) {
-        userData = data.user;
-    }
+    const {user} = useLoaderData<any>();
     return <nav className="navbar">
         <div className="navbar-logo">
             <Link to="/"><img alt="CIS Rooms" src="/CISRooms.png"></img></Link>
@@ -21,7 +17,7 @@ export default function Navbar() {
         <ul className="navbar-links">
             <li key="rooms_link"><Link to="/">Rooms</Link></li>
             <li key="reservations_link"><Link to="/reservations">Reservations</Link></li>
-            {(data?.user && <li key="welcome">Welcome {userData.name}</li>) || (<li key="login_link"><Link to="/login/sso-out">Login</Link></li>)}
+            {(user && <li key="welcome">Welcome {user.first_name}!</li>) || (<li key="login_link"><Link to="/login/sso-out">Login</Link></li>)}
         </ul>
     </nav>
 }
