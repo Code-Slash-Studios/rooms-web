@@ -5,14 +5,14 @@ export const loader = async ({request}: ClientLoaderFunctionArgs) => {
     //load user from session
     const session = await sessionStorage.getSession(request.headers.get("Cookie"));
     const user = session.get("user") || "";
-    return { "user": user };
+    return { "user": user, "placeholder": "" };
 }
 
 export default function Navbar() {
-    const { user } = useLoaderData<any>();
+    const data = useLoaderData<typeof loader>();
     let userData = {name: ""};
-    if (user !== "") {
-        userData = JSON.parse(user);
+    if (data.user) {
+        userData = JSON.parse(data.user);
     }
     return <nav className="navbar">
         <div className="navbar-logo">
