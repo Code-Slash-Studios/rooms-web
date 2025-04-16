@@ -5,9 +5,13 @@ export let loginRequired = async (request:Request) => {
   const session = await sessionStorage.getSession(request.headers.get("Cookie"));
   const user = session.get("user");
   // Check if user is logged in and the token is not expired
-  if (!user || user.expiresAt < Date.now()) {
-    console.log("User not logged in or token expired", request.headers.get("x-forwarded-for") || "");
-    throw redirect("/login/sso-out");
+  if (user === undefined) {
+    console.log("User not logged in");
+    return redirect("/login/sso-out");
   }
-  return user;
+  if (user.expiresAt < Date.now()) {
+    console.log("Token expired");
+    return redirect("/login/error?e=token_expired&d=Token expired;");
+  }
+  return user || "";
 }
