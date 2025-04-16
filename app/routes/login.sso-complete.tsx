@@ -7,7 +7,7 @@ export const action = async ({ request } : { request: Request }) => {
     //get nonce from session
     console.log("~~Login Request~~")
     const session = await sessionStorage.getSession(request.headers.get("Cookie"));
-    console.log("Session", session);
+    console.log("Session", session.get("nonce"));
     const nonce = `CISRooms`
     if (!nonce) {
         console.log("Nonce not found in session");
@@ -22,9 +22,6 @@ export const action = async ({ request } : { request: Request }) => {
     if (error) {
         console.log("Error", error);
         return redirect("/login/error?e=" + error);
-    } else if (nonce2 !== nonce) {
-        console.log("Nonce does not match", formData.get("nonce"), nonce);
-        return redirect("/login/error?e=nonce_mismatch;d=Nonce does not match;");
     }
     //decode token_id
     // see https://learn.microsoft.com/en-us/entra/identity-platform/id-token-claims-reference for refrence of fields
