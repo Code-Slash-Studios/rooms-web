@@ -1,10 +1,34 @@
-import { useLoaderData } from "@remix-run/react";
+import { Form, useActionData, useLoaderData } from "@remix-run/react";
 import { ChangeEventHandler, FormEventHandler, useEffect, useState } from "react";
-import { getReservationById, createReservation } from "~/api/reservation";
-import { getRoom, getRooms } from "~/api/room";
+import { getReservationById, updateReservation } from "~/api/reservation";
+import { getRooms } from "~/api/room";
 import { Reservation } from "~/models/reservation";
-import { ReservationFormComp } from "~/components/Reservation";
 import { Room } from "~/models/room";
+import { LoaderFunctionArgs } from "@remix-run/node";
+import { toDatetimeLocal } from "~/utils/datetime";
+
+export const action = async ({request}: LoaderFunctionArgs) => {
+    //TODO once user is available, use userID instead of hardcoded "caldweln"
+    const formData = await request.formData();
+    const id: number = Number.parseInt(formData.get("id")?.toString() || "-1");
+    const title = formData.get("title")?.toString() || "";
+    const roomID = formData.get("room")?.toString() || "";
+    const start = new Date(formData.get("start-date") + "T" + formData.get("start-time"));
+    const duration: number = parseInt(formData.get("duration")?.toString() || "60");
+    const end = new Date(start.getTime() + (duration * 60 * 1000));
+    let save = new Reservation(id, title, roomID, "caldweln", start, end)
+    const isValid = save.isValid();
+    if (isValid.valid && id !== -1) {
+        return updateReservation(save).then((res) => {
+            return res;
+        });
+    } else {
+        if (id == -1) {
+            return "Invalid reservation data: ID is -1, form data tampered with?";
+        }
+        return "Invalid reservation data:" + isValid.message;
+    }
+}
 
 export const loader = async ({ params }:any) => {
     const rooms = await getRooms()
@@ -26,9 +50,9 @@ export const loader = async ({ params }:any) => {
 export default function EditReservation() {
     //displays a react component that allows the user to edit a reservation
     const {reservationData, getError, roomsData} = useLoaderData<typeof loader>();
-    
-    const [reservation, setReservation] = useState<Reservation>(Reservation.empty());
+    const response = useActionData<typeof action>();
     const [rooms, setRooms] = useState<Room[]>([]);
+    const [id, setId] = useState(-1);
     const [title, setTitle] = useState("");
     const [roomID, setRoomID] = useState("");
     const [start, setStart] = useState<Date>(new Date());
@@ -43,14 +67,14 @@ export default function EditReservation() {
         }
         if (reservationData != undefined) {
             const r = Reservation.fromJSON(reservationData);
-            setReservation(r);
+            setId(r.id);
             setTitle(r.name);
             setRoomID(r.roomID);
             setStart(r.start);
             setEnd(r.end);
             setDuration((r.end.getTime() - r.start.getTime()) / (60 * 1000));
         }
-    }, [reservationData, roomID, rooms]);
+    }, [reservationData, roomsData]);
 
     const handleChange: FormEventHandler<HTMLFormElement> = (event: any) => {
         const val = event.target.value;
@@ -88,25 +112,27 @@ export default function EditReservation() {
         setRoomID(event.target.value);
     }
 
-    const handleSubmit: FormEventHandler<HTMLFormElement> = (event: any) => {
-        event.preventDefault();
-        console.log(title, rooms.find((r) => r.id === roomID), start, end);
-        if (!reservationData) {
-            console.error("No reservation found");
-            return;
-        }
-        let save = new Reservation(reservation.id, title, roomID, "caldweln", start, end)
-        if (save.isValid()) {
-            createReservation(save).then((res) => {
-                alert(res)
-            });
-        }
-    }
-
     return (
         <div>
             <h1 key="title">Edit Reservation</h1>
-            <ReservationFormComp rooms={rooms} title={title} roomID={roomID} start={start} end={end} duration={duration} onSelect={handleSelect} onChange={handleChange} onSubmit={handleSubmit} />
+            <main>
+            {response != undefined ? <p className="Error">{response.id}</p> : <></>}
+            <h1 key="title">Create Reservation</h1>
+            <Form method="put" onChange={handleChange} className="reservationForm" onSubmit={(e) => {console.log(roomID)}}>
+                <input type="hidden" name="id" value={id}/>
+                <input title="title" name="title" type="text" defaultValue={title}/>
+                <select title="room" name="room" onChange={(e) => {handleSelect(e)}}>
+                    <option value={-1}>Select a room</option>
+                    {rooms.map((room) => (
+                        <option key={room.id} value={room.id} selected={roomID === room.id}>{room.name} ({room.department})</option>
+                    ))}
+                </select>
+                <input title="start-date" name="start-date" type="date" defaultValue={toDatetimeLocal(start).split("T")[0]}/>
+                <input title="start-time" name="start-time" type="time" defaultValue={toDatetimeLocal(start).split("T")[1]}/>
+                <input title="duration" name="duration" type="number" max={240} min={15} defaultValue={duration}/>
+                <button type="submit">Submit</button>
+            </Form>
+        </main>
         </div>
     );
 }

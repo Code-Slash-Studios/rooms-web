@@ -77,7 +77,7 @@ export async function updateReservation(reservation: Reservation) {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(reservation)
+            body: reservation.toJSON()
         }
     ).then((response) => {
         return response.json();

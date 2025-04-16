@@ -89,11 +89,13 @@ export default function CreateReservation() {
                 break;
         }
     }
+
+
     return (
         <main>
             {response != undefined ? <p className="Error">{response.id}</p> : <></>}
             <h1 key="title">Create Reservation</h1>
-            <Form method="post" onChange={handleChange} className="reservationForm" onSubmit={(e) => {console.log(roomID)}}>
+            <Form method="post" onChange={handleChange} className="reservationForm">
                 <input title="title" name="title" type="text" defaultValue={title}/>
                 <select title="room" name="room" onChange={(e) => {handleSelect(e)}}>
                     <option value={-1}>Select a room</option>
