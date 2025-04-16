@@ -1,4 +1,4 @@
-import { Form, useActionData, useLoaderData } from "@remix-run/react";
+import { ClientLoaderFunctionArgs, Form, useActionData, useLoaderData } from "@remix-run/react";
 import { ChangeEventHandler, FormEventHandler, useEffect, useState } from "react";
 import { getReservationById, updateReservation } from "~/api/reservation";
 import { getRooms } from "~/api/room";
@@ -6,6 +6,7 @@ import { Reservation } from "~/models/reservation";
 import { Room } from "~/models/room";
 import { LoaderFunctionArgs } from "@remix-run/node";
 import { toDatetimeLocal } from "~/utils/datetime";
+import { loginRequired } from "~/services/auth";
 
 export const action = async ({request}: LoaderFunctionArgs) => {
     //TODO once user is available, use userID instead of hardcoded "caldweln"
@@ -30,14 +31,19 @@ export const action = async ({request}: LoaderFunctionArgs) => {
     }
 }
 
-export const loader = async ({ params }:any) => {
+export const loader = async ({ params, request }: ClientLoaderFunctionArgs) => {
+    const id = params.id;
+    if (id === undefined) {
+        return {"reservationData": undefined, "getError": "No reservation found, invalid ID", "roomsData": []};
+    }
+    const user = await loginRequired(request);
     const rooms = await getRooms()
-    let data = await getReservationById(params.id).then((res) => {
-        if (res == undefined) {
-            console.error("No reservation found");
-            return {"reservationData": undefined, "getError": "No reservation found", "roomsData": rooms.map((r) => r.toJSON())};
+    const data = await getReservationById(id).then((res) => {
+        if (res === undefined) {
+            console.error("No reservation found with id", id);
+            return {"reservationData": undefined, "getError": "No reservation found with id" + id, "roomsData": rooms.map((r) => r.toJSON()),user: user};
         }
-        return {"reservationData": res.toJSON(), "getError": undefined, "roomsData": rooms.map((r) => r.toJSON())};
+        return {"reservationData": res.toJSON(), "getError": undefined, "roomsData": rooms.map((r) => r.toJSON()), user: user};
     });
     //Side note, the above code is a bit absurd.
     //Reservation is returned from Fetch as a JSON object, it is then converted into a Reservation in /api/reservation.ts

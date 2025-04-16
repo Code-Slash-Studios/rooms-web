@@ -28,8 +28,8 @@ export const action = async ({request}: LoaderFunctionArgs) => {
 }
 
 export const loader = async ({request}: LoaderFunctionArgs) => {
-    //const user = await loginRequired(request);
-    //console.log(user);
+    const user = await loginRequired(request);
+    console.log(user.oid, "create reservation loader");
     const roomData = await getRooms();
 
     return {roomData: roomData, getError: undefined};

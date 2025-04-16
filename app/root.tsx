@@ -13,6 +13,7 @@ export const loader = async ({ request }: { request: Request }) => {
     //load user from session
     const session = await sessionStorage.getSession(request.headers.get("Cookie"));
     const user = session.get("user") || "";
+    console.log("Path", request.url);
     return { "user": user };
 }
 

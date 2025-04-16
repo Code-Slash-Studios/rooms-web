@@ -16,7 +16,7 @@ export default function Navbar() {
         </div>
         <ul className="navbar-links">
             <li key="rooms_link"><Link to="/">Rooms</Link></li>
-            <li key="reservations_link"><Link to="/reservations">Reservations</Link></li>
+            {/* <li key="reservations_link"><Link to="/reservations">Reservations</Link></li> */}
             {(user && <li key="welcome">Welcome {user.first_name}!</li>) || (<li key="login_link"><Link to="/login/sso-out">Login</Link></li>)}
         </ul>
     </nav>
