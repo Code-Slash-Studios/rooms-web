@@ -7,11 +7,11 @@ export let loginRequired = async (request:Request) => {
   // Check if user is logged in and the token is not expired
   if (user === undefined) {
     console.log("User not logged in");
-    return redirect("/login/sso-out");
+    throw redirect("/login/sso-out");
   }
   if (user.expiresAt < Date.now()) {
     console.log("Token expired");
-    return redirect("/login/error?e=token_expired&d=Token expired;");
+    throw redirect("/login/error?e=token_expired&d=Token expired;");
   }
   return user || "";
 }
