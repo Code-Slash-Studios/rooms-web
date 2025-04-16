@@ -7,7 +7,6 @@ export const action = async ({ request } : { request: Request }) => {
     //get nonce from session
     console.log("~~Login Request~~")
     const session = await sessionStorage.getSession(request.headers.get("Cookie"));
-    console.log("Session", session.get("nonce"));
     const nonce = `CISRooms`
     if (!nonce) {
         console.log("Nonce not found in session");
@@ -15,7 +14,6 @@ export const action = async ({ request } : { request: Request }) => {
     }
     //get form data
     const formData = await request.formData();
-    const nonce2 = formData.get("nonce") as string;
     console.log(formData)
     //check for errors
     const error = formData.get("error") as string;
@@ -29,9 +27,9 @@ export const action = async ({ request } : { request: Request }) => {
     const token = JSON.parse(atob(encoded_token.split(".")[1]));
     console.log("Login from", token.name, token.email, token.sub);
     
-    if (token.nonce !== `CisRooms`) { //TODO make an algorithm for securing nonce
+    if (token.nonce !== "CISRooms") { //TODO make an algorithm for securing nonce
         console.log("Nonce does not match");
-        return redirect("/login/error?e=nonce_mismatch;d=Nonce does not match;");
+        return redirect("/login/error?e=nonce_mismatch&d=Nonce does not match;");
     }
     
     session.set("user", {
