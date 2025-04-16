@@ -6,7 +6,7 @@ import { useLoaderData } from "@remix-run/react";
 export const action = async ({ request } : { request: Request }) => {
     //get nonce from session
     const session = await sessionStorage.getSession(request.headers.get("Cookie"));
-    const nonce = session.get("nonce") || null;
+    const nonce = `CISRooms`
     if (!nonce) {
         console.log("Nonce not found in session");
         return redirect("/login/error?e=nonce_not_found;d=Nonce not found in session;");

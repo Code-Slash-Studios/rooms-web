@@ -14,7 +14,7 @@ export const loader: ClientLoaderFunction = async ({request}) => {
         redirect_uri: process.env.REDIRECT_URI!,
         scope: "openid profile email",
         response_mode: "form_post",
-        nonce: nonce,// SHOULD BE CHECKED ?? NOT CHECKED FOR TESTING PURPOSES
+        nonce: "CISRooms",// SHOULD BE CHECKED ?? NOT CHECKED FOR TESTING PURPOSES
     })
     //unset user from session
     const session = await sessionStorage.getSession(request.headers.get("Cookie"));
