@@ -14,7 +14,6 @@ export const loader = async ({ request }: { request: Request }) => {
     const session = await sessionStorage.getSession(request.headers.get("Cookie"));
     const user = session.get("user") || "";
     if (process.env.NODE_ENV === "development" && process.env.LOCAL_ADMIN === "1") {
-      console.log("Development mode, local admin enabled");
       return {"user":{
         id: "1",
         firstName: "Local",
