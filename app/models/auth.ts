@@ -18,7 +18,7 @@ export class User {
     expiresAt: number;
 
     constructor(user: SessionUser) {
-        this.id = user.openid;
+        this.id = user.id;
         this.name = user.profile;
         this.email = user.email;
         this.accessToken = user.accessToken;

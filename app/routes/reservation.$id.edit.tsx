@@ -10,6 +10,7 @@ import { loginRequired } from "~/services/auth";
 
 export const action = async ({request}: LoaderFunctionArgs) => {
     //TODO once user is available, use userID instead of hardcoded "caldweln"
+    const user = await loginRequired(request);
     const formData = await request.formData();
     const id: number = Number.parseInt(formData.get("id")?.toString() || "-1");
     const title = formData.get("title")?.toString() || "";
@@ -17,7 +18,7 @@ export const action = async ({request}: LoaderFunctionArgs) => {
     const start = new Date(formData.get("start-date") + "T" + formData.get("start-time"));
     const duration: number = parseInt(formData.get("duration")?.toString() || "60");
     const end = new Date(start.getTime() + (duration * 60 * 1000));
-    let save = new Reservation(id, title, roomID, "caldweln", start, end)
+    let save = new Reservation(id, title, roomID, user.id, start, end)
     const isValid = save.isValid();
     if (isValid.valid && id !== -1) {
         return updateReservation(save).then((res) => {
@@ -34,16 +35,18 @@ export const action = async ({request}: LoaderFunctionArgs) => {
 export const loader = async ({ params, request }: ClientLoaderFunctionArgs) => {
     const id = params.id;
     if (id === undefined) {
-        return {"reservationData": undefined, "getError": "No reservation found, invalid ID", "roomsData": []};
+        throw new Response("Reservation ID not found", {status: 404});
     }
     const user = await loginRequired(request);
     const rooms = await getRooms()
     const data = await getReservationById(id).then((res) => {
         if (res === undefined) {
-            console.error("No reservation found with id", id);
-            return {"reservationData": undefined, "getError": "No reservation found with id" + id, "roomsData": rooms.map((r) => r.toJSON()),user: user};
+            throw new Response("Reservation not found", {status: 404});
         }
-        return {"reservationData": res.toJSON(), "getError": undefined, "roomsData": rooms.map((r) => r.toJSON()), user: user};
+        if (res.userID !== user.id) { //TODO add admin access
+            throw new Response("You do not have permission to edit this reservation", {status: 403});
+        }
+        return {"reservationData": res.toJSON(), "getError": undefined, "roomsData": rooms.map((r) => r.toJSON()), "userData": user};
     });
     //Side note, the above code is a bit absurd.
     //Reservation is returned from Fetch as a JSON object, it is then converted into a Reservation in /api/reservation.ts
@@ -55,7 +58,7 @@ export const loader = async ({ params, request }: ClientLoaderFunctionArgs) => {
 
 export default function EditReservation() {
     //displays a react component that allows the user to edit a reservation
-    const {reservationData, getError, roomsData} = useLoaderData<typeof loader>();
+    const {reservationData, getError, roomsData, userData} = useLoaderData<typeof loader>();
     const response = useActionData<typeof action>();
     const [rooms, setRooms] = useState<Room[]>([]);
     const [id, setId] = useState(-1);

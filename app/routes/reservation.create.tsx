@@ -9,14 +9,14 @@ import { LoaderFunctionArgs } from "@remix-run/node";
 import { toDatetimeLocal } from "~/utils/datetime";
 
 export const action = async ({request}: LoaderFunctionArgs) => {
-    //TODO once user is available, use userID instead of hardcoded "caldweln"
+    const user = await loginRequired(request);
     const formData = await request.formData();
     const title = formData.get("title")?.toString() || "";
     const roomID = formData.get("room")?.toString() || "";
     const start = new Date(formData.get("start-date") + "T" + formData.get("start-time"));
     const duration: number = parseInt(formData.get("duration")?.toString() || "60");
     const end = new Date(start.getTime() + (duration * 60 * 1000));
-    let save = new Reservation(-1, title, roomID, "caldweln", start, end)
+    let save = new Reservation(-1, title, roomID, user.id, start, end)
     const isValid = save.isValid();
     if (isValid.valid) {
         return createReservation(save).then((res) => {
@@ -96,6 +96,7 @@ export default function CreateReservation() {
             {response != undefined ? <p className="Error">{response.id}</p> : <></>}
             <h1 key="title">Create Reservation</h1>
             <Form method="post" onChange={handleChange} className="reservationForm">
+                <input type="hidden" value=""></input>
                 <input title="title" name="title" type="text" defaultValue={title}/>
                 <select title="room" name="room" onChange={(e) => {handleSelect(e)}}>
                     <option value={-1}>Select a room</option>

@@ -5,17 +5,18 @@ import { useEffect, useState } from 'react';
 import { loginRequired } from '~/services/auth';
 
 export const loader = async ({request}: ClientLoaderFunctionArgs) => {
+    const user = await loginRequired(request);
     return getAllReservations().then((res) => {
         if (res == undefined) {
             console.error("No reservations found");
-            return {"reservations": undefined, "getError": "No reservations found"};
+            return {"getError": "No reservations found", "user": user};
         }
         if (res.length == 0) {
             console.error("No reservations found");
-            return {"reservations": undefined, "getError": "No reservations found"};
+            return {"getError": "No reservations found", "user": user};
         }
         console.log("Fetched Reservation Index",res);
-        return {"reservationData": res.map((r) => r.toJSON()), "getError": undefined};
+        return {"reservationData": res.map((r) => r.toJSON()), "user": user};
     });
 };
 

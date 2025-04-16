@@ -10,7 +10,7 @@ import { loginRequired } from "~/services/auth";
 export const loader: LoaderFunction = async ({ request }) => {
     // get user from cookie or show 403
     const user = await loginRequired(request);
-    const reservations = await getReservationsByUserId(user.openid);
+    const reservations = await getReservationsByUserId(user.id);
     return {user, reservationData: reservations.map((reservation) => reservation.toJSON())};
 };
 

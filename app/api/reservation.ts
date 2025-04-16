@@ -124,6 +124,23 @@ export async function getReservationsByRoomId(room_id: string) {
     return reservations
 }
 
+export async function getNextReservationByRoomId(room_id: string) {
+    //this path does not exist on the api so return getReservations filtered for next reservation
+    return getReservationsByRoomId(room_id).then((reservations) => {
+        const now = new Date();
+        const nextReservation = reservations.filter((reservation) => {
+            return (reservation.start < now && now < reservation.end) || reservation.start > now;
+        }
+        ).sort((a, b) => {
+            return a.start.getTime() - b.start.getTime();
+        }
+        )[0];
+        return nextReservation;
+    }).catch((error) => {
+        console.error(error); return undefined
+    });
+}
+
 export async function getReservationsByUserId(user_id: string) {
     const reservations: Reservation[] | [] = await fetch(
         `${process.env.API_URL!}/reservations/user/${user_id}`,
