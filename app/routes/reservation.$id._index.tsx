@@ -1,4 +1,5 @@
-import { ClientLoaderFunctionArgs, Link, useLoaderData } from "@remix-run/react";
+import { LoaderFunction, LoaderFunctionArgs } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
 import { useEffect, useState } from "react";
 import { getReservationById } from "~/api/reservation";
 import { getRoom } from "~/api/room";
@@ -10,7 +11,7 @@ import { loginRequired } from "~/services/auth";
 //this view is just for looking at details about one reservation
 //it should have a button to edit the reservation
 
-export const loader = async ({ params, request }: ClientLoaderFunctionArgs) => {
+export const loader: LoaderFunction = async ({ params, request }: LoaderFunctionArgs) => {
     //get the reservation with the id params.id
     const user = await loginRequired(request);
     const res = await getReservationById(params.id || "-1");
