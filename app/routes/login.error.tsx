@@ -1,4 +1,4 @@
-import { ClientLoaderFunctionArgs, useLoaderData } from "@remix-run/react";
+import { ClientLoaderFunctionArgs, Link, useLoaderData } from "@remix-run/react";
 
 
 export const loader = async ({ request }: ClientLoaderFunctionArgs) => {
@@ -15,7 +15,7 @@ export default function LoginError() {
             <h1>Login Error</h1>
             {error && <p>Error: {error}</p>}
             {errorMessage && <p>Message: {errorMessage}</p>}
-            <p>Please try again.</p>
+            <p><Link to="/login/sso-out">Please try again.</Link></p>
             <p>If the problem persists, please contact support.</p>
             <a href="/">Back to Home</a>
         </div>
