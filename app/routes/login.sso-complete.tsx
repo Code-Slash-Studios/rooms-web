@@ -34,8 +34,8 @@ export const action = async ({ request } : { request: Request }) => {
     
     session.set("user", {
         id: token.oid,
-        first_name: token.name.split(", ")[1],
-        last_name: token.name.split(", ")[0],
+        firstName: token.name.split(", ")[1],
+        lastName: token.name.split(", ")[0],
         name: token.name,
         username: token.prefered_username,
         email: token.email,
@@ -45,8 +45,8 @@ export const action = async ({ request } : { request: Request }) => {
     });
     console.log({
         id: token.oid,
-        first_name: token.name.split(", ")[1],
-        last_name: token.name.split(", ")[0],
+        firstName: token.name.split(", ")[1],
+        lastName: token.name.split(", ")[0],
         name: token.name,
         username: token.prefered_username,
         email: token.email,

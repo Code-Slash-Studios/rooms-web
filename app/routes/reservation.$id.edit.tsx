@@ -11,8 +11,14 @@ import { loginRequired } from "~/services/auth";
 export const action = async ({request}: LoaderFunctionArgs) => {
     //TODO once user is available, use userID instead of hardcoded "caldweln"
     const user = await loginRequired(request);
+    if (user === undefined) {
+        throw new Response("User not logged in", {status: 401});
+    }
     const formData = await request.formData();
     const id: number = Number.parseInt(formData.get("id")?.toString() || "-1");
+    if (id !== user.id && !user.isAdmin) {
+        throw new Response("You do not have permission to edit this reservation", {status: 403});
+    }
     const title = formData.get("title")?.toString() || "";
     const roomID = formData.get("room")?.toString() || "";
     const start = new Date(formData.get("start-date") + "T" + formData.get("start-time"));
@@ -43,7 +49,7 @@ export const loader = async ({ params, request }: ClientLoaderFunctionArgs) => {
         if (res === undefined) {
             throw new Response("Reservation not found", {status: 404});
         }
-        if (res.userID !== user.id) { //TODO add admin access
+        if (res.userID !== user.id && !user.isAdmin) {
             throw new Response("You do not have permission to edit this reservation", {status: 403});
         }
         return {"reservationData": res.toJSON(), "getError": undefined, "roomsData": rooms.map((r) => r.toJSON()), "userData": user};
@@ -122,11 +128,9 @@ export default function EditReservation() {
     }
 
     return (
-        <div>
-            <h1 key="title">Edit Reservation</h1>
             <main>
             {response != undefined ? <p className="Error">{response.id}</p> : <></>}
-            <h1 key="title">Create Reservation</h1>
+            <h1 key="title">Edit Reservation</h1>
             <Form method="put" onChange={handleChange} className="reservationForm" onSubmit={(e) => {console.log(roomID)}}>
                 <input type="hidden" name="id" value={id}/>
                 <input title="title" name="title" type="text" defaultValue={title}/>
@@ -142,6 +146,5 @@ export default function EditReservation() {
                 <button type="submit">Submit</button>
             </Form>
         </main>
-        </div>
     );
 }
