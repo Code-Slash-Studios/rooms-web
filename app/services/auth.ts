@@ -20,7 +20,7 @@ export let loginRequired = async (request:Request) => {
       token: {
 
       }
-  }
+  }}
   
   if (user === undefined) {
     console.log("User not logged in");
