@@ -14,6 +14,7 @@ export const action = async ({ request } : { request: Request }) => {
     //get form data
     const formData = await request.formData();
     const nonce2 = formData.get("nonce") as string;
+    console.log(formData)
     //check for errors
     const error = formData.get("error") as string;
     if (error) {
