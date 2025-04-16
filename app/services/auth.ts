@@ -10,6 +10,7 @@ export let loginRequired = async (request:Request) => {
     throw redirect("/login/sso-out");
   }
   if (user.expiresAt < Date.now()) {
+    console.log(user, user.expiresAt, Date.now())
     console.log("Token expired");
     throw redirect("/login/error?e=token_expired&d=Token expired;");
   }
