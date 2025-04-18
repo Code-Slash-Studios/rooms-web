@@ -2,17 +2,13 @@ import { ClientLoaderFunctionArgs, useLoaderData } from "@remix-run/react";
 import { useEffect, useState } from "react";
 import { getReservationsByRoomId } from "~/api/reservation";
 import { getRoom } from "~/api/room";
-import { SessionUser } from "~/models/auth";
 import { Reservation } from "~/models/reservation";
 import { Room } from "~/models/room";
 import { loginRequired } from "~/services/auth";
-import { sessionStorage } from "~/services/session";
 
 
 export const loader = async ({ params, request }: ClientLoaderFunctionArgs) => {
-    const session = await sessionStorage.getSession(request.headers.get("Cookie"));
-    const user = session.get("user"); 
-    console.log(user)
+    const user = await loginRequired(request);
     const roomID = params.rid
     if (!roomID) {
         throw new Response("Room ID not found", {status: 404});
@@ -31,7 +27,6 @@ export default function ScheduleRoom() {
     const {roomData, reservationsData} = useLoaderData<typeof loader>();
 
     const [room, setRoom] = useState<Room | undefined>(undefined);
-    const [user, setUser] = useState<SessionUser | undefined>(undefined);
     const [reservations, setReservations] = useState<Reservation[]>([]);
 
     const currentDate = new Date();

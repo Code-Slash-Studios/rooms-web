@@ -1,11 +1,11 @@
 import { useLoaderData } from "@remix-run/react";
 import { useEffect, useState } from "react";
+import { getNextReservationByRoomId } from "~/api/reservation";
 import { getRooms } from "~/api/room";
 import { Room } from "~/models/room";
 
 export const loader = async () => {
     const roomData = await getRooms();
-    console.log(roomData)
     return {roomsData: roomData.map((r) => r.toJSON()), getError: undefined};
 }
 

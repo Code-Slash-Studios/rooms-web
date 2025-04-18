@@ -1,72 +1,78 @@
 import { redirect } from "@remix-run/node";
 import { sessionStorage } from "~/services/session";
+import { useEffect } from "react";
+import { useLoaderData } from "@remix-run/react";
 
 export const action = async ({ request } : { request: Request }) => {
-    let url = new URL(request.url);
-    let code = url.searchParams.get("code");
-    console.log(url)
-    if (!code) {
-        throw new Response("Missing Authorization code", { status: 403 });
-    }
-    const tokenParams = new URLSearchParams({
-        client_id: process.env.CLIENT_ID!,
-        scope: "openid profile email",
-        code: code,
-        redirect_uri: "http://cisrooms.stvincent.edu/login/sso-complete",
-        grant_type: "authorization_code",
-        client_secret: process.env.CLIENT_SECRET!,
-    })
-
-    let tokenResponse = await fetch(
-        `https://login.microsoftonline.com/${process.env.TENANT_ID!}/oauth2/v2.0/token`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-            },
-            body: tokenParams.toString(),
-        }
-    )
-    //https://learn.microsoft.com/en-us/windows/windows-app-sdk/api/winrt/microsoft.security.authentication.oauth.tokenresponse?view=windows-app-sdk-1.7
-    let tokenData = await tokenResponse.json();
-    
-    if (tokenResponse.status !== 200) {
-        console.error(tokenData);
-        console.error(tokenResponse.statusText);
-        throw new Response(`403: Error getting token ${tokenResponse.statusText}`, { status: 403 });
-    }
-
+    //get nonce from session
+    console.log("~~Login Request~~")
     const session = await sessionStorage.getSession(request.headers.get("Cookie"));
+    const nonce = `CISRooms`
+    if (!nonce) {
+        console.log("Nonce not found in session");
+        return redirect("/login/error?e=nonce_not_found;d=Nonce not found in session;");
+    }
+    //get form data
+    const formData = await request.formData();
+    console.log(formData)
+    //check for errors
+    const error = formData.get("error") as string;
+    if (error) {
+        console.log("Error", error);
+        return redirect("/login/error?e=" + error);
+    }
+    //decode token_id
+    // see https://learn.microsoft.com/en-us/entra/identity-platform/id-token-claims-reference for refrence of fields
+    const encoded_token = formData.get("id_token") as string;
+    const token = JSON.parse(atob(encoded_token.split(".")[1]));
+    console.log("Login from", token.name, token.email, token.sub);
+    
+    if (token.nonce !== "CISRooms") { //TODO make an algorithm for securing nonce
+        console.log("Nonce does not match");
+        return redirect("/login/error?e=nonce_mismatch&d=Nonce does not match;");
+    }
     
     session.set("user", {
-        openid: tokenData.openid,
-        profile: tokenData.profile,
-        email: tokenData.email,
-        accessToken: tokenData.access_token,
-        refreshToken: tokenData.refresh_token,
-        idToken: tokenData.id_token,
-        expiresAt: Date.now() + tokenData.expires_in * 1000,
+        id: token.oid,
+        firstName: token.name.split(", ")[1],
+        lastName: token.name.split(", ")[0],
+        name: token.name,
+        username: token.prefered_username,
+        email: token.email,
+        idToken: token,
+        authenticated: token.iat,
+        expiresAt: token.exp,
     });
     console.log({
-        openid: tokenData.openid,
-        profile: tokenData.profile,
-        email: tokenData.email,
-        accessToken: tokenData.access_token,
-        refreshToken: tokenData.refresh_token,
-        idToken: tokenData.id_token,
-        expiresAt: Date.now() + tokenData.expires_in * 1000,
+        id: token.oid,
+        firstName: token.name.split(", ")[1],
+        lastName: token.name.split(", ")[0],
+        name: token.name,
+        username: token.prefered_username,
+        email: token.email,
+        idToken: token,
+        authenticated: token.iat,
+        expiresAt: token.exp,
     })
     return redirect("/", {headers: {"Set-Cookie": await sessionStorage.commitSession(session)}});
-}
+}    
 
 export const loader = async ({ request } : { request: Request }) => {
     const session = await sessionStorage.getSession(request.headers.get("Cookie"));
-    const user = session.get("user");
-    if (user) {
-        return redirect("/");
-    }
-    return {user}
+    const user = session.get("user") || null;
+    console.log("User", user);
+    return { user };
 }
 
-export function SSOComplete() {
+export default function SSOComplete() {
+    const {user} = useLoaderData<typeof loader>();
+    useEffect(() => {
+        if (user) {
+            console.log("User already logged in", user);
+            redirect("/");
+        } else {
+            console.log("User not logged in", user);
+        }
+    }, )
     return <p>Processing authentication... (If you are seeing this, something has probably gone wrong :)</p>
 }

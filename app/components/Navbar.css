@@ -11,6 +11,10 @@ nav {
     box-sizing: border-box;
 }
 
+.navbar-logo img {
+    height: 40px;
+}
+
 .navbar-links {
     list-style-type: none;
     margin-top: 10px;
@@ -24,6 +28,9 @@ nav {
 .navbar-links li a {
     color: white;
     text-decoration: none;
+}
+.navbar-links li {
+    color: white;
     font-weight: bold;
     font-size: 18px;
 }

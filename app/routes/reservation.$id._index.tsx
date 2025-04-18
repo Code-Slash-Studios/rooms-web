@@ -1,28 +1,31 @@
-import { Link, useLoaderData } from "@remix-run/react";
+import { LoaderFunction, LoaderFunctionArgs } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
 import { useEffect, useState } from "react";
 import { getReservationById } from "~/api/reservation";
 import { getRoom } from "~/api/room";
 import { Reservation } from "~/models/reservation";
 import { Room } from "~/models/room";
+import { loginRequired } from "~/services/auth";
 
 
 //this view is just for looking at details about one reservation
 //it should have a button to edit the reservation
 
-export const loader = async ({ params }:any) => {
+export const loader: LoaderFunction = async ({ params, request }: LoaderFunctionArgs) => {
     //get the reservation with the id params.id
-    const res = await getReservationById(params.id);
+    const user = await loginRequired(request);
+    const res = await getReservationById(params.id || "-1");
     if (res == undefined) {
         console.error("No reservation found");
-        return {"reservationID": undefined, "getError": "No reservation found"};
+        return {"reservationID": undefined, "getError": "No reservation found", user:user};
     }
     const room = await getRoom(res.roomID);
     if (room == undefined) {
         console.error("Invalid Room");
-        return {"reservationID": undefined, "getError": "Invalid Room"};
+        return {"reservationID": undefined, "getError": "Invalid Room",user:user};
     }
 
-    return {"reservationID": params.id, "reservationData": res.toJSON(), "roomData": room.toJSON(), "getError": undefined};
+    return {"reservationID": params.id, "reservationData": res.toJSON(), "roomData": room.toJSON(), user:user};
   };
 
 export default function reservationDetail() {
