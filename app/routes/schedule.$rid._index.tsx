@@ -2,9 +2,11 @@ import { ClientLoaderFunctionArgs, useLoaderData } from "@remix-run/react";
 import { useEffect, useState } from "react";
 import { getReservationsByRoomId } from "~/api/reservation";
 import { getRoom } from "~/api/room";
+import { CalendarDay } from "~/components/calendarDay";
 import { Reservation } from "~/models/reservation";
 import { Room } from "~/models/room";
 import { loginRequired } from "~/services/auth";
+import { sameDay } from "~/utils/datetime";
 
 
 export const loader = async ({ params, request }: ClientLoaderFunctionArgs) => {
@@ -38,11 +40,15 @@ export default function ScheduleRoom() {
     const endOfSelected = new Date(selectedDate.getTime());
     endOfSelected.setHours(23,59,59,999);
     const [startOfWeek, setWeekStart] = useState(new Date(selectedDate.getTime() - selectedDate.getDay() * MILLIS_IN_DAY));
+    let count = 0;
     let currentWeek = Array.from({length: 7}, (v, i) => {
         const date = new Date(startOfWeek.getTime() + i * MILLIS_IN_DAY);
-        return {"past":date.getTime() < currentDate.getTime(),"date":date}
+        const localReservations = reservations.filter((r) => sameDay(date, r.start))
+        count += localReservations.length;
+        return {"past":date.getTime() < currentDate.getTime(),"date":date, "rs": localReservations}
     });
-    let endOfWeek = new Date(startOfWeek.getTime() + 6 * MILLIS_IN_DAY);
+    const noReservations = count === 0;
+    const endOfWeek = new Date(startOfWeek.getTime() + 6 * MILLIS_IN_DAY);
     const inThePast = endOfWeek < currentDate;
     const isEndOfMonth = startOfWeek.getMonth() != endOfWeek.getMonth();
     const isEndOfYear = startOfWeek.getFullYear() != endOfWeek.getFullYear();
@@ -91,18 +97,19 @@ export default function ScheduleRoom() {
                 <div className="calendar">
                     <div className={"calendar-header " + (inThePast? "past" : "")}>
                         <button className="prev" onClick={e => backWeek()}>&#x276E;</button>
-                        <span id="calendar-week">Week of {startOfWeek.toLocaleDateString("en-US", {"month":"long","day":"numeric", "year":isEndOfYear?"numeric":undefined})} - {endOfWeek.toLocaleDateString("en-US", {"month":isEndOfMonth? "long" : undefined,"day":"numeric","year":isEndOfYear? "numeric" : undefined})} 
+                        <span id="calendar-week">Week of {startOfWeek.toLocaleDateString("en-US", {timeZone:"America/New_York","month":"long","day":"numeric", "year":isEndOfYear?"numeric":undefined})} - {endOfWeek.toLocaleDateString("en-US", {"month":isEndOfMonth? "long" : undefined,"day":"numeric","year":isEndOfYear? "numeric" : undefined})} 
                         </span>
                         <button className="next" onClick={e => nextWeek()}>&#x276F;</button>
                     </div>
                     <div className="calendar-grid" id="calendar-days">
-                        {currentWeek.map(({past, date}) => {
-                            return <div className={"calendar-day " + (past? "past" : "")} data-date={date.toISOString()} onClick={e => selectDate(date)}>{date.toLocaleDateString("en-US",{month:"short", day:"2-digit"})}</div>
-                        })}
+                        {currentWeek.map(({past, date, rs}) => 
+                            <CalendarDay date={date} reservations={rs} past={past} selected={sameDay(selectedDate, date)} triggerSelect={selectDate} blank={noReservations}></CalendarDay>
+                        )}
+                        {noReservations && <div className="calendar-empty-ms">No Reservations Yet</div>}
                     </div>
                 </div>
             <div className="time-slots-container">
-                <h3>Selected: {selectedDate.toLocaleDateString("en-US", {"timeZone":"EST", "month":"short","day":"numeric","year":isEndOfYear? "numeric" : undefined})}</h3>
+                <h3>Selected: {selectedDate.toLocaleDateString("en-US", {"timeZone":"America/New_York", "month":"short","day":"numeric","year":isEndOfYear? "numeric" : undefined})}</h3>
                 <h4>Available Time Slots:</h4>
                 <div id="time-slots">
 
@@ -112,7 +119,7 @@ export default function ScheduleRoom() {
                     {reservations.filter((r) => r.start < endOfSelected && r.end > startOfSelected).map((r) => {
                         return <div className="reservation" key={r.id}>
                             <p>{r.name}</p>
-                            <p>{r.start.toLocaleTimeString("en-US", {hour: "2-digit", minute: "2-digit"})} - {r.end.toLocaleTimeString("en-US", {hour: "2-digit", minute: "2-digit",})}</p>
+                            <p>{r.start.toLocaleTimeString("en-US", {timeZone:"America/New_York",hour: "2-digit", minute: "2-digit"})} - {r.end.toLocaleTimeString("en-US", {hour: "2-digit", minute: "2-digit",})}</p>
                         </div>
                     })}
                 </div>
