@@ -321,3 +321,19 @@ button {
 button:hover {
     background-color: #5A94D1;
 }
+button.delete {
+    background-color: rgb(220, 66, 66);
+    padding: 4px;
+    width: 30px;
+    height: 30px;
+    margin:3px;
+    font-size: 1em;
+}
+button.edit {
+    background-color: #fcdf64;
+    padding: 4px;
+    width: 30px;
+    height: 30px;
+    margin:3px;
+    font-size: 1em;
+}
