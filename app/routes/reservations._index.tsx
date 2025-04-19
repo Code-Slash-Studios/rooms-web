@@ -64,7 +64,7 @@ export default function ReservationIndex() {
         return <p>{getError}</p>;
     }
 
-    const handeDelete = (r: Reservation) => {
+    const handleDelete = (r: Reservation) => {
         let cnf = confirm(`Are you sure you want to delete the ${r.name} reservation?`)
         console.log(cnf)
         if (cnf)
@@ -77,7 +77,7 @@ export default function ReservationIndex() {
             {reservations.map((r) => 
                 <li key={r.id}>
                     <h2>{r.name}</h2>
-                    {(r.userID === user.openID || user.isAdmin) && <span className='button-tray'><Link to={`/reservation/${r.id}/edit`}><button className='edit'>&#9998;</button></Link><button className='delete' onClick={(e)=>handeDelete(r)}>X</button></span>}
+                    {(r.userID === user.openID || user.isAdmin) && <span className='button-tray'><Link to={`/reservation/${r.id}/edit`}><button className='edit'>&#9998;</button></Link><button className='delete' onClick={(e)=>handleDelete(r)}>X</button></span>}
                     <p>Room: {r.roomID}</p>
                     <p>User: {r.userID}</p>
                     <p>Start: {r.start.toLocaleString()}</p>
