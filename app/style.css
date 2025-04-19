@@ -121,9 +121,13 @@ header h1, header p {
     color: #ccc;
 }
 
-.calendar-day:hover, .calendar-day.selected, .calendar-day.past.selected {
+.calendar-day:hover {
     background: #4F81BC;
     color: white;
+}
+.calendar-day.selected, .calendar-day.selected:hover {
+    background: #fcdf64;
+    color: black;
 }
 
 .calendar-day-col .period {
