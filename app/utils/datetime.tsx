@@ -1,3 +1,10 @@
+export function startOfDay(date?: Date) {
+    if (date === undefined) {
+        date = new Date();
+    }
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0)
+}
+
 export function toDatetimeLocal(date: Date) {
     const pad = (num: number) => num.toString().padStart(2, '0');
     if (date == undefined) {

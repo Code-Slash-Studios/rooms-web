@@ -6,7 +6,11 @@ export let loginRequired = async (request:Request) => {
   const user = session.get("user");
   // Check if user is logged in and the token is not expired
   if (process.env.NODE_ENV === "development" && process.env.LOCAL_ADMIN === "1") {
-    console.log("Development mode, local admin enabled");
+    if (!process.env.dev_notify){
+      console.log("Development mode, local admin enabled");
+    }
+    process.env["dev_notify"] = "1"
+    
     return {
       id: "1",
       firstName: "Local",
