@@ -1,6 +1,7 @@
+import { ActionFunctionArgs } from "@remix-run/node";
 import { ClientLoaderFunctionArgs, useLoaderData } from "@remix-run/react";
 import { useEffect, useState } from "react";
-import { getReservationsByRoomId } from "~/api/reservation";
+import { createReservation, getReservationsByRoomId } from "~/api/reservation";
 import { getRoom } from "~/api/room";
 import { CalendarDay } from "~/components/calendarDay";
 import { Reservation } from "~/models/reservation";
@@ -8,6 +9,24 @@ import { Room } from "~/models/room";
 import { loginRequired } from "~/services/auth";
 import { sameDay } from "~/utils/datetime";
 
+export const action = async ({request}: ActionFunctionArgs) => {
+    const user = await loginRequired(request);
+    const formData = await request.formData();
+    const title = formData.get("title")?.toString() || "";
+    const roomID = formData.get("room")?.toString() || "";
+    const start = new Date(formData.get("start-date") + "T" + formData.get("start-time"));
+    const duration: number = parseInt(formData.get("duration")?.toString() || "60");
+    const end = new Date(start.getTime() + (duration * 60 * 1000));
+    let save = new Reservation(-1, title, roomID, user.id, start, end)
+    const isValid = save.isValid();
+    if (isValid.valid) {
+        return createReservation(save).then((res) => {
+            return res;
+        });
+    } else {
+        return "Invalid reservation data:" + isValid.message;
+    }
+}
 
 export const loader = async ({ params, request }: ClientLoaderFunctionArgs) => {
     const user = await loginRequired(request);
@@ -50,6 +69,7 @@ export default function ScheduleRoom() {
     const noReservations = count === 0;
     const endOfWeek = new Date(startOfWeek.getTime() + 6 * MILLIS_IN_DAY);
     const inThePast = endOfWeek < currentDate;
+    const isSelectedPast = selectedDate < currentDate;
     const isEndOfMonth = startOfWeek.getMonth() != endOfWeek.getMonth();
     const isEndOfYear = startOfWeek.getFullYear() != endOfWeek.getFullYear();
 
@@ -114,14 +134,24 @@ export default function ScheduleRoom() {
                 <div id="time-slots">
 
                 </div>
-                <h4>Current Reservations:</h4>
-                <div id="reservations">
-                    {reservations.filter((r) => r.start < endOfSelected && r.end > startOfSelected).map((r) => {
-                        return <div className="reservation" key={r.id}>
-                            <p>{r.name}</p>
-                            <p>{r.start.toLocaleTimeString("en-US", {timeZone:"America/New_York",hour: "2-digit", minute: "2-digit"})} - {r.end.toLocaleTimeString("en-US", {hour: "2-digit", minute: "2-digit",})}</p>
+                <div className="time-slots-container">
+                    <form>
+                        <h4>Available Time Slots:</h4>
+                        <div id="time-slots">
+                            <select title="time" id="time-selector">
+                                <option value="08:00">8:00 AM</option>
+                                <option value="08:15">8:15 AM</option>
+                                <option value="10:15">10:15 AM</option>
+                            </select>
+                        
+                            <div id="duration-container">
+                                <button className="time-slot">+15 min</button>
+                                <button className="time-slot">+30 min</button>
+                                <button className="time-slot">+45 min</button>
+                                <button className="time-slot">+60 min</button>
+                            </div>
                         </div>
-                    })}
+                    </form>
                 </div>
             </div>
         </div>

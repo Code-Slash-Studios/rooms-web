@@ -19,9 +19,9 @@ interface BlankPeriod {
 const scale = 360000/2;
 
 export const CalendarDay = ({date, reservations, blank, past, selected, triggerSelect: trigger}: CalendarDayProps) => {
-    //make full day list with reservations slotted in appropiately
-    date.setHours(0,0,0,0)
-    const DAY_END = new Date(date.getTime() + 86400000)
+    //make full day of periods with reservations slotted in appropiately
+    date.setHours(8,0,0,0)
+    const DAY_END = new Date(date.getTime() + 57600000) //add 16 hours
     let cursor = date
     let periods: (Reservation | BlankPeriod)[] = []
     reservations.forEach((r)=>{
@@ -51,11 +51,12 @@ export const CalendarDay = ({date, reservations, blank, past, selected, triggerS
         <div className="calendar-reservations">
             {!blank && periods.map((p) =>{
                 if (p.isEmpty())
-                    return <div className="period-blank" title={genTime(p.start) + "-" + genTime(p.end)} style={{height: (p.end.getTime() - p.start.getTime())/scale*2}}>
+                    return <div className="period blank" title={genTime(p.start) + "-" + genTime(p.end)} style={{height: (p.end.getTime() - p.start.getTime())/scale}}>
                         
                     </div>
                 else
                     return <div className="period" title={genTime(p.start) + "-" + genTime(p.end)} style={{height: (p.end.getTime() - p.start.getTime())/scale}}>
+                    
                     </div>
             })}
         </div>
