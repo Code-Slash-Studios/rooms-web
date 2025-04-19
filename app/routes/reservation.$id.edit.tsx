@@ -27,7 +27,7 @@ export const action = async ({request}: LoaderFunctionArgs) => {
     let save = new Reservation(id, title, roomID, user.id, start, end)
     const isValid = save.isValid();
     if (isValid.valid && id !== -1) {
-        return updateReservation(save).then((res) => {
+        return updateReservation(save, request).then((res) => {
             return res;
         });
     } else {
@@ -45,7 +45,7 @@ export const loader = async ({ params, request }: ClientLoaderFunctionArgs) => {
     }
     const user = await loginRequired(request);
     const rooms = await getRooms()
-    const data = await getReservationById(id).then((res) => {
+    const data = await getReservationById(id, request).then((res) => {
         if (res === undefined) {
             throw new Response("Reservation not found", {status: 404});
         }

@@ -10,7 +10,7 @@ import { Reservation } from "~/models/reservation";
  * "/reservations/user/{user_id}" # GET reservations by user id, all reservations made by a user
  */
 
-export async function getAllReservations() {
+export async function getAllReservations(request: Request) {
     const reservations: Reservation[] | [] = await fetch(
         `${process.env.API_URL!}/reservations`,
         {
@@ -30,7 +30,8 @@ export async function getAllReservations() {
     return reservations
 }
 
-export async function getReservationById(id: string): Promise<Reservation | undefined> {
+export async function getReservationById(id: string, actor?: any): Promise<Reservation | undefined> {
+    
     const reservation: Reservation | undefined = await fetch(
         `${process.env.API_URL!}/reservations/${id}`,
         {
@@ -50,7 +51,8 @@ export async function getReservationById(id: string): Promise<Reservation | unde
     return reservation
 }
 
-export async function createReservation(reservation: Reservation) {
+export async function createReservation(reservation: Reservation, actor?: any) {
+    
     const resp: any | undefined = await fetch(
         `${process.env.API_URL!}/reservations`,
         {
@@ -69,7 +71,12 @@ export async function createReservation(reservation: Reservation) {
     return resp
 }
 
-export async function updateReservation(reservation: Reservation) {
+export async function updateReservation(reservation: Reservation, actor?: any) {
+    if (actor !== undefined) {
+        if (actor.openID !== reservation.userID && !actor.isAdmin) {
+            return new Response(JSON.stringify({error: "permission denied"}),{status: 403})
+        }   
+    }
     const resp: any | undefined = await fetch(
         `${process.env.API_URL!}/reservations/${reservation.id}`,
         {
@@ -87,9 +94,14 @@ export async function updateReservation(reservation: Reservation) {
     return resp
 }
 
-export async function deleteReservation(id: string) {
+export async function deleteReservation(reservation: Reservation, actor?: any) {
+    if (actor !== undefined) {
+        if (actor.openID !== reservation.userID && !actor.isAdmin) {
+            return new Response("PermissionDenied",{status: 403})
+        }   
+    }
     const resp: any | undefined = await fetch(
-        `${process.env.API_URL!}/reservations/${id}`,
+        `${process.env.API_URL!}/reservations/${reservation.id}`,
         {
             method: "DELETE",
             headers: {
@@ -104,7 +116,7 @@ export async function deleteReservation(id: string) {
     return resp
 }
 
-export async function getReservationsByRoomId(room_id: string) {
+export async function getReservationsByRoomId(room_id: string, actor?: any) {
     const reservations: Reservation[] | [] = await fetch(
         `${process.env.API_URL!}/reservations/room/${room_id}`,
         {
@@ -124,9 +136,9 @@ export async function getReservationsByRoomId(room_id: string) {
     return reservations
 }
 
-export async function getNextReservationByRoomId(room_id: string) {
+export async function getNextReservationByRoomId(room_id: string, actor?: any) {
     //this path does not exist on the api so return getReservations filtered for next reservation
-    return getReservationsByRoomId(room_id).then((reservations) => {
+    return getReservationsByRoomId(room_id, actor).then((reservations) => {
         const now = new Date();
         const nextReservation = reservations.filter((reservation) => {
             return (reservation.start < now && now < reservation.end) || reservation.start > now;
