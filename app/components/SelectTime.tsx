@@ -36,7 +36,6 @@ export function SelectTime({ date, reservations, setTime }: SelectTimeProps) {
     // Refs for infinite scroll
     const hoursRef = useRef<HTMLDivElement>(null);
     const minutesRef = useRef<HTMLDivElement>(null);
-    const ampmRef = useRef<HTMLDivElement>(null);
 
     // Recompute openAM/openPM whenever reservations change
     useEffect(() => {
@@ -45,6 +44,59 @@ export function SelectTime({ date, reservations, setTime }: SelectTimeProps) {
         setOpenAM(all.filter((p) => genHour(p.start) < 12 && genHour(p.start) > 0));
         setOpenPM(all.filter((p) => genHour(p.start) >= 12));
     }, [date, reservations]);
+    useLayoutEffect(() => {
+        if (!dropped) return;
+        /**
+         * Centers the `selected` element (from the *unique* values array) 
+         * in the middle copy of a triple‑rendered list.
+         */
+        const frame = requestAnimationFrame(() => { function centerOn<T>(
+          ref: React.RefObject<HTMLDivElement>,
+          values: T[],              // the ORIGINAL array, e.g. [0,1,2,3…11] or ['00','15'…]
+          selected: T | undefined
+        ) {
+            const node = ref.current;
+            if (!node) return;
+        
+            // grab one item to measure
+            const itemEl = node.querySelector('button');
+            if (!itemEl) return;
+            const itemH = itemEl.clientHeight + 5;
+            const containerH = node.clientHeight;
+            const len = values.length;
+        
+            // find the index INSIDE the unique array
+            const selIdx = selected != null 
+                ? values.findIndex(v => v === selected) 
+                : -1;
+        
+            // if nothing selected, just go to the top of the middle copy
+            const idx = selIdx >= 0 ? selIdx : 0;
+        
+            // scrollTop so that (middle‑copy + idx)·itemH + itemH/2  ==  containerH/2
+            const targetScroll =
+                (len + idx) * itemH      // jump into 2nd copy + idx items
+                + itemH / 2              // go to the *middle* of that item
+                - containerH / 2;        // bring it up to the container’s center
+        
+            node.scrollTop = targetScroll;
+            }
+        
+            // HOURS — map your Period[] → number[]
+            centerOn(
+            hoursRef,
+            hoursList.map(p => genHour(p.start)),
+            hour
+            );
+        
+            // MINUTES — you already have the unique minuteList: string[]
+            centerOn(minutesRef, minuteList, minute);
+        });
+
+        return () => {
+            cancelAnimationFrame(frame);
+        };
+      }, [dropped, PM, hour, minute, hoursList, minuteList]);
 
     // close popover on outside click
     useEffect(() => {
@@ -83,6 +135,18 @@ export function SelectTime({ date, reservations, setTime }: SelectTimeProps) {
             node.scrollTop -= full;
         }
     };
+    const handleSetPM = (pm: boolean) => {
+        const h = hour? hour : 12
+        if (pm) {
+            setPM(true)
+            setHour(h);
+        } else {
+            setPM(false)
+            if (h >= 12 + 8) {
+                setHour(h - 12)
+            }
+        }
+    }
 
     return (
         <div className={`time-picker${dropped ? " open" : ""}`}>
@@ -145,7 +209,7 @@ export function SelectTime({ date, reservations, setTime }: SelectTimeProps) {
                             <button
                                 key={`amp-${label}-${idx}`}
                                 className={PM === (label === "PM") ? "selected" : ""}
-                                onClick={() => setPM(label === "PM")}
+                                onClick={() => handleSetPM(label === "PM")}
                                 type="button"
                             >
                                 {label}

@@ -138,15 +138,10 @@ export default function ScheduleRoom() {
                 </div>
                 <div className="time-slots-container">
                     <h3>Selected: {selectedDate.toLocaleDateString("en-US", {"timeZone":"America/New_York", "month":"short","day":"numeric","year":isEndOfYear? "numeric" : undefined})}</h3>
-                    <SelectTime date={selectedDate} reservations={selectedReservations} setTime={()=>null} ></SelectTime>
                     <form>
                         <h4>Available Time Slots:</h4>
                         <div id="time-slots">
-                            <select title="time" id="time-selector">
-                                <option value="08:00">8:00 AM</option>
-                                <option value="08:15">8:15 AM</option>
-                                <option value="10:15">10:15 AM</option>
-                            </select>
+                            <SelectTime date={selectedDate} reservations={selectedReservations} setTime={()=>null} ></SelectTime>
                         
                             <div id="duration-container">
                                 <button className="time-slot" type="button">+15 min</button>
