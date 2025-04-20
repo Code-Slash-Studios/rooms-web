@@ -44,8 +44,8 @@ export const FullDay = (date: Date, filled: (Period | Reservation)[], periodLeng
     })
 
     if (cursor < DAY_END) {
-        while (diffMinutes(cursor, DAY_END) >= DEFAULT_PERIOD) {
-            const nextCursor = addMinutes(cursor, DEFAULT_PERIOD);
+        while (diffMinutes(cursor, DAY_END) >= periodLength) {
+            const nextCursor = addMinutes(cursor, periodLength);
             periods.push(new Period(cursor, nextCursor));
             cursor = nextCursor;
         }
@@ -53,7 +53,7 @@ export const FullDay = (date: Date, filled: (Period | Reservation)[], periodLeng
     }
     return periods
 }
-export const FullDayOpen = (date: Date, filled: (Period | Reservation)[], periodLength=DEFAULT_PERIOD) => {
+export const FullDayOpen = (date: Date, filled: (Period | Reservation)[], periodLength:number=DEFAULT_PERIOD) => {
     //make full day of periods with reservations slotted in appropiately
     let periods: Period[] = []
 
@@ -74,8 +74,8 @@ export const FullDayOpen = (date: Date, filled: (Period | Reservation)[], period
     })
 
     if (cursor < DAY_END) {
-        while (diffMinutes(cursor, DAY_END) >= DEFAULT_PERIOD) {
-            const nextCursor = addMinutes(cursor, DEFAULT_PERIOD);
+        while (diffMinutes(cursor, DAY_END) >= periodLength) {
+            const nextCursor = addMinutes(cursor, periodLength);
             periods.push(new Period(cursor, nextCursor));
             cursor = nextCursor;
         }
