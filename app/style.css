@@ -63,6 +63,7 @@ header h1, header p {
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
 }
 
+
 .calendar-empty-ms {
     grid-column-start:1;
     grid-column-end:8;
@@ -96,14 +97,25 @@ header h1, header p {
 
 .calendar-grid {
     display: grid;
-    padding: 2px 0px;
+    padding: 2px 0;
+    width: 100%;
     gap: 2px;
     font-size: smaller;
     grid-template-columns: repeat(7, 1fr);
+    resize:vertical;
+    overflow-y: auto;
+    min-height:fit-content;
+    /* scrollbar-width: none; */
+}
+.calendar-grid-col {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
 }
 
 .calendar-day {
-    width: 50px;
+    display:flex;
+    justify-content: center;
     padding: 10px;
     background: #7fcfd3;
     border-radius: 5px;
@@ -130,12 +142,16 @@ header h1, header p {
     color: black;
 }
 
+.calendar-reservations {
+    height:100%;
+    min-height: 300px;
+}
 
-.calendar-day-col .period {
+.calendar-reservations .period {
     background-color: #fcdf64;
     border-radius: 3px;
 }
-.calendar-day-col .period.blank {
+.calendar-reservations .period.blank {
     background-color: #eee;
 }
 

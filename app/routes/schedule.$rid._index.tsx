@@ -3,7 +3,8 @@ import { ClientLoaderFunctionArgs, useLoaderData } from "@remix-run/react";
 import { useEffect, useState } from "react";
 import { createReservation, getReservationsByRoomId } from "~/api/reservation";
 import { getRoom } from "~/api/room";
-import { CalendarDay } from "~/components/calendarDay";
+import { CalendarDay, CalendarDayHeader } from "~/components/calendarDay";
+import { SelectTime } from "~/components/SelectTime";
 import { Reservation } from "~/models/reservation";
 import { Room } from "~/models/room";
 import { loginRequired } from "~/services/auth";
@@ -53,25 +54,30 @@ export default function ScheduleRoom() {
     const currentDate = new Date();
     currentDate.setHours(0,0,0,0);
     const [selectedDate, setSelectedDate] = useState(new Date());
+    let selectedReservations: Reservation[] = []
     // selectedDate.setHours(0,0,0,0);
     const startOfSelected = new Date(selectedDate.getTime());
     startOfSelected.setHours(0,0,0,0);
     const endOfSelected = new Date(selectedDate.getTime());
     endOfSelected.setHours(23,59,59,999);
+    
     const [startOfWeek, setWeekStart] = useState(new Date(selectedDate.getTime() - selectedDate.getDay() * MILLIS_IN_DAY));
     let count = 0;
     let currentWeek = Array.from({length: 7}, (v, i) => {
         const date = new Date(startOfWeek.getTime() + i * MILLIS_IN_DAY);
         const localReservations = reservations.filter((r) => sameDay(date, r.start))
+        if (i === selectedDate.getDay()) {
+            selectedReservations = localReservations
+        }
         count += localReservations.length;
         return {"past":date.getTime() < currentDate.getTime(),"date":date, "rs": localReservations}
     });
-    const noReservations = count === 0;
     const endOfWeek = new Date(startOfWeek.getTime() + 6 * MILLIS_IN_DAY);
     const inThePast = endOfWeek < currentDate;
-    const isSelectedPast = selectedDate < currentDate;
     const isEndOfMonth = startOfWeek.getMonth() != endOfWeek.getMonth();
     const isEndOfYear = startOfWeek.getFullYear() != endOfWeek.getFullYear();
+
+    const [duration, setDuration] = useState(60)
 
     useEffect(() => {
         // set room data to the state
@@ -122,19 +128,17 @@ export default function ScheduleRoom() {
                         <button className="next" onClick={e => nextWeek()}>&#x276F;</button>
                     </div>
                     <div className="calendar-grid" id="calendar-days">
-                        {currentWeek.map(({past, date, rs}) => 
-                            <CalendarDay date={date} reservations={rs} past={past} selected={sameDay(selectedDate, date)} triggerSelect={selectDate} blank={noReservations}></CalendarDay>
+                        {currentWeek.map(({past, date, rs}) =>
+                            <div className="calendar-grid-col" key={date.toLocaleDateString()}>
+                                <CalendarDayHeader date={date} past={past} selected={sameDay(date, selectedDate)} trigger={selectDate}></CalendarDayHeader>
+                                <CalendarDay date={date} reservations={rs}></CalendarDay>
+                            </div>
                         )}
-                        {noReservations && <div className="calendar-empty-ms">No Reservations Yet</div>}
                     </div>
                 </div>
-            <div className="time-slots-container">
-                <h3>Selected: {selectedDate.toLocaleDateString("en-US", {"timeZone":"America/New_York", "month":"short","day":"numeric","year":isEndOfYear? "numeric" : undefined})}</h3>
-                <h4>Available Time Slots:</h4>
-                <div id="time-slots">
-
-                </div>
                 <div className="time-slots-container">
+                    <h3>Selected: {selectedDate.toLocaleDateString("en-US", {"timeZone":"America/New_York", "month":"short","day":"numeric","year":isEndOfYear? "numeric" : undefined})}</h3>
+                    <SelectTime date={selectedDate} reservations={selectedReservations} setTime={()=>null} ></SelectTime>
                     <form>
                         <h4>Available Time Slots:</h4>
                         <div id="time-slots">
@@ -145,16 +149,15 @@ export default function ScheduleRoom() {
                             </select>
                         
                             <div id="duration-container">
-                                <button className="time-slot">+15 min</button>
-                                <button className="time-slot">+30 min</button>
-                                <button className="time-slot">+45 min</button>
-                                <button className="time-slot">+60 min</button>
+                                <button className="time-slot" type="button">+15 min</button>
+                                <button className="time-slot" type="button">+30 min</button>
+                                <button className="time-slot" type="button">+45 min</button>
+                                <button className="time-slot" type="button">+60 min</button>
                             </div>
                         </div>
                     </form>
                 </div>
             </div>
-        </div>
         </div>
     </main>
 }
