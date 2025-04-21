@@ -195,7 +195,7 @@ export default function ScheduleRoom() {
                     
                         <div id="duration-container">
                             {[15, 30, 45, 60].map(((v)=>
-                                <button className={"duratation" + (duration === v)? " selected":""} key={v} type="button" onClick={(e) => setDuration(v)}>+{v} min</button>
+                                <button className={(duration === v)? "duration selected" : "duration"} key={v} type="button" onClick={(e) => setDuration(v)}>+{v} min</button>
                             ))}
                         </div>
                     </div>
