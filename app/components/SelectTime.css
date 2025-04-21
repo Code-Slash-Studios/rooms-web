@@ -17,7 +17,7 @@
 
 .time-picker__popover {
   position: absolute;
-  top: calc(100% + 4px);
+  bottom: calc(100% + 4px);
   left: 0;
   display: none;
   background: #fff;

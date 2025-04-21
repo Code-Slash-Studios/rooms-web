@@ -1,22 +1,23 @@
 import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { Period, FullDayOpen } from "~/models/period";
 import { Reservation } from "~/models/reservation";
-import { genHour, genTime, shiftTime, startOfDay } from "~/utils/datetime";
+import { genHour, genTime, shiftTime, startOfDay, Time } from "~/utils/datetime";
 import "./SelectTime.css";
 
 interface SelectTimeProps {
     date: Date;
     reservations: Reservation[];
-    setTime: (time: Date) => void;
+    setTime: (time: Time) => void;
 }
 
 export function SelectTime({ date, reservations, setTime }: SelectTimeProps) {
     const [PM, setPM] = useState(true);
+    const [minuteList, setMinList] = useState<string[]>(["00", "15", "30", "45"]);
     const [periods, setPeriods] = useState<Period[]>([]);
     const [openAM, setOpenAM] = useState<Period[]>([]);
     const [openPM, setOpenPM] = useState<Period[]>([]);
     const [dropped, setDropped] = useState(false);
-    const [hour, setHour] = useState<number | undefined>(undefined);
+    const [hour, setHour] = useState<number>(12);
     const [minute, setMinute] = useState("00");
 
     const selectedTime = hour
@@ -24,25 +25,45 @@ export function SelectTime({ date, reservations, setTime }: SelectTimeProps) {
         : undefined;
 
     // Build lists
+    let notFound = 0;
     const hoursList = (PM ? openPM : openAM).filter(
-        (p) => p.start.getMinutes() === 0
+        (p) => {
+            const c = p.start.getMinutes() === notFound*15 || p.start.getMinutes() === 0;
+            if (c) {
+                notFound = 0;
+                return true;
+            } else if (notFound < 3) {
+                notFound = (notFound + 1)%4;
+                return false;
+            } else { //got to +45 minutes without finding a valid hour.
+                notFound = 0;
+                return false;
+            }
+        }
     );
-    const minuteList = hour
-        ? periods
-            .filter((p) => genHour(p.start) === hour)
-            .map((p) => p.start.toTimeString().split(":")[1])
-        : ["00", "15", "30", "45"];
-
+    notFound = 1;
+    const setHourUpdateMinList = (hour: number) => {
+        setHour(hour);
+        setMinList(
+            (PM? openPM : openAM).filter((p) => 
+                p.start.getHours() === hour
+        ).map((p) => p.start.getMinutes().toString().padStart(2, "0")));
+    }
+    
     // Refs for infinite scroll
     const hoursRef = useRef<HTMLDivElement>(null);
     const minutesRef = useRef<HTMLDivElement>(null);
-
+    
     // Recompute openAM/openPM whenever reservations change
     useEffect(() => {
         const all = FullDayOpen(date, reservations, 15);
         setPeriods(all);
         setOpenAM(all.filter((p) => genHour(p.start) < 12 && genHour(p.start) > 0));
         setOpenPM(all.filter((p) => genHour(p.start) >= 12));
+        setMinList(
+            (PM? openPM : openAM).filter((p) => 
+                p.start.getHours() === hour
+        ).map((p) => p.start.getMinutes().toString().padStart(2, "0")));
     }, [date, reservations]);
     useLayoutEffect(() => {
         if (!dropped) return;
@@ -139,11 +160,11 @@ export function SelectTime({ date, reservations, setTime }: SelectTimeProps) {
         const h = hour? hour : 12
         if (pm) {
             setPM(true)
-            setHour(h);
+            setHourUpdateMinList(h);
         } else {
             setPM(false)
             if (h >= 12 + 8) {
-                setHour(h - 12)
+                setHourUpdateMinList(h - 12)
             }
         }
     }
@@ -173,7 +194,7 @@ export function SelectTime({ date, reservations, setTime }: SelectTimeProps) {
                                 <button
                                     key={`h-${val}-${idx}`}
                                     className={hour === val ? "selected" : ""}
-                                    onClick={() => setHour(val)}
+                                    onClick={() => setHourUpdateMinList(val)}
                                     type="button"
                                 >
                                     {val === 12 ? 12 : val % 12}
@@ -187,9 +208,9 @@ export function SelectTime({ date, reservations, setTime }: SelectTimeProps) {
                     <div
                         className="time-picker__list"
                         ref={minutesRef}
-                        onScroll={(e) => infiniteScroll(e, minuteList.length)}
+                        onScroll={minuteList.length !== 0?(e) => infiniteScroll(e, minuteList.length) : undefined}
                     >
-                        {[...minuteList, ...minuteList, ...minuteList].map((m, idx) => (
+                        {(minuteList.length === 3 ? [...minuteList, ...minuteList, ...minuteList] : minuteList).map((m, idx) => (
                             <button
                                 key={`m-${m}-${idx}`}
                                 className={minute === m ? "selected" : ""}

@@ -2,6 +2,10 @@ export const MIN_MILLI = 60000
 export const HOUR_MILLI = MIN_MILLI * 60
 export const DAY_MILLI = HOUR_MILLI * 24
 
+export interface Time { //24hr format
+    hour: number
+    minute: number
+}
 
 export function startOfDay(date?: Date) {
     if (date === undefined) {

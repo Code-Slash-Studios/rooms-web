@@ -2,11 +2,11 @@ import { addMinutes, diffMinutes, HOUR_MILLI, MIN_MILLI, shiftTime } from "~/uti
 import { Reservation } from "./reservation"
 
 const DEFAULT_PERIOD = 60
-
 export class Period {
     start: Date
     end: Date
     name: string = ""
+    id: number = -1
     isEmpty: () => true = () => true //used to distiguish between periods and reservations
     constructor(start: Date, end: Date, name?: string) {
         this.start = start;
@@ -32,7 +32,7 @@ export const FullDay = (date: Date, filled: (Period | Reservation)[], periodLeng
     filled.forEach((r)=>{
         //gap before this reservation
         if (r.start > cursor) {
-            while (diffMinutes(r.start, cursor) >= periodLength) {
+            while (diffMinutes(r.start, cursor) > periodLength) {
                 const nextCursor = addMinutes(cursor, periodLength);
                 periods.push(new Period(cursor, nextCursor));
                 cursor = nextCursor;
@@ -44,7 +44,7 @@ export const FullDay = (date: Date, filled: (Period | Reservation)[], periodLeng
     })
 
     if (cursor < DAY_END) {
-        while (diffMinutes(cursor, DAY_END) >= periodLength) {
+        while (diffMinutes(cursor, DAY_END) > periodLength) {
             const nextCursor = addMinutes(cursor, periodLength);
             periods.push(new Period(cursor, nextCursor));
             cursor = nextCursor;
