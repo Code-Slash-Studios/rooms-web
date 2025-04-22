@@ -100,7 +100,7 @@ export function SelectTime({ date, time, reservations, setTime }: SelectTimeProp
             // grab one item to measure
             const itemEl = node.querySelector('button');
             if (!itemEl) return;
-            const itemH = itemEl.clientHeight + 5;
+            const itemH = itemEl.clientHeight + 5; // +5 for margin/border
             const containerH = node.clientHeight;
             const len = values.length;
         
@@ -128,7 +128,7 @@ export function SelectTime({ date, time, reservations, setTime }: SelectTimeProp
             hour
             );
         
-            // MINUTES — you already have the unique minuteList: string[]
+            // MINUTES — minuteList: string[]
             centerOn(minutesRef, minuteList, minute);
         });
 
@@ -226,7 +226,7 @@ export function SelectTime({ date, time, reservations, setTime }: SelectTimeProp
                     <div
                         className="time-picker__list"
                         ref={minutesRef}
-                        onScroll={minuteList.length > 2?(e) => infiniteScroll(e, minuteList.length) : undefined}
+                        onScroll={(e) => minuteList.length > 2  && infiniteScroll(e, minuteList.length)}
                     >
                         {(minuteList.length > 2 ? [...minuteList, ...minuteList, ...minuteList] : minuteList).map((m, idx) => (
                             <button

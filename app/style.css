@@ -150,25 +150,31 @@ header h1, header p {
     height:100%;
     min-height: 300px;
 }
-
 .calendar-reservations .period {
     background-color: #fcdf64;
     border-radius: 3px;
-}
-.calendar-reservations .period {
     color: black;
     font-size: 10px;
     text-decoration: none;
-    
+    overflow:hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 .calendar-reservations .period a {
     height: 12px;
     padding: 3px 5px;
     box-sizing: content-box;
+    overflow:hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
-.calendar-reservations .period.blank {
+.calendar-reservations .period.blank, .past .calendar-reservations .period.blank {
     background-color: #eee;
 }
+.past .calendar-reservations .period {
+    background-color: #ddd;
+}
+
 
 .duration-container {
     display: flex;

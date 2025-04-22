@@ -65,7 +65,7 @@ export const FullDayOpen = (date: Date, filled: (Period | Reservation)[], period
     filled.forEach((r)=>{
         //gap before this reservation
         if (r.start > cursor) {
-            while (diffMinutes(r.start, cursor) >= periodLength) {
+            while (diffMinutes(r.start, cursor) > periodLength) {
                 const remainder = cursor.getMinutes() % periodLength;
             const nextCursor = addMinutes(cursor, periodLength - remainder);
                 periods.push(new Period(cursor, nextCursor));
@@ -77,7 +77,7 @@ export const FullDayOpen = (date: Date, filled: (Period | Reservation)[], period
     })
 
     if (cursor < DAY_END) {
-        while (diffMinutes(cursor, DAY_END) >= periodLength) {
+        while (diffMinutes(cursor, DAY_END) > periodLength) {
             const remainder = cursor.getMinutes() % periodLength;
             const nextCursor = addMinutes(cursor, periodLength - remainder);
             periods.push(new Period(cursor, nextCursor));

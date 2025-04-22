@@ -64,6 +64,7 @@ export default function reservationDetail() {
         <h2>{reservation.name}</h2>
         {(reservation.userID === user.id || user.isAdmin) && <span className='button-tray'><Link to={`/reservation/${reservation.id}/edit`}><button className='edit'>&#9998;</button></Link><button className='delete' type='button' onClick={(e)=>handleDelete(reservation)}>Del</button></span>}
         <p>Room: {room.name}</p>
+        <p>Title: {reservation.name}</p>
         <p>User: {reservation.userID}</p>
         <p>Start: {reservation.start.toLocaleString()}</p>
         <p>End: {reservation.end.toLocaleString()}</p>
