@@ -29,10 +29,10 @@ export const CalendarDay = ({date, reservations, setDateTime}: CalendarDayProps)
     return <div key={key +".reservations"} className="calendar-reservations">
             {periods.map((p) =>{
                 if (p.isEmpty())
-                    return <div className="period blank" onClick={(e) => setDateTime(p.start)} key={"blank" + "." + key + "." + genTime(p.start, false)} title={genTime(p.start) + "-" + genTime(p.end)} style={{height: `${percentOfDay(p.start, p.end)}%`}}>
-                    <Link to={`/reservation/create?t=${p.start.toISOString()}`} className="fill">
+                    return <div className="period blank" key={"blank" + "." + key + "." + genTime(p.start, false)} title={genTime(p.start) + "-" + genTime(p.end)} style={{height: `${percentOfDay(p.start, p.end)}%`}}>
+                    <a onClick={(e) => setDateTime(p.start)} className="fill">
                         {p.start.getDay() === 0 && genTime(p.start)}
-                    </Link>
+                    </a>
                     </div>
                 else
                     return <div className="period" key={key + "." + genTime(p.start, false)} title={p.name + " " + genTime(p.start) + "-" + genTime(p.end)} style={{height: `${percentOfDay(p.start, p.end)}%`}}>
