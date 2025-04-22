@@ -14,8 +14,10 @@ export const action = async ({request}: LoaderFunctionArgs) => {
         throw new Response("User not logged in", {status: 401});
     }
     const formData = await request.formData();
+    const userID: number = Number.parseInt(formData.get("userID")?.toString() || "-1");
     const id: number = Number.parseInt(formData.get("id")?.toString() || "-1");
-    if (id !== user.id && !user.isAdmin) {
+    
+    if (userID !== user.id && !user.isAdmin) {
         throw new Response("You do not have permission to edit this reservation", {status: 403});
     }
     const title = formData.get("title")?.toString() || "";
@@ -64,6 +66,7 @@ export default function EditReservation() {
     const response = useActionData<typeof action>();
     const [rooms, setRooms] = useState<Room[]>([]);
     const [id, setId] = useState(-1);
+    const [userID, setUserID] = useState(userData.id);
     const [title, setTitle] = useState("");
     const [roomID, setRoomID] = useState("");
     const [start, setStart] = useState<Date>(new Date());
@@ -80,6 +83,7 @@ export default function EditReservation() {
             const r = Reservation.fromJSON(reservationData);
             setId(r.id);
             setTitle(r.name);
+            setUserID(r.userID);
             setRoomID(r.roomID);
             setStart(r.start);
             setEnd(r.end);
@@ -129,6 +133,7 @@ export default function EditReservation() {
             <h1 key="title">Edit Reservation</h1>
             <Form method="put" onChange={handleChange} className="reservationForm" onSubmit={(e) => {console.log(roomID)}}>
                 <input type="hidden" name="id" value={id}/>
+                <input type="hidden" name="userID" value={userID}></input>
                 <input title="title" name="title" type="text" defaultValue={title}/>
                 <select title="room" name="room" onChange={(e) => {handleSelect(e)}}>
                     <option value={-1}>Select a room</option>
