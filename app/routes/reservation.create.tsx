@@ -45,12 +45,22 @@ export default function CreateReservation() {
     //displays a react component that allows the user to edit a reservation
     const {roomData, initDate} = useLoaderData<typeof loader>();
     const response = useActionData<typeof action>();
+    const [responseData, setResponseData] = useState<any>(undefined);
     const [rooms, setRooms] = useState<Room[]>([]);
     const [title, setTitle] = useState("");
     const [roomID, setRoomID] = useState<string>("-1");
     const [start, setStart] = useState<Date>(new Date(initDate));
     const [end, setEnd] = useState<Date>(new Date(new Date().getTime() + (60 * 1000)));
     const [duration, setDuration] = useState(60); //in minutes
+
+    useEffect(() => {
+        if (response !== undefined) {
+            setResponseData(response);
+            if (response.message !== undefined) {
+                alert(response.message);
+            }
+        }
+    }, [response])
 
     useEffect(() => {
         if (roomData != undefined) {
