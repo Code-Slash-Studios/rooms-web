@@ -102,7 +102,6 @@ header h1, header p {
     display: grid;
     padding: 2px 0;
     width: 100%;
-    gap: 2px;
     font-size: smaller;
     grid-template-columns: repeat(7, 1fr);
     resize:vertical;
@@ -122,10 +121,16 @@ header h1, header p {
     justify-content: center;
     padding: 10px;
     background: #7fcfd3;
-    border-radius: 5px;
     cursor: pointer;
     transition: 0.3s;
     text-align: center;
+    border-radius: inherit;
+}
+.calendar-grid-col:first-child {
+    border-radius: 5px 0 0 0;
+}
+.calendar-grid-col:last-child {
+    border-radius: 0 5px 0 0;
 }
 
 .calendar-day.past {
@@ -148,11 +153,13 @@ header h1, header p {
 
 .calendar-reservations {
     height:100%;
-    min-height: 300px;
+    min-height: 400px;
 }
 .calendar-reservations .period {
+    box-sizing: border-box;
+    border-bottom: #ddd 1px solid;
+    border-right: #ddd 1px solid;
     background-color: #fcdf64;
-    border-radius: 3px;
     color: black;
     font-size: 10px;
     text-decoration: none;
@@ -161,8 +168,9 @@ header h1, header p {
     white-space: nowrap;
 }
 .calendar-reservations .period a {
-    height: 12px;
-    padding: 3px 5px;
+    padding-left: 3px;
+    padding-top: 5px;
+    padding-bottom: 2px;
     box-sizing: content-box;
     overflow:hidden;
     text-overflow: ellipsis;

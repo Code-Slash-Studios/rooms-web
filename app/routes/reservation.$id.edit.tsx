@@ -27,7 +27,7 @@ export const action = async ({request}: LoaderFunctionArgs) => {
     const isValid = save.isValid();
     if (isValid.valid && id !== -1) {
         return updateReservation(save, user).then((res) => {
-            return res;
+            return {message: "Reservation updated successfully: #" + res.id + " " + res.name};
         });
     } else {
         return {message: "Invalid reservation data:" + isValid.message};
@@ -125,7 +125,7 @@ export default function EditReservation() {
 
     return (
             <main>
-            {response != undefined ? <p className="Error">{response.id}</p> : <></>}
+            {response != undefined ? <p key="responseSpace">{response.message}</p> : <></>}
             <h1 key="title">Edit Reservation</h1>
             <Form method="put" onChange={handleChange} className="reservationForm" onSubmit={(e) => {console.log(roomID)}}>
                 <input type="hidden" name="id" value={id}/>
