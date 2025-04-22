@@ -79,7 +79,7 @@ export class Reservation {
             id: this.id,
             room_id: this.roomID,
             name: this.name,
-            user_id: "caldweln",
+            user_id: this.userID,
             start: this.start.toISOString(),
             end: this.end.toISOString()
         });
