@@ -114,6 +114,15 @@ header h1, header p {
     display: flex;
     flex-direction: column;
     width: 100%;
+    border: #ddd 1px solid;
+}
+.calendar-grid-col:first-child {
+    border-radius: 5px 0 0 0;
+    border-left: none;
+}
+.calendar-grid-col:last-child {
+    border-radius: 0 5px 0 0;
+    border-right: none;
 }
 
 .calendar-day {
@@ -125,12 +134,6 @@ header h1, header p {
     transition: 0.3s;
     text-align: center;
     border-radius: inherit;
-}
-.calendar-grid-col:first-child {
-    border-radius: 5px 0 0 0;
-}
-.calendar-grid-col:last-child {
-    border-radius: 0 5px 0 0;
 }
 
 .calendar-day.past {
