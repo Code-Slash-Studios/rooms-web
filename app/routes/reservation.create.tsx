@@ -31,7 +31,7 @@ export const loader = async ({request}: LoaderFunctionArgs) => {
     // try to get form time from query string
     
     const user = await loginRequired(request);
-    console.log(user.oid, "create reservation loader");
+    console.log(user.id, "create reservation loader");
     const roomData = await getRooms();
     const url = new URL(request.url);
     const time = url.searchParams.get("t")?.toString() || null;
@@ -101,7 +101,7 @@ export default function CreateReservation() {
         <main>
             {response !== undefined ? <p className="Error">{response.message}</p> : <></>}
             <h1 key="title">Create Reservation</h1>
-            <Form method="post" onChange={handleChange} className="reservationForm">
+            <Form method="post" onChange={handleChange} className="reservationForm" action="">
                 <input type="hidden" value={roomID} title="roomID" name="roomID"></input>
                 <input title="title" name="title" type="text" defaultValue={title}/>
                 <select title="room" name="room" onChange={(e) => {handleSelect(e)}} value={roomID}>
