@@ -73,7 +73,7 @@ export async function createReservation(reservation: Reservation, actor?: any) {
 
 export async function updateReservation(reservation: Reservation, actor?: any) {
     if (actor !== undefined) {
-        if (actor.openID !== reservation.userID && !actor.isAdmin) {
+        if (actor.id !== reservation.userID && !actor.isAdmin) {
             return new Response(JSON.stringify({error: "permission denied"}),{status: 403})
         }   
     }
@@ -96,7 +96,8 @@ export async function updateReservation(reservation: Reservation, actor?: any) {
 
 export async function deleteReservation(reservation: Reservation, actor?: any) {
     if (actor !== undefined) {
-        if (actor.openID !== reservation.userID && !actor.isAdmin) {
+        console.log("is deleting", actor.id, reservation.userID, actor.isAdmin)
+        if (actor.id !== reservation.userID && !actor.isAdmin) {
             return new Response("PermissionDenied",{status: 403})
         }   
     }
@@ -104,9 +105,10 @@ export async function deleteReservation(reservation: Reservation, actor?: any) {
         `${process.env.API_URL!}/reservations/${reservation.id}`,
         {
             method: "DELETE",
+            body: reservation.toJSON(),
             headers: {
                 'Content-Type': 'application/json'
-            }
+            },
         }
     ).then((response) => {
         return response.json();

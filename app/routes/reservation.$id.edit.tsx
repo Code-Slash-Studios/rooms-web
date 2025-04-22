@@ -9,7 +9,6 @@ import { toDatetimeLocal } from "~/utils/datetime";
 import { loginRequired } from "~/services/auth";
 
 export const action = async ({request}: LoaderFunctionArgs) => {
-    //TODO once user is available, use userID instead of hardcoded "caldweln"
     const user = await loginRequired(request);
     if (user === undefined) {
         throw new Response("User not logged in", {status: 401});

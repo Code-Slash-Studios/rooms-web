@@ -1,5 +1,5 @@
 export interface SessionUser {
-    openid: string,
+    id: string,
     profile: string,
     email: string,
     accessToken: string,

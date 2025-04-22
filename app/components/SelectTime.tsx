@@ -42,12 +42,23 @@ export function SelectTime({ date, reservations, setTime }: SelectTimeProps) {
         }
     );
     notFound = 1;
-    const setHourUpdateMinList = (hour: number) => {
+    const handleSetHour = (hour: number) => {
         setHour(hour);
         setMinList(
             (PM? openPM : openAM).filter((p) => 
                 p.start.getHours() === hour
         ).map((p) => p.start.getMinutes().toString().padStart(2, "0")));
+        setTime({
+            hour: hour,
+            minute: parseInt(minute),
+        })
+    }
+    const handleSetMinute = (minute: string) => {
+        setMinute(minute);
+        setTime({
+            hour: hour,
+            minute: parseInt(minute),
+        })
     }
     
     // Refs for infinite scroll
@@ -66,7 +77,9 @@ export function SelectTime({ date, reservations, setTime }: SelectTimeProps) {
         ).map((p) => p.start.getMinutes().toString().padStart(2, "0")));
     }, [date, reservations]);
     useLayoutEffect(() => {
-        if (!dropped) return;
+        if (!dropped) {
+            return
+        }
         /**
          * Centers the `selected` element (from the *unique* values array) 
          * in the middle copy of a triple‑rendered list.
@@ -160,11 +173,11 @@ export function SelectTime({ date, reservations, setTime }: SelectTimeProps) {
         const h = hour? hour : 12
         if (pm) {
             setPM(true)
-            setHourUpdateMinList(h);
+            handleSetHour(h);
         } else {
             setPM(false)
             if (h >= 12 + 8) {
-                setHourUpdateMinList(h - 12)
+                handleSetHour(h - 12)
             }
         }
     }
@@ -194,7 +207,7 @@ export function SelectTime({ date, reservations, setTime }: SelectTimeProps) {
                                 <button
                                     key={`h-${val}-${idx}`}
                                     className={hour === val ? "selected" : ""}
-                                    onClick={() => setHourUpdateMinList(val)}
+                                    onClick={() => handleSetHour(val)}
                                     type="button"
                                 >
                                     {val === 12 ? 12 : val % 12}
@@ -214,7 +227,7 @@ export function SelectTime({ date, reservations, setTime }: SelectTimeProps) {
                             <button
                                 key={`m-${m}-${idx}`}
                                 className={minute === m ? "selected" : ""}
-                                onClick={() => setMinute(m)}
+                                onClick={() => handleSetMinute(m)}
                                 type="button"
                             >
                                 {m}

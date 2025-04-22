@@ -157,27 +157,28 @@ header h1, header p {
 }
 .calendar-reservations .period {
     color: black;
-    font-size: 0.4em;
+    font-size: 10px;
     text-decoration: none;
     
 }
 .calendar-reservations .period a {
-    height: 10px;
-    padding-inline: 5px;
-    padding-block: 2px;
+    height: 12px;
+    padding: 3px 5px;
     box-sizing: content-box;
 }
 .calendar-reservations .period.blank {
     background-color: #eee;
 }
 
-.duration-conainter {
+.duration-container {
     display: flex;
-    gap: 10px;
+    gap: 5px;
+    align-items: center;
+    justify-content: center;
 }
 .time-slots-container {
     background: white;
-    padding-top: 15px;
+    padding: 15px;
     border-radius: 8px;
     margin-bottom: 20px;
 }
@@ -186,11 +187,16 @@ header h1, header p {
     justify-content: space-between;
     align-items: center;
 }
+form label {
+    font-weight: bold;
+    color: #333;
+    margin-right: 10px;
+}
 
 #time-slots {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
+    justify-content: left;
     gap: 10px;
 }
 
@@ -249,16 +255,22 @@ header h1, header p {
     border-radius: 5px;
 }
 
-#booking-form button {
+button.full-width {
     width: 100%;
     max-width: 200px;
     margin-top: 20px;
-    margin-bottom: 30px;
 }
 button.selected {
     background: #fcdf64;
     color: #004781;
     border: none;
+}
+input.long {
+    width: 65%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
 }
 
 /* Main Content Styles */
