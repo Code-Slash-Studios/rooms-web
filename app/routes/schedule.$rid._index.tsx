@@ -110,17 +110,19 @@ export default function ScheduleRoom() {
 
     }, [roomData, reservationsData]);
 
+    const [actionResponse, setActionResponse] = useState(response);
+
     useEffect(() => {
-        if (response !== undefined) {
-            if (response.message === "Reservation created") {
+        if (actionResponse !== undefined) {
+            if (actionResponse.message === "Reservation created") {
                 alert("Reservation created successfully!");
                 resetForm();
-                response = undefined;
+                setActionResponse(undefined);
             } else {
-                alert(response.message)
+                alert(actionResponse.message);
             }
         }
-    }, [response])
+    }, [actionResponse]);
 
     const resetForm = () => {
         if (formRef.current) {
