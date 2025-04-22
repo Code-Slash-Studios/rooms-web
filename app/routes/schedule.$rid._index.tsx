@@ -174,6 +174,11 @@ export default function ScheduleRoom() {
     const nextWeek = () => {
         setWeekStart(new Date(startOfWeek.getTime() + 7 * MILLIS_IN_DAY));
     }
+    const isOverlappingDuration = (duration: number) => {
+        const start = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate(), selectedTime.hour, selectedTime.minute);
+        const end = new Date(start.getTime() + (duration * 60 * 1000));
+        return isOverlapping(start, end).length !== 0;
+    }
     const isOverlapping = (start: Date, _end: Date) => {
         return reservations.filter((r) => {
             return (r.start < _end && start < r.end) || (r.start > start && r.start < _end) || (start > r.start && _end < r.end)
@@ -258,12 +263,12 @@ export default function ScheduleRoom() {
                         <SelectTime date={selectedDate} reservations={selectedReservations} time={selectedTime} setTime={setSelectedTime} ></SelectTime>
                     
                         <div id="duration-container" className="duration-container">
-                            {minutesAvailable.map(((v)=>
+                            {minutesAvailable.filter((v) => !isOverlappingDuration(v)).map(((v)=>
                                 <button className={(duration === v)? "duration selected" : "duration"} key={v} type="button" onClick={(e) => setDuration(v)}>{v} min</button>
                             ))}
                         </div>
                     </div>
-                    <button type="submit" className="full-width" style={{display:(isValid()? "inline-block" : "none")}}>Submit</button>
+                    <button type="submit" className="full-width" disabled={!isValid()}>Submit</button>
                     {!isValid() && <p>Please select a valid time slot, name, and duration. (then you can submit this form)</p>}
                 </Form>
             </div>

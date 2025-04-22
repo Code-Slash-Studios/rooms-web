@@ -386,6 +386,11 @@ button.edit {
     margin:3px;
     font-size: 1em;
 }
+button:disabled {
+    background-color: #aaa;
+    cursor: not-allowed;
+    color: #ccc;
+}
 
 a.fill {
     display: block;
