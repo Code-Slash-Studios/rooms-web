@@ -188,7 +188,7 @@ export default function ScheduleRoom() {
 
         submit(
             { "title": title, "room": roomID, "start": start.toISOString(), "end": end.toISOString() },
-            {method: "POST", action: `/reservations/schedule/${roomID}`, replace: true}
+            {method: "POST", action: "", replace: true}
         )
     } 
 
