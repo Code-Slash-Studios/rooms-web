@@ -68,6 +68,7 @@ export async function createReservation(reservation: Reservation, actor?: any) {
     }).catch((error) => {
         console.error(error); return undefined
     });
+    console.log(resp)
     return resp
 }
 

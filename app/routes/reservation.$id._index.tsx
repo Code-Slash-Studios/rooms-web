@@ -1,5 +1,5 @@
 import { LoaderFunction, LoaderFunctionArgs } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { Link, useLoaderData, useSubmit } from "@remix-run/react";
 import { useEffect, useState } from "react";
 import { getReservationById } from "~/api/reservation";
 import { getRoom } from "~/api/room";
@@ -29,7 +29,8 @@ export const loader: LoaderFunction = async ({ params, request }: LoaderFunction
   };
 
 export default function reservationDetail() {
-    const {reservationID, reservationData, roomData} = useLoaderData<typeof loader>();
+    const submit = useSubmit()
+    const {reservationID, reservationData, roomData, user} = useLoaderData<typeof loader>();
     const [room, setRoom] = useState<Room | undefined>();
     const [reservation, setReservation] = useState<Reservation | undefined>();
     const [error, setError] = useState<string | undefined>();
@@ -52,10 +53,16 @@ export default function reservationDetail() {
     if (error != undefined) {
         return <p>{error}</p>;
     }
-
+    const handleDelete = (r: Reservation) => {
+        let cnf = confirm(`Are you sure you want to delete the ${r.name} reservation?`)
+        console.log(cnf)
+        if (cnf)
+            submit({reservation: r.toJSON()}, {"encType":"multipart/form-data", method:"POST", action:"/reservations"})
+    }
     return <main>
         <h1 key="title">Reservation Details</h1>
         <h2>{reservation.name}</h2>
+        {(reservation.userID === user.id || user.isAdmin) && <span className='button-tray'><Link to={`/reservation/${reservation.id}/edit`}><button className='edit'>&#9998;</button></Link><button className='delete' type='button' onClick={(e)=>handleDelete(reservation)}>X</button></span>}
         <p>Room: {room.name}</p>
         <p>User: {reservation.userID}</p>
         <p>Start: {reservation.start.toLocaleString()}</p>

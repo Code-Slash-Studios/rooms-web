@@ -20,10 +20,10 @@ export const action = async ({request}: LoaderFunctionArgs) => {
     const isValid = save.isValid();
     if (isValid.valid) {
         return createReservation(save, request).then((res) => {
-            return res;
+            return {message: res};
         });
     } else {
-        return "Invalid reservation data:" + isValid.message;
+        return {message: "Invalid reservation data:" + isValid.message};
     }
 }
 
@@ -31,7 +31,7 @@ export const loader = async ({request}: LoaderFunctionArgs) => {
     // try to get form time from query string
     
     const user = await loginRequired(request);
-    console.log(user.oid, "create reservation loader");
+    console.log(user.id, "create reservation loader");
     const roomData = await getRooms();
     const url = new URL(request.url);
     const time = url.searchParams.get("t")?.toString() || null;
@@ -45,12 +45,22 @@ export default function CreateReservation() {
     //displays a react component that allows the user to edit a reservation
     const {roomData, initDate} = useLoaderData<typeof loader>();
     const response = useActionData<typeof action>();
+    const [responseData, setResponseData] = useState<any>(undefined);
     const [rooms, setRooms] = useState<Room[]>([]);
     const [title, setTitle] = useState("");
     const [roomID, setRoomID] = useState<string>("-1");
     const [start, setStart] = useState<Date>(new Date(initDate));
     const [end, setEnd] = useState<Date>(new Date(new Date().getTime() + (60 * 1000)));
     const [duration, setDuration] = useState(60); //in minutes
+
+    useEffect(() => {
+        if (response !== undefined) {
+            setResponseData(response);
+            if (response.message !== undefined) {
+                alert(response.message);
+            }
+        }
+    }, [response])
 
     useEffect(() => {
         if (roomData != undefined) {
@@ -99,9 +109,9 @@ export default function CreateReservation() {
 
     return (
         <main>
-            {response != undefined ? <p className="Error">{response.id}</p> : <></>}
+            {response !== undefined ? <p className="Error">{response.message}</p> : <></>}
             <h1 key="title">Create Reservation</h1>
-            <Form method="post" onChange={handleChange} className="reservationForm">
+            <Form method="post" onChange={handleChange} className="reservationForm" action="">
                 <input type="hidden" value={roomID} title="roomID" name="roomID"></input>
                 <input title="title" name="title" type="text" defaultValue={title}/>
                 <select title="room" name="room" onChange={(e) => {handleSelect(e)}} value={roomID}>

@@ -6,19 +6,20 @@ import "./SelectTime.css";
 
 interface SelectTimeProps {
     date: Date;
+    time: Time;
     reservations: Reservation[];
     setTime: (time: Time) => void;
 }
 
-export function SelectTime({ date, reservations, setTime }: SelectTimeProps) {
+export function SelectTime({ date, time, reservations, setTime }: SelectTimeProps) {
     const [PM, setPM] = useState(true);
     const [minuteList, setMinList] = useState<string[]>(["00", "15", "30", "45"]);
     const [periods, setPeriods] = useState<Period[]>([]);
     const [openAM, setOpenAM] = useState<Period[]>([]);
     const [openPM, setOpenPM] = useState<Period[]>([]);
     const [dropped, setDropped] = useState(false);
-    const [hour, setHour] = useState<number>(12);
-    const [minute, setMinute] = useState("00");
+    const [hour, setHour] = useState<number>(time.hour);
+    const [minute, setMinute] = useState(time.minute.toString().padStart(2, "0"));
 
     const selectedTime = hour
         ? shiftTime(startOfDay(date), hour, parseInt(minute))
@@ -64,11 +65,15 @@ export function SelectTime({ date, reservations, setTime }: SelectTimeProps) {
     // Refs for infinite scroll
     const hoursRef = useRef<HTMLDivElement>(null);
     const minutesRef = useRef<HTMLDivElement>(null);
-    
+
+
     // Recompute openAM/openPM whenever reservations change
     useEffect(() => {
         const all = FullDayOpen(date, reservations, 15);
         setPeriods(all);
+        setHour(time.hour);
+        setMinute(time.minute.toString().padStart(2, "0"));
+        setPM(time.hour >= 12);
         setOpenAM(all.filter((p) => genHour(p.start) < 12 && genHour(p.start) > 0));
         setOpenPM(all.filter((p) => genHour(p.start) >= 12));
         setMinList(
@@ -130,7 +135,7 @@ export function SelectTime({ date, reservations, setTime }: SelectTimeProps) {
         return () => {
             cancelAnimationFrame(frame);
         };
-      }, [dropped, PM, hour, minute, hoursList, minuteList]);
+      }, [dropped, PM, hour, minute, hoursList, minuteList, time]);
 
     // close popover on outside click
     useEffect(() => {

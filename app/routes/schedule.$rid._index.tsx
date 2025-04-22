@@ -8,7 +8,7 @@ import { SelectTime } from "~/components/SelectTime";
 import { Reservation } from "~/models/reservation";
 import { Room } from "~/models/room";
 import { loginRequired } from "~/services/auth";
-import { sameDay, shiftTime, Time } from "~/utils/datetime";
+import { genHour, sameDay, shiftTime, Time } from "~/utils/datetime";
 
 export const action = async ({request}: ActionFunctionArgs) => {
     const user = await loginRequired(request);
@@ -75,7 +75,9 @@ export default function ScheduleRoom() {
     const [selectedTime, setSelectedTime] = useState<Time>({hour: 12, minute: 0}); //default to 12 PM noon
     const [duration, setDuration] = useState(60)
     const [title, setTitle] = useState("");
-    let selectedReservations: Reservation[] = []
+    const [selectedReservations, setSelectedReservations] = useState<Reservation[]>([]);
+    const [currentWeek, setCurrentWeek] = useState<{past:boolean,date:Date,rs:Reservation[]}[]>([]);
+    const [minutesAvailable, setMinutesAvailable] = useState<number[]>([]);
     // selectedDate.setHours(0,0,0,0);
     const startOfSelected = new Date(selectedDate.getTime());
     startOfSelected.setHours(0,0,0,0);
@@ -84,15 +86,7 @@ export default function ScheduleRoom() {
     
     const [startOfWeek, setWeekStart] = useState(new Date(selectedDate.getTime() - selectedDate.getDay() * MILLIS_IN_DAY));
     let count = 0;
-    let currentWeek = Array.from({length: 7}, (v, i) => {
-        const date = new Date(startOfWeek.getTime() + i * MILLIS_IN_DAY);
-        const localReservations = reservations.filter((r) => sameDay(date, r.start))
-        if (i === selectedDate.getDay()) {
-            selectedReservations = localReservations
-        }
-        count += localReservations.length;
-        return {"past":date.getTime() < currentDate.getTime(),"date":date, "rs": localReservations}
-    });
+    
     const endOfWeek = new Date(startOfWeek.getTime() + 6 * MILLIS_IN_DAY);
     const inThePast = endOfWeek < currentDate;
     const isEndOfMonth = startOfWeek.getMonth() != endOfWeek.getMonth();
@@ -123,7 +117,34 @@ export default function ScheduleRoom() {
                 alert(actionResponse.message);
             }
         }
-    }, [actionResponse]);
+    }, [actionResponse,response]);
+
+    useEffect(() => {
+        // occurs when week is changed
+        let currentWeek = Array.from({length: 7}, (v, i) => {
+            const date = new Date(startOfWeek.getTime() + i * MILLIS_IN_DAY);
+            const localReservations = reservations.filter((r) => sameDay(date, r.start))
+            count += localReservations.length;
+            return {"past":date.getTime() < currentDate.getTime(),"date":date, "rs": localReservations}
+        });
+        setCurrentWeek(currentWeek)
+    }, [startOfWeek, reservations])
+    useEffect(() => {
+        console.log("selectedDate")
+        setSelectedReservations(reservations.filter((r) => sameDay(r.start, selectedDate)));
+    },[selectedDate])
+
+    //time till next reservation (with currently selected date and time)
+    useEffect(() => {
+        const start = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate(), selectedTime.hour, selectedTime.minute);
+        const end = new Date(start.getTime() + (60 * 60 * 1000));
+        //check up to the next hour:
+        const next = reservations.filter((r) => {
+            return (r.start < end && start < r.end) || (r.start > start && r.start < end) || (start > r.start && end < r.end)
+        })
+        const nextMinutes = next[0]?.start.getMinutes() || 60;
+        setMinutesAvailable([15, 30, 45, 60].filter((v => {v <= nextMinutes})))
+    }, [selectedDate, selectedTime, reservations])
 
     const resetForm = () => {
         if (formRef.current) {
@@ -134,8 +155,15 @@ export default function ScheduleRoom() {
         setTitle("");
     }
 
-    //button actions
+    //used to fill form from calendarDay
+    const selectDateTime = (datetime: Date) => {
+        console.log("selectDateTime", datetime)
+        setSelectedDate(datetime);
+        setSelectedTime({hour: genHour(datetime), minute: datetime.getMinutes()});
+        setDuration(60);
+    }
 
+    //button actions
     const selectDate = (date: Date) => {
         setSelectedDate(date);
     }
@@ -188,7 +216,7 @@ export default function ScheduleRoom() {
 
         submit(
             { "title": title, "room": roomID, "start": start.toISOString(), "end": end.toISOString() },
-            {method: "post", action: "", replace: true}
+            {method: "POST", action: "", replace: true}
         )
     } 
 
@@ -216,18 +244,18 @@ export default function ScheduleRoom() {
                         {currentWeek.map(({past, date, rs}) =>
                             <div className="calendar-grid-col" key={date.toLocaleDateString()}>
                                 <CalendarDayHeader date={date} past={past} selected={sameDay(date, selectedDate)} trigger={selectDate}></CalendarDayHeader>
-                                <CalendarDay date={date} reservations={rs}></CalendarDay>
+                                <CalendarDay date={date} reservations={rs} setDateTime={selectDateTime}></CalendarDay>
                             </div>
                         )}
                     </div>
                 </div>
-                <form ref={formRef} className="time-slots-container" onSubmit={(e) => handleSubmit(e)} method="post" id="time-slots-form">
+                <Form ref={formRef} className="time-slots-container" onSubmit={(e) => handleSubmit(e)} method="post" action="" id="time-slots-form">
                     <h4 key={"today-label"} className="today-label" style={{float:"right"}}>{selectedDate.toLocaleDateString("en-US", {"timeZone":"America/New_York", "month":"short","day":"numeric","year":isEndOfYear? "numeric" : undefined})}</h4>
                     <label htmlFor="name">Reservation Name: </label>
-                    <input type="text" id="name" name="name" className="long" required={true} onChange={(e) => setTitle(e.target.value)}></input>
+                    <input type="text" id="name" name="name" className="long" required={true} onChange={(e) => setTitle(e.target.value)} value={title}></input>
                     <h4 key={"available-label"} className="available-label">Available Time Slots:</h4>
                     <div id="time-slots">
-                        <SelectTime date={selectedDate} reservations={selectedReservations} setTime={setSelectedTime} ></SelectTime>
+                        <SelectTime date={selectedDate} reservations={selectedReservations} time={selectedTime} setTime={setSelectedTime} ></SelectTime>
                     
                         <div id="duration-container" className="duration-container">
                             {[15, 30, 45, 60].map(((v)=>
@@ -235,9 +263,9 @@ export default function ScheduleRoom() {
                             ))}
                         </div>
                     </div>
-                    {isValid()?
-                    <button type="submit" className="full-width">Submit</button> : ""}
-                </form>
+                    <button type="submit" className="full-width" style={{display:(isValid()? "inline-block" : "none")}}>Submit</button>
+                    {!isValid() && <p>Please select a valid time slot, name, and duration. (then you can submit this form)</p>}
+                </Form>
             </div>
         </div>
         <h3>Help Text:</h3>
