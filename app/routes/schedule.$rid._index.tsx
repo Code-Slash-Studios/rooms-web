@@ -1,5 +1,5 @@
 import { ActionFunctionArgs } from "@remix-run/node";
-import { ClientLoaderFunctionArgs, Form, useLoaderData, useSubmit } from "@remix-run/react";
+import { ClientLoaderFunctionArgs, Form, useActionData, useLoaderData, useSubmit } from "@remix-run/react";
 import { useEffect, useState } from "react";
 import { createReservation, getReservationsByRoomId } from "~/api/reservation";
 import { getRoom } from "~/api/room";
@@ -34,10 +34,10 @@ export const action = async ({request}: ActionFunctionArgs) => {
     const isValid = save.isValid();
     if (isValid.valid) {
         return createReservation(save).then((res) => {
-            return res;
+            return new Response("Reservation created", {status: 200});
         });
     } else {
-        return "Invalid reservation data:" + isValid.message;
+        return new Response("Invalid reservation data:" + isValid.message, {status: 400});
     }
 }
 
@@ -59,6 +59,7 @@ const MILLIS_IN_DAY = 86400000;
 
 export default function ScheduleRoom() {
     const submit = useSubmit();
+    const response = useActionData<typeof action>();
     const {roomData, reservationsData, user} = useLoaderData<typeof loader>();
 
     const [room, setRoom] = useState<Room | undefined>(undefined);
@@ -99,13 +100,19 @@ export default function ScheduleRoom() {
                 Room.fromJSON(roomData),
             );
         }
-        if (reservations != undefined) {
+        if (reservationsData != undefined) {
             setReservations(
                 Reservation.factory(reservationsData),
             );
         }
 
     }, [roomData, reservationsData]);
+
+    useEffect(() => {
+        if (response !== undefined) {
+            alert(response)
+        }
+    }, [response])
 
     //button actions
 

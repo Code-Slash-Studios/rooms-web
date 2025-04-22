@@ -33,7 +33,8 @@ export const FullDay = (date: Date, filled: (Period | Reservation)[], periodLeng
         //gap before this reservation
         if (r.start > cursor) {
             while (diffMinutes(r.start, cursor) > periodLength) {
-                const nextCursor = addMinutes(cursor, periodLength);
+                const remainder = cursor.getMinutes() % periodLength;
+                const nextCursor = addMinutes(cursor, periodLength - remainder);
                 periods.push(new Period(cursor, nextCursor));
                 cursor = nextCursor;
             }
@@ -45,7 +46,8 @@ export const FullDay = (date: Date, filled: (Period | Reservation)[], periodLeng
 
     if (cursor < DAY_END) {
         while (diffMinutes(cursor, DAY_END) > periodLength) {
-            const nextCursor = addMinutes(cursor, periodLength);
+            const remainder = cursor.getMinutes() % periodLength;
+            const nextCursor = addMinutes(cursor, periodLength - remainder);
             periods.push(new Period(cursor, nextCursor));
             cursor = nextCursor;
         }
@@ -64,7 +66,8 @@ export const FullDayOpen = (date: Date, filled: (Period | Reservation)[], period
         //gap before this reservation
         if (r.start > cursor) {
             while (diffMinutes(r.start, cursor) >= periodLength) {
-                const nextCursor = addMinutes(cursor, periodLength);
+                const remainder = cursor.getMinutes() % periodLength;
+            const nextCursor = addMinutes(cursor, periodLength - remainder);
                 periods.push(new Period(cursor, nextCursor));
                 cursor = nextCursor;
             }
@@ -75,7 +78,8 @@ export const FullDayOpen = (date: Date, filled: (Period | Reservation)[], period
 
     if (cursor < DAY_END) {
         while (diffMinutes(cursor, DAY_END) >= periodLength) {
-            const nextCursor = addMinutes(cursor, periodLength);
+            const remainder = cursor.getMinutes() % periodLength;
+            const nextCursor = addMinutes(cursor, periodLength - remainder);
             periods.push(new Period(cursor, nextCursor));
             cursor = nextCursor;
         }
