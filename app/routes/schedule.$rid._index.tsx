@@ -142,8 +142,7 @@ export default function ScheduleRoom() {
         const next = reservations.filter((r) => {
             return (r.start < end && start < r.end) || (r.start > start && r.start < end) || (start > r.start && end < r.end)
         })
-        const nextMinutes = next[0]?.start.getMinutes() || 60;
-        setMinutesAvailable([15, 30, 45, 60].filter((v => {v <= nextMinutes})))
+        //setMinutesAvailable([15, 30, 45, 60].filter((v => {v <= nextMinutes})))
     }, [selectedDate, selectedTime, reservations])
 
     const resetForm = () => {
@@ -174,9 +173,9 @@ export default function ScheduleRoom() {
     const nextWeek = () => {
         setWeekStart(new Date(startOfWeek.getTime() + 7 * MILLIS_IN_DAY));
     }
-    const isOverlappingDuration = (duration: number) => {
+    const isOverlappingDuration = (_duration: number) => {
         const start = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate(), selectedTime.hour, selectedTime.minute);
-        const end = new Date(start.getTime() + (duration * 60 * 1000));
+        const end = new Date(start.getTime() + (_duration * 60 * 1000));
         return isOverlapping(start, end).length !== 0;
     }
     const isOverlapping = (start: Date, _end: Date) => {
@@ -263,8 +262,8 @@ export default function ScheduleRoom() {
                         <SelectTime date={selectedDate} reservations={selectedReservations} time={selectedTime} setTime={setSelectedTime} ></SelectTime>
                     
                         <div id="duration-container" className="duration-container">
-                            {minutesAvailable.filter((v) => !isOverlappingDuration(v)).map(((v)=>
-                                <button className={(duration === v)? "duration selected" : "duration"} key={v} type="button" onClick={(e) => setDuration(v)}>{v} min</button>
+                            {minutesAvailable.map(((v)=>
+                                <button className={(duration === v)? "duration selected" : "duration"} key={v} type="button" onClick={(e) => setDuration(v)} disabled={isOverlappingDuration(v)}>{v} min</button>
                             ))}
                         </div>
                     </div>

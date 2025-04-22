@@ -226,9 +226,9 @@ export function SelectTime({ date, time, reservations, setTime }: SelectTimeProp
                     <div
                         className="time-picker__list"
                         ref={minutesRef}
-                        onScroll={minuteList.length !== 0?(e) => infiniteScroll(e, minuteList.length) : undefined}
+                        onScroll={minuteList.length > 2?(e) => infiniteScroll(e, minuteList.length) : undefined}
                     >
-                        {(minuteList.length === 3 ? [...minuteList, ...minuteList, ...minuteList] : minuteList).map((m, idx) => (
+                        {(minuteList.length > 2 ? [...minuteList, ...minuteList, ...minuteList] : minuteList).map((m, idx) => (
                             <button
                                 key={`m-${m}-${idx}`}
                                 className={minute === m ? "selected" : ""}

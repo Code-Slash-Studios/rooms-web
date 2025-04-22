@@ -387,9 +387,9 @@ button.edit {
     font-size: 1em;
 }
 button:disabled {
-    background-color: #aaa;
-    cursor: not-allowed;
-    color: #ccc;
+    background-color: #ddd;
+    cursor:default;
+    color: #fff;
 }
 
 a.fill {

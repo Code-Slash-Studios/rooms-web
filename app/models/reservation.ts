@@ -128,6 +128,10 @@ export class Reservation {
             valid = false;
             message = "Start time must be before end time";
         }
+        else if (this.name.length > 100) {
+            valid = false;
+            message = "Reservation name has a maximum length of 100 characters";
+        }
         return {valid, message: message};
     }
 }
