@@ -12,7 +12,7 @@ export const action = async ({request}: LoaderFunctionArgs) => {
     const user = await loginRequired(request);
     const formData = await request.formData();
     const title = formData.get("title")?.toString() || "";
-    const roomID = formData.get("room")?.toString() || "";
+    const roomID = formData.get("roomID")?.toString() || "";
     const start = new Date(formData.get("start-date") + "T" + formData.get("start-time"));
     const duration: number = parseInt(formData.get("duration")?.toString() || "60");
     const end = new Date(start.getTime() + (duration * 60 * 1000));
@@ -28,21 +28,27 @@ export const action = async ({request}: LoaderFunctionArgs) => {
 }
 
 export const loader = async ({request}: LoaderFunctionArgs) => {
+    // try to get form time from query string
+    
     const user = await loginRequired(request);
     console.log(user.oid, "create reservation loader");
     const roomData = await getRooms();
-
-    return {roomData: roomData, getError: undefined};
+    const url = new URL(request.url);
+    const time = url.searchParams.get("t")?.toString() || null;
+    if (time != null) {
+        return {roomData: roomData, initDate: new Date(time), getError: undefined};
+    }
+    return {roomData: roomData, getError: undefined, initDate: new Date()};
 }
 
 export default function CreateReservation() {
     //displays a react component that allows the user to edit a reservation
-    const {roomData} = useLoaderData<typeof loader>();
+    const {roomData, initDate} = useLoaderData<typeof loader>();
     const response = useActionData<typeof action>();
     const [rooms, setRooms] = useState<Room[]>([]);
     const [title, setTitle] = useState("");
-    const [roomID, setRoomID] = useState<string>("0");
-    const [start, setStart] = useState<Date>(new Date());
+    const [roomID, setRoomID] = useState<string>("-1");
+    const [start, setStart] = useState<Date>(new Date(initDate));
     const [end, setEnd] = useState<Date>(new Date(new Date().getTime() + (60 * 1000)));
     const [duration, setDuration] = useState(60); //in minutes
 
@@ -96,17 +102,17 @@ export default function CreateReservation() {
             {response != undefined ? <p className="Error">{response.id}</p> : <></>}
             <h1 key="title">Create Reservation</h1>
             <Form method="post" onChange={handleChange} className="reservationForm">
-                <input type="hidden" value=""></input>
+                <input type="hidden" value={roomID} title="roomID" name="roomID"></input>
                 <input title="title" name="title" type="text" defaultValue={title}/>
-                <select title="room" name="room" onChange={(e) => {handleSelect(e)}}>
-                    <option value={-1}>Select a room</option>
+                <select title="room" name="room" onChange={(e) => {handleSelect(e)}} value={roomID}>
+                    <option value={"-1"}>Select a room</option>
                     {rooms.map((room) => (
                         <option key={room.id} value={room.id}>{room.name} ({room.department})</option>
                     ))}
                 </select>
                 <input title="start-date" name="start-date" type="date" defaultValue={toDatetimeLocal(start).split("T")[0]}/>
                 <input title="start-time" name="start-time" type="time" defaultValue={toDatetimeLocal(start).split("T")[1]}/>
-                <input title="duration" name="duration" type="number" max={240} min={15} defaultValue={duration}/>
+                <input title="duration" name="duration" type="number" max={240} min={15} defaultValue={duration} step={15}/>
                 <button type="submit">Submit</button>
             </Form>
         </main>

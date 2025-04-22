@@ -58,11 +58,20 @@ header h1, header p {
 
 .calendar-container {
     background: white;
+    
+    width: 100%;
+    max-width: 900px;
     padding: 15px;
     border-radius: 8px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
 }
 
+
+.calendar-empty-ms {
+    grid-column-start:1;
+    grid-column-end:8;
+    text-align:center;
+}
 
 .calendar-header {
     margin-top: 10px;
@@ -90,15 +99,27 @@ header h1, header p {
 }
 
 .calendar-grid {
+    display: grid;
+    padding: 2px 0;
+    width: 100%;
+    gap: 2px;
+    font-size: smaller;
+    grid-template-columns: repeat(7, 1fr);
+    resize:vertical;
+    overflow-y: auto;
+    overflow-x: hidden;
+    min-height:fit-content;
+    /* scrollbar-width: none; */
+}
+.calendar-grid-col {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-    padding-top: 10px;
+    flex-direction: column;
+    width: 100%;
 }
 
 .calendar-day {
-    width: 60px;
+    display:flex;
+    justify-content: center;
     padding: 10px;
     background: #7fcfd3;
     border-radius: 5px;
@@ -116,16 +137,54 @@ header h1, header p {
     color: #ccc;
 }
 
-.calendar-day:hover, .calendar-day.selected {
+.calendar-day:hover {
     background: #4F81BC;
     color: white;
 }
+.calendar-day.selected, .calendar-day.selected:hover {
+    background: #fcdf64;
+    color: black;
+}
 
+.calendar-reservations {
+    height:100%;
+    min-height: 300px;
+}
+
+.calendar-reservations .period {
+    background-color: #fcdf64;
+    border-radius: 3px;
+}
+.calendar-reservations .period {
+    color: black;
+    font-size: 0.4em;
+    text-decoration: none;
+    
+}
+.calendar-reservations .period a {
+    height: 10px;
+    padding-inline: 5px;
+    padding-block: 2px;
+    box-sizing: content-box;
+}
+.calendar-reservations .period.blank {
+    background-color: #eee;
+}
+
+.duration-conainter {
+    display: flex;
+    gap: 10px;
+}
 .time-slots-container {
     background: white;
     padding-top: 15px;
     border-radius: 8px;
     margin-bottom: 20px;
+}
+.time-slots-container form {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 #time-slots {
@@ -195,6 +254,11 @@ header h1, header p {
     max-width: 200px;
     margin-top: 20px;
     margin-bottom: 30px;
+}
+button.selected {
+    background: #fcdf64;
+    color: #004781;
+    border: none;
 }
 
 /* Main Content Styles */
@@ -309,4 +373,12 @@ button.edit {
     height: 30px;
     margin:3px;
     font-size: 1em;
+}
+
+a.fill {
+    display: block;
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
+    color: inherit;
 }

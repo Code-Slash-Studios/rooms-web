@@ -1,0 +1,109 @@
+/* timepicker.css */
+.time-picker {
+  position: relative;
+  display: inline-block;
+  font-family: sans-serif;
+}
+
+.time-picker__input {
+  width: 80px;
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  background: #fff;
+  color: #333;
+}
+
+.time-picker__popover {
+  position: absolute;
+  bottom: calc(100% + 4px);
+  left: 0;
+  display: none;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  padding: 8px;
+  z-index: 10;
+}
+
+.time-picker.open .time-picker__popover {
+  display: block;
+}
+
+.time-picker__lists {
+  display: flex;
+  gap: 8px;
+}
+
+/* hide native scrollbars */
+.time-picker__list {
+  position: relative;        /* for the arrows */
+  overflow-y: auto;
+  max-height: 120px;
+  scrollbar-width: none;     /* Firefox */
+}
+.time-picker__list::-webkit-scrollbar {
+  display: none;             /* Chrome/Safari/Edge */
+}
+
+/* shared arrow styles */
+.time-picker__list .scroll-arrow {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.6);
+  cursor: pointer;
+  z-index: 2;
+}
+
+/* up arrow sits at the top */
+.time-picker__list .scroll-arrow.up {
+  top: 0;
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+/* down arrow sits at the bottom */
+.time-picker__list .scroll-arrow.down {
+  bottom: 0;
+  border-top: 1px solid rgba(0,0,0,0.1);
+}
+
+/* simple chevron icon */
+.time-picker__list .scroll-arrow svg {
+  width: 12px;
+  height: 12px;
+  fill: #333;
+  pointer-events: none;
+}
+
+
+.time-picker__list button {
+  display: block;
+  color: black;
+  width: 100%;
+  padding: 4px 8px;
+  margin-bottom: 4px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+  text-align: center;
+}
+
+.time-picker__list button.selected {
+  background: #007bff;
+  color: #fff;
+  border-color: #007bff;
+}
+
+.time-picker__list button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+}
