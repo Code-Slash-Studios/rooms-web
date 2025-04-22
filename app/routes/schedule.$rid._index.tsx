@@ -119,7 +119,6 @@ export default function ScheduleRoom() {
     const nextWeek = () => {
         setWeekStart(new Date(startOfWeek.getTime() + 7 * MILLIS_IN_DAY));
     }
-    const start = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate(), selectedTime.hour, selectedTime.minute);
     const handleSubmit = (e: any) => {
         console.log("submitSchedule")
         e.preventDefault();
@@ -193,15 +192,15 @@ export default function ScheduleRoom() {
                     <div id="time-slots">
                         <SelectTime date={selectedDate} reservations={selectedReservations} setTime={setSelectedTime} ></SelectTime>
                     
-                        <div id="duration-container">
+                        <div id="duration-container" className="duration-container">
                             {[15, 30, 45, 60].map(((v)=>
-                                <button className={(duration === v)? "duration selected" : "duration"} key={v} type="button" onClick={(e) => setDuration(v)}>+{v} min</button>
+                                <button className={(duration === v)? "duration selected" : "duration"} key={v} type="button" onClick={(e) => setDuration(v)}>{v} min</button>
                             ))}
                         </div>
                     </div>
                 </div>
             </div>
-            {start.getTime() > Date.now()? <Form id="booking-form" onSubmit={(e) => handleSubmit(e)} method="post" className="booking-form">
+            {new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate(), selectedTime.hour, selectedTime.minute).getTime() > Date.now()? <Form id="booking-form" onSubmit={(e) => handleSubmit(e)} method="post" className="booking-form">
             <h2 className="booking-form-title">Reserve {room.id} - {room.name} {room.department}</h2>
 
             <label htmlFor="name">Reservation Name:</label>

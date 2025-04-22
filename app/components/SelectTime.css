@@ -1,8 +1,7 @@
 /* timepicker.css */
 .time-picker {
   position: relative;
-  display: inline-block;
-  font-family: sans-serif;
+  display: flex;
 }
 
 .time-picker__input {

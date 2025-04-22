@@ -171,9 +171,11 @@ header h1, header p {
     background-color: #eee;
 }
 
-.duration-conainter {
+.duration-container {
     display: flex;
-    gap: 10px;
+    gap: 5px;
+    align-items: center;
+    justify-content: center;
 }
 .time-slots-container {
     background: white;
