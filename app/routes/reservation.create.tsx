@@ -19,7 +19,7 @@ export const action = async ({request}: LoaderFunctionArgs) => {
     let save = new Reservation(-1, title, roomID, user.id, start, end)
     const isValid = save.isValid();
     if (isValid.valid) {
-        return createReservation(save, request).then((res) => {
+        return createReservation(save, user).then((res) => {
             return {message: res};
         });
     } else {

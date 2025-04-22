@@ -14,7 +14,7 @@ import { loginRequired } from "~/services/auth";
 export const loader: LoaderFunction = async ({ params, request }: LoaderFunctionArgs) => {
     //get the reservation with the id params.id
     const user = await loginRequired(request);
-    const res = await getReservationById(params.id || "-1", request);
+    const res = await getReservationById(params.id || "-1", user);
     if (res == undefined) {
         console.error("No reservation found");
         return {"reservationID": undefined, "getError": "No reservation found", user:user};
