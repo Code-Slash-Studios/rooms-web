@@ -69,7 +69,7 @@ export function SelectTime({ date, time, reservations, setTime }: SelectTimeProp
 
     // Recompute openAM/openPM whenever reservations change
     useEffect(() => {
-        const all = FullDayOpen(date, reservations, 15);
+        const all = FullDayOpen(date, reservations, 15).filter((v)=> v.start.getTime() > Date.now());
         setPeriods(all);
         setHour(time.hour);
         setMinute(time.minute.toString().padStart(2, "0"));
