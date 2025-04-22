@@ -8,7 +8,7 @@ import { SelectTime } from "~/components/SelectTime";
 import { Reservation } from "~/models/reservation";
 import { Room } from "~/models/room";
 import { loginRequired } from "~/services/auth";
-import { sameDay, shiftTime, Time } from "~/utils/datetime";
+import { genHour, sameDay, shiftTime, Time } from "~/utils/datetime";
 
 export const action = async ({request}: ActionFunctionArgs) => {
     const user = await loginRequired(request);
@@ -134,8 +134,14 @@ export default function ScheduleRoom() {
         setTitle("");
     }
 
-    //button actions
+    //used to fill form from calendarDay
+    const selectDateTime = (datetime: Date) => {
+        setSelectedDate(datetime);
+        setSelectedTime({hour: genHour(datetime), minute: datetime.getMinutes()});
+        setDuration(60);
+    }
 
+    //button actions
     const selectDate = (date: Date) => {
         setSelectedDate(date);
     }
@@ -216,7 +222,7 @@ export default function ScheduleRoom() {
                         {currentWeek.map(({past, date, rs}) =>
                             <div className="calendar-grid-col" key={date.toLocaleDateString()}>
                                 <CalendarDayHeader date={date} past={past} selected={sameDay(date, selectedDate)} trigger={selectDate}></CalendarDayHeader>
-                                <CalendarDay date={date} reservations={rs}></CalendarDay>
+                                <CalendarDay date={date} reservations={rs} setDateTime={selectDateTime}></CalendarDay>
                             </div>
                         )}
                     </div>
