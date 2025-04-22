@@ -221,7 +221,7 @@ export default function ScheduleRoom() {
                         )}
                     </div>
                 </div>
-                <form ref={formRef} className="time-slots-container" onSubmit={(e) => handleSubmit(e)} method="post" id="time-slots-form">
+                <form ref={formRef} className="time-slots-container" onSubmit={(e) => handleSubmit(e)} method="post" action="" id="time-slots-form">
                     <h4 key={"today-label"} className="today-label" style={{float:"right"}}>{selectedDate.toLocaleDateString("en-US", {"timeZone":"America/New_York", "month":"short","day":"numeric","year":isEndOfYear? "numeric" : undefined})}</h4>
                     <label htmlFor="name">Reservation Name: </label>
                     <input type="text" id="name" name="name" className="long" required={true} onChange={(e) => setTitle(e.target.value)}></input>
@@ -235,8 +235,7 @@ export default function ScheduleRoom() {
                             ))}
                         </div>
                     </div>
-                    {isValid()?
-                    <button type="submit" className="full-width">Submit</button> : ""}
+                    <button type="submit" className="full-width" style={{display:(isValid()? "inline-block" : "none")}}>Submit</button>
                 </form>
             </div>
         </div>
