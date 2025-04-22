@@ -77,7 +77,7 @@ export default function ScheduleRoom() {
     const [title, setTitle] = useState("");
     const [selectedReservations, setSelectedReservations] = useState<Reservation[]>([]);
     const [currentWeek, setCurrentWeek] = useState<{past:boolean,date:Date,rs:Reservation[]}[]>([]);
-    const [minutesAvailable, setMinutesAvailable] = useState<number[]>([]);
+    const [minutesAvailable, setMinutesAvailable] = useState<number[]>([15, 30, 45, 60]);
     // selectedDate.setHours(0,0,0,0);
     const startOfSelected = new Date(selectedDate.getTime());
     startOfSelected.setHours(0,0,0,0);
@@ -258,7 +258,7 @@ export default function ScheduleRoom() {
                         <SelectTime date={selectedDate} reservations={selectedReservations} time={selectedTime} setTime={setSelectedTime} ></SelectTime>
                     
                         <div id="duration-container" className="duration-container">
-                            {[15, 30, 45, 60].map(((v)=>
+                            {minutesAvailable.map(((v)=>
                                 <button className={(duration === v)? "duration selected" : "duration"} key={v} type="button" onClick={(e) => setDuration(v)}>{v} min</button>
                             ))}
                         </div>
