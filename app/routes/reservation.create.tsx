@@ -20,10 +20,10 @@ export const action = async ({request}: LoaderFunctionArgs) => {
     const isValid = save.isValid();
     if (isValid.valid) {
         return createReservation(save, request).then((res) => {
-            return res;
+            return {message: res};
         });
     } else {
-        return "Invalid reservation data:" + isValid.message;
+        return {message: "Invalid reservation data:" + isValid.message};
     }
 }
 
@@ -99,7 +99,7 @@ export default function CreateReservation() {
 
     return (
         <main>
-            {response != undefined ? <p className="Error">{response.id}</p> : <></>}
+            {response !== undefined ? <p className="Error">{response.message}</p> : <></>}
             <h1 key="title">Create Reservation</h1>
             <Form method="post" onChange={handleChange} className="reservationForm">
                 <input type="hidden" value={roomID} title="roomID" name="roomID"></input>

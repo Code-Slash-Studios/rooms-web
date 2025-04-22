@@ -30,10 +30,7 @@ export const action = async ({request}: LoaderFunctionArgs) => {
             return res;
         });
     } else {
-        if (id == -1) {
-            return "Invalid reservation data: ID is -1, form data tampered with?";
-        }
-        return "Invalid reservation data:" + isValid.message;
+        return {message: "Invalid reservation data:" + isValid.message};
     }
 }
 
