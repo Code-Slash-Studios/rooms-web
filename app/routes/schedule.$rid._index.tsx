@@ -59,13 +59,16 @@ const MILLIS_IN_DAY = 86400000;
 
 export default function ScheduleRoom() {
     const submit = useSubmit();
-    let response = useActionData<typeof action>();
+    const {roomData, reservationsData, user} = useLoaderData<typeof loader>();
+    const response = useActionData<typeof action>();
     const formRef = useRef<HTMLFormElement>(null);
 
-    const {roomData, reservationsData, user} = useLoaderData<typeof loader>();
+    const [actionResponse, setActionResponse] = useState(response);
+
     const [room, setRoom] = useState<Room | undefined>(undefined);
     const [reservations, setReservations] = useState<Reservation[]>([]);
 
+    //handle date display:
     const currentDate = new Date();
     currentDate.setHours(0,0,0,0);
     const [selectedDate, setSelectedDate] = useState(new Date());
@@ -109,8 +112,6 @@ export default function ScheduleRoom() {
         }
 
     }, [roomData, reservationsData]);
-
-    const [actionResponse, setActionResponse] = useState(response);
 
     useEffect(() => {
         if (actionResponse !== undefined) {
