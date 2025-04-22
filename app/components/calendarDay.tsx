@@ -35,7 +35,7 @@ export const CalendarDay = ({date, reservations}: CalendarDayProps) => {
                     </div>
                 else
                     return <div className="period" key={key + "." + genTime(p.start, false)} title={p.name + " " + genTime(p.start) + "-" + genTime(p.end)} style={{height: `${percentOfDay(p.start, p.end)}%`}}>
-                    <Link to={"/reservation/" + p.id + "/edit"} className="fill">
+                    <Link to={"/reservation/" + p.id} className="fill">
                         {p.start.getDay() === 0 && genTime(p.start)}
                     </Link>
                     </div>

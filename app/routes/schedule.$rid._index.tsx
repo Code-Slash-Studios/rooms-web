@@ -123,7 +123,7 @@ export default function ScheduleRoom() {
                 alert(actionResponse.message);
             }
         }
-    }, [actionResponse]);
+    }, [actionResponse,response]);
 
     const resetForm = () => {
         if (formRef.current) {
@@ -236,6 +236,7 @@ export default function ScheduleRoom() {
                         </div>
                     </div>
                     <button type="submit" className="full-width" style={{display:(isValid()? "inline-block" : "none")}}>Submit</button>
+                    {!isValid() && <p>Please select a valid time slot and duration. (then you can submit this form)</p>}
                 </Form>
             </div>
         </div>
