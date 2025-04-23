@@ -189,14 +189,17 @@ export default function ScheduleRoom() {
         if (!isValid.valid) {
             setFormStatus(isValid.message);
             setIsValid(false);
+            return false;
         }
         if (isOverlapping(start, end).length !== 0) {
-            setFormStatus("Reservation overlaps with existing reservations");
+            setFormStatus("Reservation overlaps with existing reservations.");
             setIsValid(false);
+            return false;
         }
         if (start.getTime() < Date.now()) {
-            setFormStatus("Reservation start time cannot be in the past");
+            setFormStatus("Reservation start time or date cannot be in the past.");
             setIsValid(false);
+            return false;
         }
         setIsValid(true);
 
@@ -281,7 +284,7 @@ export default function ScheduleRoom() {
                         </div>
                     </div>
                     <button type="submit" className="full-width" disabled={!isValid}>Submit</button>
-                    {!isValid && <div className={"form-status"}>{formStatus}</div>}
+                    {!isValid && <div className={"form-status"}>&gt;{formStatus}</div>}
                 </Form>
             </div>
         </div>

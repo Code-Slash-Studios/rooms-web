@@ -110,7 +110,7 @@ export class Reservation {
         let message = "Reservation is valid";
         if (this.name.trim() == "") {
             valid = false;
-            message = "Name is required";
+            message = "Name is Required.";
         }
         else if (this.roomID == "") {
             valid = false;
