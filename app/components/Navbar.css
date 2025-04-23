@@ -30,6 +30,7 @@ nav {
     text-decoration: none;
 }
 .navbar-links li {
+    position: relative;
     color: white;
     font-weight: bold;
     font-size: 18px;
@@ -38,6 +39,20 @@ nav {
 .navbar-links li a:hover {
     color: #c9d2d4;
 }
+.userdrop {
+  position: absolute;
+  left: calc(50%);
+  top: calc(100%);
+  display: none;
+  padding: 5px;
+  background-color: #4f81bc;
+}
+.userdrop.dropped {
+  display: flex;
+  height: fit-content;
+  z-index: 10;
+}
+
 @media (max-width: 480px) {
     /* Full-width, stacked nav */
     nav {
