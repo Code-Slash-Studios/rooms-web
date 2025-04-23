@@ -129,71 +129,11 @@ header h1, header p {
     height: 1000px;
     border: #aaa px solid;
 }
-.calendar-day:first {
-    border-radius: 4px 0 0 0;
-    border-left: none;
-}
 
-.calendar-day {
-    display:flex;
-    box-sizing: border-box;
-    flex-direction: column;
-    justify-content: center;
-    padding: 10px;
-    background: #7fcfd3;
-    cursor: pointer;
-    transition: 0.3s;
-    text-align: center;
-    border: #aaa 1px solid;
-}
-
-.calendar-day.past {
-    background: #ccc;
-}
-
-.calendar-day.past:hover {
-    background: #e0e0e0;
-    color: #ccc;
-}
-
-.calendar-day:hover {
-    background: #4F81BC;
-    color: white;
-}
-.calendar-day.selected, .calendar-day.selected:hover {
-    background: #fcdf64;
-    color: black;
-}
 
 .calendar-reservations {
     height:100%;
     min-height: 400px;
-}
-.period {
-    width: calc(100%);
-    z-index: 1;
-    box-sizing: border-box;
-    border: #aaa 1px solid;
-    background-color: #fcdf64;
-    color: black;
-    font-size: 10px;
-    text-decoration: none;
-    overflow:hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-.period.yours {
-    z-index: 2;
-    border: rgb(72, 205, 72) 2px solid;
-}
-.period a {
-    inherits: all;
-}
-.period.blank, .past .period.blank {
-    background-color: #eee;
-}
-.past .period {
-    background-color: #ddd;
 }
 
 
