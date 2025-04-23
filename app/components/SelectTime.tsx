@@ -1,7 +1,7 @@
 import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { Period, FullDayOpen } from "~/models/period";
 import { Reservation } from "~/models/reservation";
-import { genHour, genTime, shiftTime, startOfDay, Time } from "~/utils/datetime";
+import { genDate, genHour, genTime, shiftTime, startOfDay, Time } from "~/utils/datetime";
 import "./SelectTime.css";
 
 interface SelectTimeProps {
@@ -14,7 +14,7 @@ interface SelectTimeProps {
 const timeFrame = 30; // minutes
 
 export function SelectTime({ date, time, reservations, setTime }: SelectTimeProps) {
-    const [PM, setPM] = useState(true);
+    const [PM, setPM] = useState(time.hour >= 12);
     const [minuteList, setMinList] = useState<string[]>(["00", "15", "30", "45"]);
     const [periods, setPeriods] = useState<Period[]>([]);
     const [openAM, setOpenAM] = useState<Period[]>([]);
@@ -64,6 +64,19 @@ export function SelectTime({ date, time, reservations, setTime }: SelectTimeProp
         })
     }
     
+    const handleSetPM = (pm: boolean) => {
+        const h = time.hour? time.hour : 12
+        if (pm) {
+            setPM(true)
+            handleSetHour(h+12);
+        } else {
+            setPM(false)
+            if (h >= 12 + 8) {
+                handleSetHour(h - 12)
+            }
+        }
+    }
+    
     // Refs for infinite scroll
     const hoursRef = useRef<HTMLDivElement>(null);
     const minutesRef = useRef<HTMLDivElement>(null);
@@ -71,18 +84,20 @@ export function SelectTime({ date, time, reservations, setTime }: SelectTimeProp
 
     // Recompute openAM/openPM whenever reservations change
     useEffect(() => {
-        const all = FullDayOpen(date, reservations, timeFrame).filter((v)=> v.start.getTime() > Date.now());
+        const all = FullDayOpen(date, reservations, timeFrame);
         setPeriods(all);
         setHour(time.hour);
         setMinute(time.minute.toString().padStart(2, "0"));
         setPM(time.hour >= 12);
         setOpenAM(all.filter((p) => genHour(p.start) < 12 && genHour(p.start) > 0));
         setOpenPM(all.filter((p) => genHour(p.start) >= 12));
-        setMinList(
-            (PM? openPM : openAM).filter((p) => 
-                p.start.getHours() === hour
-        ).map((p) => p.start.getMinutes().toString().padStart(2, "0")));
-    }, [date, reservations, time, PM]);
+        const minList = (time.hour >= 12? openPM : openAM).filter((p) => 
+            p.start.getHours() === hour).map((p) => p.start.getMinutes().toString().padStart(2, "0"))
+        if (minList.length === 0) {
+
+        }
+        setMinList(minList);
+    }, [date, reservations]);
     useLayoutEffect(() => {
         if (!dropped) {
             return
@@ -131,13 +146,13 @@ export function SelectTime({ date, time, reservations, setTime }: SelectTimeProp
             );
         
             // MINUTES — minuteList: string[]
-            centerOn(minutesRef, minuteList, minute);
+            //centerOn(minutesRef, minuteList, minute);
         });
 
         return () => {
             cancelAnimationFrame(frame);
         };
-      }, [dropped, PM, hour, minute, hoursList, minuteList, time]);
+      }, [dropped, hoursList]);
 
     // close popover on outside click
     useEffect(() => {
@@ -176,25 +191,13 @@ export function SelectTime({ date, time, reservations, setTime }: SelectTimeProp
             node.scrollTop -= full;
         }
     };
-    const handleSetPM = (pm: boolean) => {
-        const h = hour? hour : 12
-        if (pm) {
-            setPM(true)
-            handleSetHour(h);
-        } else {
-            setPM(false)
-            if (h >= 12 + 8) {
-                handleSetHour(h - 12)
-            }
-        }
-    }
 
     return (
         <div className={`time-picker${dropped ? " open" : ""}`}>
             <input
                 type="text"
                 readOnly
-                className="time-picker__input"
+                className={"time-picker__input"+(date.getDate() < new Date().getDate()? " disabled" : "")}
                 value={selectedTime ? genTime(selectedTime) : ""}
                 placeholder="--:--"
                 onClick={() => setDropped((d) => !d)}
