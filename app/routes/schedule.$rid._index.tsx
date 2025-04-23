@@ -251,15 +251,20 @@ export default function ScheduleRoom() {
                 <div className="calendar">
                     <div className={"calendar-header " + (inThePast? "past" : "")}>
                         <button className="prev" onClick={e => backWeek()}>&#x276E;</button>
-                        <span id="calendar-week">Week of {startOfWeek.toLocaleDateString("en-US", {timeZone:"America/New_York","month":"long","day":"numeric", "year":isEndOfYear?"numeric":undefined})} - {endOfWeek.toLocaleDateString("en-US", {"month":isEndOfMonth? "long" : undefined,"day":"numeric","year":isEndOfYear? "numeric" : undefined})} 
+                        <span id="calendar-week">
+                            {startOfWeek.toLocaleDateString("en-US", {timeZone:"America/New_York","month":"long","day":"numeric", "year":isEndOfYear?"numeric":undefined})} - {endOfWeek.toLocaleDateString("en-US", {"month":isEndOfMonth? "long" : undefined,"day":"numeric","year":isEndOfYear? "numeric" : undefined})}
                         </span>
                         <button className="next" onClick={e => nextWeek()}>&#x276F;</button>
                     </div>
-                    <div className="calendar-grid" id="calendar-days">
+                    <div className="calender-grid-header" id="calender-grid-header">
+                        {currentWeek.map(({past, date}) =>
+                            <CalendarDayHeader endOfMonth={isEndOfMonth} date={date} past={past} selected={sameDay(date, selectedDate)} trigger={selectDate} key={date.toLocaleDateString()}></CalendarDayHeader>
+                        )}
+                    </div>
+                    <div className="calendar-grid" id="calendar-grid">
                         {currentWeek.map(({past, date, rs}) =>
                             <div className="calendar-grid-col" key={date.toLocaleDateString()}>
-                                <CalendarDayHeader date={date} past={past} selected={sameDay(date, selectedDate)} trigger={selectDate}></CalendarDayHeader>
-                                <CalendarDay past={past} date={date} reservations={rs} setDateTime={past? (x) => null : selectDateTime}></CalendarDay>
+                                <CalendarDay past={past} date={date} reservations={rs} setDateTime={selectDateTime}></CalendarDay>
                             </div>
                         )}
                     </div>
@@ -271,7 +276,6 @@ export default function ScheduleRoom() {
                     <h4 key={"available-label"} className="available-label">Available Time Slots:</h4>
                     <div id="time-slots">
                         <SelectTime date={selectedDate} reservations={selectedReservations} time={selectedTime} setTime={setSelectedTime} ></SelectTime>
-                    
                         <div id="duration-container" className="duration-container">
                             {durationList.map(((v)=>
                                 <button className={(duration === v)? "duration selected" : "duration"} key={v} type="button" onClick={(e) => setDuration(v)} disabled={isOverlappingDuration(v)}>{durationShortHand(v)}</button>
