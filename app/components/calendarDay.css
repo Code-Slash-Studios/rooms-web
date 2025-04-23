@@ -6,7 +6,7 @@
 .period .name {
     width:100%;
     font-family:Verdana, Geneva, Tahoma, sans-serif;
-    font-weight: bold;
+    font-weight: 500;
     font-size: 1em;
     color: black;
     text-overflow: ellipsis;
