@@ -1,5 +1,8 @@
 import { ClientLoaderFunctionArgs, Link, useLoaderData } from "@remix-run/react";
 import "./Navbar.css";
+import { useState } from "react";
+import { SessionUser } from "~/models/auth";
+import { signout } from "~/services/auth";
 
 // export const loader = async ({request}: ClientLoaderFunctionArgs) => {
 //     //load user from session
@@ -8,8 +11,14 @@ import "./Navbar.css";
 //     return { "user": user, "placeholder": "" };
 // }
 
-export default function Navbar() {
-    const {user} = useLoaderData<any>();
+interface NavbarProps {
+    _signout: () => null
+    user: SessionUser | undefined
+}
+
+export default function Navbar({_signout, user}: NavbarProps) {
+    const [dropped, setDrop] = useState(false)
+    console.log(dropped)
     return <nav className="navbar">
         <div className="navbar-logo">
             <Link to="/"><img alt="CIS Rooms" src="/CISRooms.png"></img></Link>
@@ -17,7 +26,7 @@ export default function Navbar() {
         <ul className="navbar-links">
             <li key="rooms_link"><Link to="/">Rooms</Link></li>
             {/* <li key="reservations_link"><Link to="/reservations">Reservations</Link></li> */}
-            {(user && <li key="welcome">Welcome {user.firstName}!</li>) || (<li key="login_link"><Link to="/login/sso-out">Login</Link></li>)}
+            {(user && <li key="welcome" onClick={()=>setDrop(!dropped)}>Welcome {user.firstName}!<div className={"userdrop"+ (dropped? " dropped" : "")} onClick={()=>_signout()}>Signout</div></li>) || (<li key="login_link"><Link to="/login/sso-out">Login</Link></li>)}
         </ul>
     </nav>
 }

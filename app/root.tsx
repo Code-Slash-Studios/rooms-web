@@ -3,35 +3,31 @@ import {
     Meta,
     Outlet,
     Scripts,
+    useLoaderData,
   } from "@remix-run/react";
 import Navbar from "./components/Navbar";
 import "./style.css";
 import "./favicon.ico";
 import { sessionStorage } from "./services/session";
+import { getUser } from "./services/auth";
+import { useEffect, useState } from "react";
+import { SessionUser } from "./models/auth";
+import { LoaderFunction } from "@remix-run/node";
 
-export const loader = async ({ request }: { request: Request }) => {
+export const loader: LoaderFunction = async ({ request }: { request: Request }) => {
     //load user from session
-    const session = await sessionStorage.getSession(request.headers.get("Cookie"));
-    const user = session.get("user") || "";
-    if (process.env.NODE_ENV === "development" && process.env.LOCAL_ADMIN === "1") {
-      return {"user":{
-        id: "1",
-        firstName: "Local",
-        lastName: "Admin",
-        name: "Local Admin",
-        username: "localadmin@cisrooms.stvincent.edu",
-        email: "localadmin@cisrooms.stvincent.edu",
-        isAdmin: true,
-        exp: 9999999999,
-        authenticated: Date.now()/1000,
-        token: {}
-      }}
-    }
+    const user = await getUser(request)
     console.log("Path", request.url.slice(request.url.indexOf(":80") + 5, request.url.length));
-    return { "user": user };
+    return { userData: user };
 }
 
 export default function App() {
+  const {userData} = useLoaderData<typeof loader>()
+  const [user, setUser] = useState<SessionUser | undefined>()
+  useEffect(()=>{
+    setUser(userData)
+  }, [userData])
+
   return (
     <html>
       <head>
@@ -43,7 +39,7 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <Navbar />
+        <Navbar user={user}  _signout={() => null}/>
         <Outlet />
         <Scripts />
       </body>
