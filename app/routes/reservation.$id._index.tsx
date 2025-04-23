@@ -62,7 +62,7 @@ export default function reservationDetail() {
     return <main>
         <h1 key="title">Reservation Details</h1>
         <h2>{reservation.name}</h2>
-        {(reservation.userID === user.id || user.isAdmin) && <span className='button-tray'><Link to={`/reservation/${reservation.id}/edit`}><button className='edit'>&#9998;</button></Link><button className='delete' type='button' onClick={(e)=>handleDelete(reservation)}>Del</button></span>}
+        {(reservation.userID === user.id || user.isAdmin) && <span className='button-tray'><Link to={`/reservation/${reservation.id}/edit`}><button className='edit'>&#9998; Edit</button></Link><button className='delete' type='button' onClick={(e)=>handleDelete(reservation)}>X Delete</button></span>}
         <p>Room: {room.name}</p>
         <p>Title: {reservation.name}</p>
         <p>User: {reservation.userID}</p>
