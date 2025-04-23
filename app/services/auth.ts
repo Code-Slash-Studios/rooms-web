@@ -26,6 +26,7 @@ export const getUser = async (request:Request) => {
     }
     return devUser;
   }
+  return user
 }
 
 export const loginRequired = async (request:Request) => {

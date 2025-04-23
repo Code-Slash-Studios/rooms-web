@@ -26,7 +26,7 @@ export default function Navbar({_signout, user}: NavbarProps) {
         <ul className="navbar-links">
             <li key="rooms_link"><Link to="/">Rooms</Link></li>
             {/* <li key="reservations_link"><Link to="/reservations">Reservations</Link></li> */}
-            {(user && <li key="welcome" onClick={()=>setDrop(!dropped)}>Welcome {user.firstName}!<div className={"userdrop"+ (dropped? " dropped" : "")} onClick={()=>_signout()}>Signout</div></li>) || (<li key="login_link"><Link to="/login/sso-out">Login</Link></li>)}
+            {(user && <li key="welcome" onClick={()=>setDrop(!dropped)}>Welcome {user.firstName}!<div className={"userdrop"+ (dropped? " dropped" : "")}>Signout</div></li>) || (<li key="login_link"><Link to="/login/sso-out">Login</Link></li>)}
         </ul>
     </nav>
 }
