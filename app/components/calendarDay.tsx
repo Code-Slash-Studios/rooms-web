@@ -5,12 +5,6 @@ import { Reservation } from "~/models/reservation"
 import { genDate, genTime } from "~/utils/datetime"
 import "./calendarDay.css"
 
-interface CalendarDayProps {
-    date: Date,
-    reservations: Reservation[]
-    setDateTime: (datetime: Date) => void,
-    past: boolean,
-}
 
 interface CalendarDayHeaderProps {
     date: Date,
@@ -19,7 +13,14 @@ interface CalendarDayHeaderProps {
     selected: boolean,
     trigger: (date: Date) => void,
 }
-const scale = 360000/2;
+
+interface CalendarDayProps {
+    date: Date,
+    reservations: Reservation[]
+    setDateTime: (datetime: Date) => void,
+    past: boolean,
+    user: any,
+}
 
 export const CalendarDayHeader = ({date, past, selected, trigger, endOfMonth}: CalendarDayHeaderProps) => {
     const key = genDate(date)
@@ -39,7 +40,7 @@ export const CalendarDayHeader = ({date, past, selected, trigger, endOfMonth}: C
     return <div key={key +".header"} className={"calendar-day" + (past? " past" : "") + (selected? " selected" : "")} data-date={date.toISOString()} onClick={e => trigger(date)}>{date.toLocaleDateString("en-US",{month:(isMobile? endOfMonth? "narrow" : undefined : "short"), day:"2-digit"})}</div>
 }
 
-export const CalendarDay = ({date, reservations, setDateTime, past}: CalendarDayProps) => {
+export const CalendarDay = ({date, reservations, setDateTime, user}: CalendarDayProps) => {
     //make full day of periods with reservations slotted in appropiately
     const periods = FullDay(date, reservations)
     const key = genDate(date)
@@ -54,7 +55,7 @@ export const CalendarDay = ({date, reservations, setDateTime, past}: CalendarDay
                     </a>
                     </div>
                 else
-                    return <div className={"period"+(past? " past" : "")} key={key + "." + genTime(p.start, false)} title={p.name + " " + genTime(p.start) + "-" + genTime(p.end)} style={{height: `${percentOfDay(p.start, p.end)}%`}}>
+                    return <div className={"period"+(past? " past" : "")+(p.userID===user?.id ? " yours" : "")} key={key + "." + genTime(p.start, false)} title={p.name + " " + genTime(p.start) + "-" + genTime(p.end)} style={{height: `${percentOfDay(p.start, p.end)}%`}}>
                     <Link to={"/reservation/" + p.id} className="fill">
                         {p.start.getDay() === 0 && <div className="float-time">{genTime(p.start)}</div>}
                         <div className="name">{p.name}</div>

@@ -264,7 +264,7 @@ export default function ScheduleRoom() {
                     <div className="calendar-grid" id="calendar-grid">
                         {currentWeek.map(({past, date, rs}) =>
                             <div className="calendar-grid-col" key={date.toLocaleDateString()}>
-                                <CalendarDay past={past} date={date} reservations={rs} setDateTime={selectDateTime}></CalendarDay>
+                                <CalendarDay past={past} date={date} reservations={rs} setDateTime={selectDateTime} user={user}></CalendarDay>
                             </div>
                         )}
                     </div>
@@ -272,7 +272,7 @@ export default function ScheduleRoom() {
                 <Form ref={formRef} className="time-slots-container" onSubmit={(e) => handleSubmit(e)} method="post" action="" id="time-slots-form">
                     <h4 key={"today-label"} className="today-label" style={{float:"right"}}>{selectedDate.toLocaleDateString("en-US", {"timeZone":"America/New_York", "month":"short","day":"numeric","year":isEndOfYear? "numeric" : undefined})}</h4>
                     <label htmlFor="name">Reservation Name: </label>
-                    <input type="text" id="name" name="name" className="long" required={true} onBlur={() => checkIsValid()} onChange={(e) => setTitle(e.target.value)} value={title} placeholder="E.g. CIS Project Meeting, mx 100" maxLength={100}></input>
+                    <input type="text" id="name" name="name" className="long" required={true} onChange={(e) => {setTitle(e.target.value);checkIsValid()}} value={title} placeholder="E.g. CIS Project Meeting, mx 100" maxLength={100}></input>
                     <h4 key={"available-label"} className="available-label">Available Time Slots:</h4>
                     <div id="time-slots">
                         <SelectTime date={selectedDate} reservations={selectedReservations} time={selectedTime} setTime={setSelectedTime} ></SelectTime>
@@ -291,5 +291,7 @@ export default function ScheduleRoom() {
         <h3>Help Text:</h3>
         <p>Select a date, choose a time slot, and select the duration of your reservation.</p>
         <p>Also make sure to input a reservation name.</p>
+        <hr/>
+        <p>Your Reservations appear in green.</p>
     </main>
 }

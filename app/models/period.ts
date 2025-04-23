@@ -7,6 +7,7 @@ export class Period {
     end: Date
     name: string = ""
     id: number = -1
+    userID: string = ""
     isEmpty: () => true = () => true //used to distiguish between periods and reservations
     constructor(start: Date, end: Date, name?: string) {
         this.start = start;

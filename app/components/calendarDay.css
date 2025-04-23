@@ -32,15 +32,16 @@
 }
 .period.yours {
     z-index: 2;
-    border: rgb(72, 205, 72) 2px solid;
+    background-color:#94d460;
 }
-.period a {
-    inherits: all;
+.period.past.yours {
+    background-color: #88a670;
 }
-.period.blank, .past .period.blank {
+
+.period.blank {
     background-color: #eee;
 }
-.past .period {
+.period.past {
     background-color: #ddd;
 }
 .calendar-day:first {
