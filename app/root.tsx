@@ -25,7 +25,7 @@ export default function App() {
   const {userData} = useLoaderData<typeof loader>()
   const [user, setUser] = useState<SessionUser | undefined>()
   useEffect(()=>{
-    setUser(JSON.parse(userData))
+    setUser(userData)
   }, [userData])
 
   return (
