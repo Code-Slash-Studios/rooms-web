@@ -62,6 +62,7 @@ export default function ScheduleRoom() {
     const {roomData, reservationsData, user} = useLoaderData<typeof loader>();
     const response = useActionData<typeof action>();
     const formRef = useRef<HTMLFormElement>(null);
+    //const customDurationRef = useRef<HTMLInputElement>(null);
 
     const [actionResponse, setActionResponse] = useState(response);
     const [formStatus, setFormStatus] = useState<string | null>(null);
@@ -79,7 +80,7 @@ export default function ScheduleRoom() {
     const [title, setTitle] = useState("");
     const [selectedReservations, setSelectedReservations] = useState<Reservation[]>([]);
     const [currentWeek, setCurrentWeek] = useState<{past:boolean,date:Date,rs:Reservation[]}[]>([]);
-    const [minutesAvailable, setMinutesAvailable] = useState<number[]>([30, 60, 90, 120]);
+    const durationList = [30, 60, 90, 120]
     // selectedDate.setHours(0,0,0,0);
     const startOfSelected = new Date(selectedDate.getTime());
     startOfSelected.setHours(0,0,0,0);
@@ -222,15 +223,16 @@ export default function ScheduleRoom() {
     const durationShortHand = (duration: number) => {
         switch (duration) {
             case 30:
-                return "&#189; hr"
+                return "30 min"
             case 60:
                 return "1 hr"
             case 90:
-                return "1.5 hrs"
+                return "90 min"
             case 120:
                 return "2 hrs"
             default:
                 return duration + " min"
+        }
     }
 
     // error states
@@ -271,9 +273,10 @@ export default function ScheduleRoom() {
                         <SelectTime date={selectedDate} reservations={selectedReservations} time={selectedTime} setTime={setSelectedTime} ></SelectTime>
                     
                         <div id="duration-container" className="duration-container">
-                            {minutesAvailable.map(((v)=>
-                                <button className={(duration === v)? "duration selected" : "duration"} key={v} type="button" onClick={(e) => setDuration(v)} disabled={isOverlappingDuration(v)}>{v} min</button>
+                            {durationList.map(((v)=>
+                                <button className={(duration === v)? "duration selected" : "duration"} key={v} type="button" onClick={(e) => setDuration(v)} disabled={isOverlappingDuration(v)}>{durationShortHand(v)}</button>
                             ))}
+                            {/* CUSTOM DURATION IMPLEMENTATION: <button title="custom-duration-button" type="button" className={"duration input" + (durationList.find((v) => v === duration)? "" : " selected")} key="custom" onClick={(e) => setDuration(parseInt(customDurationRef.current?.value || "60"))}><input ref={customDurationRef} title="custom-duration-input" type="number" onChange={(e)=> setDuration(parseInt(e.target.value))} value={duration} step={15} max={180} min={0}></input></button> */}
                         </div>
                     </div>
                     <button type="submit" className="full-width" disabled={!isValid}>Submit</button>
