@@ -79,7 +79,7 @@ export default function ScheduleRoom() {
     const [title, setTitle] = useState("");
     const [selectedReservations, setSelectedReservations] = useState<Reservation[]>([]);
     const [currentWeek, setCurrentWeek] = useState<{past:boolean,date:Date,rs:Reservation[]}[]>([]);
-    const [minutesAvailable, setMinutesAvailable] = useState<number[]>([15, 30, 45, 60]);
+    const [minutesAvailable, setMinutesAvailable] = useState<number[]>([30, 60, 90, 120]);
     // selectedDate.setHours(0,0,0,0);
     const startOfSelected = new Date(selectedDate.getTime());
     startOfSelected.setHours(0,0,0,0);
@@ -191,9 +191,17 @@ export default function ScheduleRoom() {
         let save = new Reservation(-1, title, room?.id || "-1", user.id, start, end);
         const isValid = save.isValid();
         if (!isValid.valid) {
+            setFormStatus(isValid.message);
             return false;
         }
-        const state = isOverlapping(start, end).length === 0 && end.getTime() > Date.now()
+        if (isOverlapping(start, end).length !== 0) {
+            setFormStatus("Reservation overlaps with existing reservations");
+            return false;
+        }
+        if (start.getTime() < Date.now()) {
+            setFormStatus("Reservation start time cannot be in the past");
+            return false;
+        }
         return save;
     }
 
@@ -210,6 +218,20 @@ export default function ScheduleRoom() {
             {method: "POST", action: "", replace: true}
         )
     } 
+
+    const durationShortHand = (duration: number) => {
+        switch (duration) {
+            case 30:
+                return "&#189; hr"
+            case 60:
+                return "1 hr"
+            case 90:
+                return "1.5 hrs"
+            case 120:
+                return "2 hrs"
+            default:
+                return duration + " min"
+    }
 
     // error states
     if (!roomData || roomData === undefined) {
@@ -235,7 +257,7 @@ export default function ScheduleRoom() {
                         {currentWeek.map(({past, date, rs}) =>
                             <div className="calendar-grid-col" key={date.toLocaleDateString()}>
                                 <CalendarDayHeader date={date} past={past} selected={sameDay(date, selectedDate)} trigger={selectDate}></CalendarDayHeader>
-                                <CalendarDay date={date} reservations={rs} setDateTime={selectDateTime}></CalendarDay>
+                                <CalendarDay past={past} date={date} reservations={rs} setDateTime={past? (x) => null : selectDateTime}></CalendarDay>
                             </div>
                         )}
                     </div>

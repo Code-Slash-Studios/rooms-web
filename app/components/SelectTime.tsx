@@ -11,6 +11,8 @@ interface SelectTimeProps {
     setTime: (time: Time) => void;
 }
 
+const timeFrame = 30; // minutes
+
 export function SelectTime({ date, time, reservations, setTime }: SelectTimeProps) {
     const [PM, setPM] = useState(true);
     const [minuteList, setMinList] = useState<string[]>(["00", "15", "30", "45"]);
@@ -69,7 +71,7 @@ export function SelectTime({ date, time, reservations, setTime }: SelectTimeProp
 
     // Recompute openAM/openPM whenever reservations change
     useEffect(() => {
-        const all = FullDayOpen(date, reservations, 15).filter((v)=> v.start.getTime() > Date.now());
+        const all = FullDayOpen(date, reservations, timeFrame).filter((v)=> v.start.getTime() > Date.now());
         setPeriods(all);
         setHour(time.hour);
         setMinute(time.minute.toString().padStart(2, "0"));
@@ -80,7 +82,7 @@ export function SelectTime({ date, time, reservations, setTime }: SelectTimeProp
             (PM? openPM : openAM).filter((p) => 
                 p.start.getHours() === hour
         ).map((p) => p.start.getMinutes().toString().padStart(2, "0")));
-    }, [date, reservations]);
+    }, [date, reservations, time, PM]);
     useLayoutEffect(() => {
         if (!dropped) {
             return
