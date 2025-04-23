@@ -16,6 +16,7 @@ export const action: ActionFunction = async ({request}: ActionFunctionArgs) => {
     const r = Reservation.fromJSON(data)
     const resp = await deleteReservation(r, user);
     console.log(resp)
+    return redirect(`/schedule/${r.roomID}`)
     return {"response": resp}
 }
 

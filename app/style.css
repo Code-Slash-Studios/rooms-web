@@ -95,6 +95,11 @@ header h1, header p {
     background: #bcbcbc;
     color: #666;
 }
+.calender-grid-header {
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(7, 1fr);
+}
 
 .calendar-grid {
     display: grid;
@@ -292,7 +297,6 @@ input.long {
 main {
     padding: 20px;
     flex: 1;
-    margin-top: 20px;
 }
 
 /* About Page Styles */

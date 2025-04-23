@@ -1,11 +1,25 @@
-import { LoaderFunction, LoaderFunctionArgs } from "@remix-run/node";
+import { ActionFunction, ActionFunctionArgs, LoaderFunction, LoaderFunctionArgs } from "@remix-run/node";
 import { Link, useLoaderData, useSubmit } from "@remix-run/react";
 import { useEffect, useState } from "react";
-import { getReservationById } from "~/api/reservation";
+import { deleteReservation, getReservationById } from "~/api/reservation";
 import { getRoom } from "~/api/room";
 import { Reservation } from "~/models/reservation";
 import { Room } from "~/models/room";
 import { loginRequired } from "~/services/auth";
+
+
+export const action: ActionFunction = async ({request}: ActionFunctionArgs) => {
+    const user = await loginRequired(request)
+    const data = await request.formData().then(d => d.get("reservation"))
+    console.log(data)
+    if (data === null) {
+        return {"response": new Response("invalid form data")}
+    }
+    const r = Reservation.fromJSON(data)
+    const resp = await deleteReservation(r, user);
+    console.log(resp)
+    return {"response": resp}
+}
 
 
 //this view is just for looking at details about one reservation
