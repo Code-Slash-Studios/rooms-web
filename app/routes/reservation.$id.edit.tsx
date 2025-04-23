@@ -14,12 +14,12 @@ export const action = async ({request}: LoaderFunctionArgs) => {
         throw new Response("User not logged in", {status: 401});
     }
     const formData = await request.formData();
-    const userID: number = Number.parseInt(formData.get("userID")?.toString() || "-1");
-    const id: number = Number.parseInt(formData.get("id")?.toString() || "-1");
+    const userID: string = formData.get("userID")?.toString() || "-1";
     
     if (userID !== user.id && !user.isAdmin) {
         throw new Response("You do not have permission to edit this reservation", {status: 403});
     }
+    const id: number = Number.parseInt(formData.get("id")?.toString() || "-1");
     const title = formData.get("title")?.toString() || "";
     const roomID = formData.get("room")?.toString() || "";
     const start = new Date(formData.get("start-date") + "T" + formData.get("start-time"));

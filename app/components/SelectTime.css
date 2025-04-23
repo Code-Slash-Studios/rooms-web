@@ -3,7 +3,9 @@
   position: relative;
   display: flex;
 }
-
+.time-picker__input.disabled {
+  background-color: #eee;
+}
 .time-picker__input {
   width: 70px;
   padding: 6px 8px;
@@ -17,6 +19,7 @@
 
 .time-picker__popover {
   position: absolute;
+  width: 150px;
   bottom: calc(100% + 4px);
   left: 0;
   display: none;
@@ -29,7 +32,8 @@
 }
 
 .time-picker.open .time-picker__popover {
-  display: block;
+  display: flex;
+  justify-content: space-around;
 }
 
 .time-picker__lists {
@@ -41,7 +45,8 @@
 .time-picker__list {
   position: relative;        /* for the arrows */
   overflow-y: auto;
-  max-height: 160px;
+  height: 160px;
+  min-width: 40px;
   scrollbar-width: none;     /* Firefox */
 }
 .time-picker__list::-webkit-scrollbar {

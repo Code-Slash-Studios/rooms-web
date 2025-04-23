@@ -1,29 +1,28 @@
 export interface SessionUser {
     id: string,
-    profile: string,
+    firstName: string,
+    lastName: string,
+    name: string,
+    username: string,
+    isAdmin: boolean,
     email: string,
-    accessToken: string,
-    refreshToken: string,
-    idToken: string,
-    expiresAt: string,
+    idToken: any,
+    authenticated: number,
+    expiresAt: number,
 }
 
 export class User {
     id: string;
     name: string;
     email: string;
-    accessToken: string;
-    refreshToken: string;
-    idToken: string;
+    idToken: any;
     expiresAt: number;
 
     constructor(user: SessionUser) {
         this.id = user.id;
-        this.name = user.profile;
+        this.name = user.name;
         this.email = user.email;
-        this.accessToken = user.accessToken;
-        this.refreshToken = user.refreshToken;
         this.idToken = user.idToken;
-        this.expiresAt = parseInt(user.expiresAt);
+        this.expiresAt = user.expiresAt;
     }
 }

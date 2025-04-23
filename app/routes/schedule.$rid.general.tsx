@@ -10,37 +10,6 @@ import { Room } from "~/models/room";
 import { loginRequired } from "~/services/auth";
 import { genHour, sameDay, shiftTime, Time } from "~/utils/datetime";
 
-export const action = async ({request}: ActionFunctionArgs) => {
-    const user = await loginRequired(request);
-    const formData = await request.formData();
-    console.log(formData)
-    const title = formData.get("title")?.toString() || "";
-    const roomID = formData.get("room")?.toString() || "";
-    let start = formData.get("start")?.toString() || undefined;
-    let end = formData.get("end")?.toString() || undefined;
-    let startDate: Date | undefined = undefined;
-    let endDate: Date | undefined = undefined;
-    if (start) {
-        startDate = new Date(start);
-        if (end)
-            endDate = new Date(end);
-        else 
-            endDate = shiftTime(startDate, 1); //default to 1 hour later //default to 1 hour later
-    } else {
-        startDate = new Date();
-        endDate = shiftTime(startDate, 1) //default to 1 hour later
-    }
-    let save = new Reservation(-1, title, roomID, user.id, startDate, endDate);
-    const isValid = save.isValid();
-    if (isValid.valid) {
-        return createReservation(save).then((res) => {
-            return {message: "Reservation created"}
-        });
-    } else {
-        return {message: "Invalid reservation data:" + isValid.message};
-    }
-}
-
 export const loader = async ({ params, request }: ClientLoaderFunctionArgs) => {
     const user = await loginRequired(request);
     const roomID = params.rid
@@ -72,11 +41,10 @@ export default function ScheduleRoom() {
     const [reservations, setReservations] = useState<Reservation[]>([]);
 
     //handle date display:
-    const now = new Date()
     const currentDate = new Date();
     currentDate.setHours(0,0,0,0);
-    const [selectedDate, setSelectedDate] = useState(now);
-    const [selectedTime, setSelectedTime] = useState<Time>({hour: now.getHours() < 23? now.getHours() + 1 : 12, minute: 0}); //default to 12 PM noon
+    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [selectedTime, setSelectedTime] = useState<Time>({hour: 12, minute: 0}); //default to 12 PM noon
     const [duration, setDuration] = useState(60)
     const [title, setTitle] = useState("");
     const [selectedReservations, setSelectedReservations] = useState<Reservation[]>([]);

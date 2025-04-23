@@ -2,6 +2,7 @@ import { redirect } from "@remix-run/node";
 import { sessionStorage } from "~/services/session";
 import { useEffect } from "react";
 import { useLoaderData } from "@remix-run/react";
+import { SessionUser } from "~/models/auth";
 
 export const action = async ({ request } : { request: Request }) => {
     //get nonce from session
@@ -31,8 +32,8 @@ export const action = async ({ request } : { request: Request }) => {
         console.log("Nonce does not match");
         return redirect("/login/error?e=nonce_mismatch&d=Nonce does not match;");
     }
-    
-    session.set("user", {
+    const user: SessionUser = {
+        isAdmin: false,
         id: token.oid,
         firstName: token.name.split(", ")[1],
         lastName: token.name.split(", ")[0],
@@ -40,20 +41,11 @@ export const action = async ({ request } : { request: Request }) => {
         username: token.prefered_username,
         email: token.email,
         idToken: token,
-        authenticated: token.iat,
-        expiresAt: token.exp,
-    });
-    console.log({
-        id: token.oid,
-        firstName: token.name.split(", ")[1],
-        lastName: token.name.split(", ")[0],
-        name: token.name,
-        username: token.prefered_username,
-        email: token.email,
-        idToken: token,
-        authenticated: token.iat,
-        expiresAt: token.exp,
-    })
+        authenticated: parseInt(token.iat),
+        expiresAt: parseInt(token.exp),
+    }
+    session.set("user", user);
+    console.log(user)
     return redirect("/", {headers: {"Set-Cookie": await sessionStorage.commitSession(session)}});
 }    
 
