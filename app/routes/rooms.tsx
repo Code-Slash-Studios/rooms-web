@@ -1,16 +1,23 @@
+import { LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { useEffect, useState } from "react";
 import { getNextReservationByRoomId } from "~/api/reservation";
 import { getRooms } from "~/api/room";
 import { Room } from "~/models/room";
+import { getUser } from "~/services/auth";
 
-export const loader = async () => {
+export const loader = async ({request}: LoaderFunctionArgs) => {
+    const user = await getUser(request);
     const roomData = await getRooms();
-    return {roomsData: roomData.map((r) => r.toJSON()), getError: undefined};
+    let getError: undefined | string = undefined
+    if (roomData.length === 0) {
+        getError = "No Rooms Found. The API may be down, check back again later."
+    }
+    return {roomsData: roomData.map((r) => r.toJSON()), getError: getError, user:user};
 }
 
 export default function Rooms() {
-    const {roomsData} = useLoaderData<typeof loader>();
+    const {roomsData, user, getError} = useLoaderData<typeof loader>();
     const [rooms, setRooms] = useState<Room[]>([]);
     useEffect(() => {
         // set rooms data to the state
@@ -21,6 +28,9 @@ export default function Rooms() {
         }
     }
     , [roomsData]);
+    if (getError) {
+        return <p>getError</p>
+    }
     if (roomsData == undefined) {
         return <p>Loading...</p>;
     }
@@ -34,7 +44,7 @@ export default function Rooms() {
                 <div className="room" key={room.id}>
                     <h2>Dupre {room.id} - {room.name}</h2>
                     <p>Placeholder for status integration</p>
-                    <a href={"schedule/" + room.id}><button>Schedule</button></a>
+                    <a href={"schedule/" + room.id + (user? "" : "general")}><button>Schedule</button></a>
                 </div>
             )}
         </section>

@@ -1,5 +1,5 @@
 import { ActionFunctionArgs } from "@remix-run/node";
-import { ClientLoaderFunctionArgs, Form, useActionData, useLoaderData, useSubmit } from "@remix-run/react";
+import { ClientLoaderFunctionArgs, Form, redirect, useActionData, useLoaderData, useSubmit } from "@remix-run/react";
 import { useEffect, useRef, useState } from "react";
 import { createReservation, getReservationsByRoomId } from "~/api/reservation";
 import { getRoom } from "~/api/room";
@@ -7,14 +7,17 @@ import { CalendarDay, CalendarDayHeader } from "~/components/calendarDay";
 import { SelectTime } from "~/components/SelectTime";
 import { Reservation } from "~/models/reservation";
 import { Room } from "~/models/room";
-import { loginRequired } from "~/services/auth";
+import { getUser, loginRequired } from "~/services/auth";
 import { genHour, sameDay, shiftTime, Time } from "~/utils/datetime";
 
 export const loader = async ({ params, request }: ClientLoaderFunctionArgs) => {
-    const user = await loginRequired(request);
+    const user = await getUser(request);
     const roomID = params.rid
     if (!roomID) {
         throw new Response("Room ID not found", {status: 404});
+    }
+    if (user) {
+        throw redirect(`/schedule/${roomID}`)
     }
     const reservations = await getReservationsByRoomId(roomID);
     const room = await getRoom(roomID);
@@ -27,15 +30,7 @@ export const loader = async ({ params, request }: ClientLoaderFunctionArgs) => {
 const MILLIS_IN_DAY = 86400000;
 
 export default function ScheduleRoom() {
-    const submit = useSubmit();
     const {roomData, reservationsData, user} = useLoaderData<typeof loader>();
-    const response = useActionData<typeof action>();
-    const formRef = useRef<HTMLFormElement>(null);
-    //const customDurationRef = useRef<HTMLInputElement>(null);
-
-    const [actionResponse, setActionResponse] = useState(response);
-    const [formStatus, setFormStatus] = useState<string | null>(null);
-    const [isValid, setIsValid] = useState(false);
 
     const [room, setRoom] = useState<Room | undefined>(undefined);
     const [reservations, setReservations] = useState<Reservation[]>([]);
@@ -45,8 +40,6 @@ export default function ScheduleRoom() {
     currentDate.setHours(0,0,0,0);
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [selectedTime, setSelectedTime] = useState<Time>({hour: 12, minute: 0}); //default to 12 PM noon
-    const [duration, setDuration] = useState(60)
-    const [title, setTitle] = useState("");
     const [selectedReservations, setSelectedReservations] = useState<Reservation[]>([]);
     const [currentWeek, setCurrentWeek] = useState<{past:boolean,date:Date,rs:Reservation[]}[]>([]);
     const durationList = [30, 60, 90, 120]
@@ -80,20 +73,6 @@ export default function ScheduleRoom() {
     }, [roomData, reservationsData]);
 
     useEffect(() => {
-        if (actionResponse !== undefined) {
-            if (actionResponse.message === "Reservation created") {
-                alert("Reservation created successfully!");
-                resetForm();
-                setActionResponse(undefined);
-                setFormStatus("Reservation created successfully!");
-            } else {
-                alert(actionResponse.message);
-                setFormStatus(actionResponse.message);
-            }
-        }
-    }, [actionResponse]);
-
-    useEffect(() => {
         // occurs when week is changed
         let currentWeek = Array.from({length: 7}, (v, i) => {
             const date = new Date(startOfWeek.getTime() + i * MILLIS_IN_DAY);
@@ -107,19 +86,6 @@ export default function ScheduleRoom() {
         console.log("selectedDate")
         setSelectedReservations(reservations.filter((r) => sameDay(r.start, selectedDate)));
     },[selectedDate])
-
-    useEffect(() => {
-        checkIsValid();
-    }, [selectedDate, selectedTime, reservations])
-
-    const resetForm = () => {
-        if (formRef.current) {
-            formRef.current?.reset();
-        }
-        setSelectedDate(new Date());
-        setDuration(60);
-        setTitle("");
-    }
 
     //used to fill form from calendarDay
     const selectDateTime = (datetime: Date) => {
@@ -149,61 +115,6 @@ export default function ScheduleRoom() {
             return (r.start < _end && start < r.end) || (r.start > start && r.start < _end) || (start > r.start && _end < r.end)
         })
     }
-    const checkIsValid = () => {
-        setFormStatus(null);
-        const start = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate(), selectedTime.hour, selectedTime.minute);
-        const end = new Date(start.getTime() + (duration * 60 * 1000));
-        let save = new Reservation(-1, title, room?.id || "-1", user.id, start, end);
-        const isValid = save.isValid();
-        if (!isValid.valid) {
-            setFormStatus(isValid.message);
-            setIsValid(false);
-            return false;
-        }
-        if (isOverlapping(start, end).length !== 0) {
-            setFormStatus("Reservation overlaps with existing reservations.");
-            setIsValid(false);
-            return false;
-        }
-        if (start.getTime() < Date.now()) {
-            setFormStatus("Reservation start time or date cannot be in the past.");
-            setIsValid(false);
-            return false;
-        }
-        setIsValid(true);
-
-        return save;
-    }
-
-    const handleSubmit = (e: any) => {
-        e.preventDefault();
-        const save = checkIsValid();
-        if (!save) {
-            setFormStatus("Reservation Failed");
-            alert("Reservation Failed: " + formStatus);
-            return;
-        }
-        submit(
-            { "title": save.name, "room": save.roomID, "start": save.start.toISOString(), "end": save.end.toISOString()},
-            {method: "POST", action: "", replace: true}
-        )
-    } 
-
-    const durationShortHand = (duration: number) => {
-        switch (duration) {
-            case 30:
-                return "30 min"
-            case 60:
-                return "1 hr"
-            case 90:
-                return "90 min"
-            case 120:
-                return "2 hrs"
-            default:
-                return duration + " min"
-        }
-    }
-
     // error states
     if (!roomData || roomData === undefined) {
         console.log(roomData)
@@ -238,29 +149,10 @@ export default function ScheduleRoom() {
                         )}
                     </div>
                 </div>
-                <Form ref={formRef} className="time-slots-container" onSubmit={(e) => handleSubmit(e)} method="post" action="" id="time-slots-form">
-                    <h4 key={"today-label"} className="today-label" style={{float:"right"}}>{selectedDate.toLocaleDateString("en-US", {"timeZone":"America/New_York", "month":"short","day":"numeric","year":isEndOfYear? "numeric" : undefined})}</h4>
-                    <label htmlFor="name">Reservation Name: </label>
-                    <input type="text" id="name" name="name" className="long" required={true} onChange={(e) => {setTitle(e.target.value);checkIsValid()}} value={title} placeholder="E.g. CIS Project Meeting, mx 100" maxLength={100}></input>
-                    <h4 key={"available-label"} className="available-label">Available Time Slots:</h4>
-                    <div id="time-slots">
-                        <SelectTime date={selectedDate} reservations={selectedReservations} time={selectedTime} setTime={setSelectedTime} ></SelectTime>
-                        <div id="duration-container" className="duration-container">
-                            {durationList.map(((v)=>
-                                <button className={(duration === v)? "duration selected" : "duration"} key={v} type="button" onClick={(e) => {setDuration(v)}} disabled={isOverlappingDuration(v)}>{durationShortHand(v)}</button>
-                            ))}
-                            {/* CUSTOM DURATION IMPLEMENTATION: <button title="custom-duration-button" type="button" className={"duration input" + (durationList.find((v) => v === duration)? "" : " selected")} key="custom" onClick={(e) => setDuration(parseInt(customDurationRef.current?.value || "60"))}><input ref={customDurationRef} title="custom-duration-input" type="number" onChange={(e)=> setDuration(parseInt(e.target.value))} value={duration} step={15} max={180} min={0}></input></button> */}
-                        </div>
-                    </div>
-                    <button type="submit" className="full-width" disabled={!isValid}>Submit</button>
-                    {!isValid && <div className={"form-status"}>&gt;{formStatus}</div>}
-                </Form>
+                
             </div>
         </div>
         <h3>Help Text:</h3>
-        <p>Select a date, choose a time slot, and select the duration of your reservation.</p>
-        <p>Also make sure to input a reservation name.</p>
-        <hr/>
-        <p>Your Reservations appear in green.</p>
+        <p>Please note that you will not be able to access any further details unless you <b>login</b>.</p>
     </main>
 }

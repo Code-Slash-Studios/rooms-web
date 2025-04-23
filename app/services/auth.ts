@@ -42,3 +42,13 @@ export const loginRequired = async (request:Request) => {
   }
   return user || "";
 }
+
+export const signout = async (request:Request) => {
+  const session = await sessionStorage.getSession(request.headers.get("Cookie"));
+  session.unset("user");
+  throw redirect("/", {headers: 
+    {
+      "Set-Cookie": await sessionStorage.commitSession(session)
+    }
+  })
+}
