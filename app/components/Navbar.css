@@ -38,3 +38,54 @@ nav {
 .navbar-links li a:hover {
     color: #c9d2d4;
 }
+@media (max-width: 480px) {
+    /* Full-width, stacked nav */
+    nav {
+      width: 100%;
+      background-color: #004781;
+    }
+  
+    .navbar {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 15px 10px;
+      box-sizing: border-box;
+    }
+  
+    /* Smaller logo, with bottom spacing */
+    .navbar-logo img {
+      height: 30px;
+      margin-bottom: 12px;
+    }
+  
+    /* Stack links vertically, full-width tap targets */
+    .navbar-links {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+  
+    .navbar-links li {
+      width: 100%;
+      text-align: center;
+      font-size: 16px;
+      font-weight: bold;
+    }
+  
+    .navbar-links li a {
+      display: block;
+      padding: 10px 0;
+      color: white;
+      text-decoration: none;
+    }
+  
+    .navbar-links li a:hover {
+      color: #c9d2d4;
+    }
+  }
+  

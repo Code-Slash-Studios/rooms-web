@@ -14,8 +14,10 @@ export const action = async ({request}: LoaderFunctionArgs) => {
         throw new Response("User not logged in", {status: 401});
     }
     const formData = await request.formData();
+    const userID: number = Number.parseInt(formData.get("userID")?.toString() || "-1");
     const id: number = Number.parseInt(formData.get("id")?.toString() || "-1");
-    if (id !== user.id && !user.isAdmin) {
+    
+    if (userID !== user.id && !user.isAdmin) {
         throw new Response("You do not have permission to edit this reservation", {status: 403});
     }
     const title = formData.get("title")?.toString() || "";
@@ -26,8 +28,8 @@ export const action = async ({request}: LoaderFunctionArgs) => {
     let save = new Reservation(id, title, roomID, user.id, start, end)
     const isValid = save.isValid();
     if (isValid.valid && id !== -1) {
-        return updateReservation(save, request).then((res) => {
-            return res;
+        return updateReservation(save, user).then((res) => {
+            return {message: "Reservation updated successfully: #" + res.id + " " + res.name};
         });
     } else {
         return {message: "Invalid reservation data:" + isValid.message};
@@ -41,7 +43,7 @@ export const loader = async ({ params, request }: ClientLoaderFunctionArgs) => {
     }
     const user = await loginRequired(request);
     const rooms = await getRooms()
-    const data = await getReservationById(id, request).then((res) => {
+    const data = await getReservationById(id, user).then((res) => {
         if (res === undefined) {
             throw new Response("Reservation not found", {status: 404});
         }
@@ -64,6 +66,7 @@ export default function EditReservation() {
     const response = useActionData<typeof action>();
     const [rooms, setRooms] = useState<Room[]>([]);
     const [id, setId] = useState(-1);
+    const [userID, setUserID] = useState(userData.id);
     const [title, setTitle] = useState("");
     const [roomID, setRoomID] = useState("");
     const [start, setStart] = useState<Date>(new Date());
@@ -80,6 +83,7 @@ export default function EditReservation() {
             const r = Reservation.fromJSON(reservationData);
             setId(r.id);
             setTitle(r.name);
+            setUserID(r.userID);
             setRoomID(r.roomID);
             setStart(r.start);
             setEnd(r.end);
@@ -125,10 +129,11 @@ export default function EditReservation() {
 
     return (
             <main>
-            {response != undefined ? <p className="Error">{response.id}</p> : <></>}
+            {response != undefined ? <p key="responseSpace">{response.message}</p> : <></>}
             <h1 key="title">Edit Reservation</h1>
             <Form method="put" onChange={handleChange} className="reservationForm" onSubmit={(e) => {console.log(roomID)}}>
                 <input type="hidden" name="id" value={id}/>
+                <input type="hidden" name="userID" value={userID}></input>
                 <input title="title" name="title" type="text" defaultValue={title}/>
                 <select title="room" name="room" onChange={(e) => {handleSelect(e)}}>
                     <option value={-1}>Select a room</option>
@@ -138,7 +143,7 @@ export default function EditReservation() {
                 </select>
                 <input title="start-date" name="start-date" type="date" defaultValue={toDatetimeLocal(start).split("T")[0]}/>
                 <input title="start-time" name="start-time" type="time" defaultValue={toDatetimeLocal(start).split("T")[1]}/>
-                <input title="duration" name="duration" type="number" max={240} min={15} defaultValue={duration}/>
+                <input title="duration" name="duration" type="number" max={240} min={15} defaultValue={duration} step={15}/>
                 <button type="submit">Submit</button>
             </Form>
         </main>

@@ -16,6 +16,7 @@ export const action: ActionFunction = async ({request}: ActionFunctionArgs) => {
     const r = Reservation.fromJSON(data)
     const resp = await deleteReservation(r, user);
     console.log(resp)
+    return redirect(`/schedule/${r.roomID}`)
     return {"response": resp}
 }
 
@@ -77,7 +78,7 @@ export default function ReservationIndex() {
             {reservations.map((r) => 
                 <li key={r.id}>
                     <h2>{r.name}</h2>
-                    {(r.userID === user.id || user.isAdmin) && <span className='button-tray'><Link to={`/reservation/${r.id}/edit`}><button className='edit'>&#9998;</button></Link><button className='delete' type='button' onClick={(e)=>handleDelete(r)}>X</button></span>}
+                    {(r.userID === user.id || user.isAdmin) && <span className='button-tray'><Link to={`/reservation/${r.id}/edit`}><button className='edit'>&#9998;</button></Link><button className='delete' type='button' onClick={(e)=>handleDelete(r)}>X Delete</button></span>}
                     <p>Room: {r.roomID}</p>
                     <p>User: {r.userID}</p>
                     <p>Start: {r.start.toLocaleString()}</p>
@@ -91,7 +92,7 @@ export default function ReservationIndex() {
             {oldReservations.map((r) => 
                 <li key={r.id}>
                     <h2>{r.name}</h2>
-                    {(r.userID === user.id || user.isAdmin) && <span className='button-tray'><Link to={`/reservation/${r.id}/edit`}><button className='edit'>&#9998;</button></Link><button className='delete' type='button' onClick={(e)=>handleDelete(r)}>X</button></span>}
+                    {(r.userID === user.id || user.isAdmin) && <span className='button-tray'><Link to={`/reservation/${r.id}/edit`}><button className='edit'>&#9998;</button></Link><button className='delete' type='button' onClick={(e)=>handleDelete(r)}>X Delete</button></span>}
                     <p>Room: {r.roomID}</p>
                     <p>User: {r.userID}</p>
                     <p>Start: {r.start.toLocaleString()}</p>

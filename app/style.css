@@ -53,14 +53,11 @@ header h1, header p {
     flex-wrap: wrap;
     justify-content: center;
     gap: 40px;
-    margin-top: 40px;
 }
 
 .calendar-container {
     background: white;
-    
     width: 100%;
-    max-width: 900px;
     padding: 15px;
     border-radius: 8px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
@@ -97,78 +94,48 @@ header h1, header p {
     background: #bcbcbc;
     color: #666;
 }
+.calender-grid-header {
+    margin-top:2px;
+    border-left: 1px solid #aaa;
+    border-top-left-radius: 5px;
+    top:0;
+    position: sticky;
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(7, 1fr);
+    height: fit-content;
+    overflow-y: scroll;
+    scrollbar-gutter: stable;
+}
 
 .calendar-grid {
     display: grid;
-    padding: 2px 0;
     width: 100%;
-    gap: 2px;
     font-size: smaller;
-    grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: repeat(7, minmax(0, 1fr));
     resize:vertical;
     overflow-y: auto;
     overflow-x: hidden;
-    min-height:fit-content;
-    /* scrollbar-width: none; */
+    text-overflow: ellipsis;
+    height: 400px;
+    max-height: max-content;
+    scrollbar-gutter: stable;
 }
+
 .calendar-grid-col {
     display: flex;
+    width:100%;
     flex-direction: column;
-    width: 100%;
+    height: 1000px;
+    border: #aaa px solid;
 }
 
-.calendar-day {
-    display:flex;
-    justify-content: center;
-    padding: 10px;
-    background: #7fcfd3;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: 0.3s;
-    text-align: center;
-}
-
-.calendar-day.past {
-    background: #ccc;
-}
-
-.calendar-day.past:hover {
-    background: #e0e0e0;
-    color: #ccc;
-}
-
-.calendar-day:hover {
-    background: #4F81BC;
-    color: white;
-}
-.calendar-day.selected, .calendar-day.selected:hover {
-    background: #fcdf64;
-    color: black;
-}
 
 .calendar-reservations {
     height:100%;
-    min-height: 300px;
+    min-height: 400px;
 }
 
-.calendar-reservations .period {
-    background-color: #fcdf64;
-    border-radius: 3px;
-}
-.calendar-reservations .period {
-    color: black;
-    font-size: 10px;
-    text-decoration: none;
-    
-}
-.calendar-reservations .period a {
-    height: 12px;
-    padding: 3px 5px;
-    box-sizing: content-box;
-}
-.calendar-reservations .period.blank {
-    background-color: #eee;
-}
 
 .duration-container {
     display: flex;
@@ -275,9 +242,8 @@ input.long {
 
 /* Main Content Styles */
 main {
-    padding: 20px;
+    padding: 10px;
     flex: 1;
-    margin-top: 20px;
 }
 
 /* About Page Styles */
@@ -370,21 +336,33 @@ button {
 button:hover {
     background-color: #5A94D1;
 }
-button.delete {
-    background-color: rgb(220, 66, 66);
+.button-tray {
+    display: flex;
+    justify-content: left;
+    gap: 10px;
+    margin-top: 20px;
+}
+.button-tray button {
     padding: 4px;
-    width: 30px;
-    height: 30px;
     margin:3px;
     font-size: 1em;
 }
+.button-tray button * {
+    height: 100%;
+    font-size: 100%;
+    padding: 2px 4px;
+}
+button.delete {
+    background-color: rgb(220, 50, 50);
+}
 button.edit {
+    color:#333;
     background-color: #fcdf64;
-    padding: 4px;
-    width: 30px;
-    height: 30px;
-    margin:3px;
-    font-size: 1em;
+}
+button:disabled {
+    background-color: #ddd;
+    cursor:default;
+    color: #fff;
 }
 
 a.fill {
@@ -394,3 +372,205 @@ a.fill {
     text-decoration: none;
     color: inherit;
 }
+
+.form-status {
+    display: flex;
+    justify-content: left;
+    align-items: left;
+    margin-top: 10px;
+    font-size: 1em;
+    font-weight: bold;
+    color: black;
+}
+
+
+/* Mobile-First Styles for Phones (up to 480px) */
+@media only screen and (width<=480px) {
+    /* Base font adjustments */
+    body {
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      margin: 0;
+      padding: 0;
+      background-color: white;
+      color: #333;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+  
+    /* Header */
+    header {
+      text-align: center;
+      background-color: #004781;
+      color: white;
+      padding: 15px 0;
+    }
+  
+    header h1 {
+      font-size: 1.5em;
+      margin: 0;
+    }
+  
+    header p {
+      font-size: 0.9em;
+      margin: 5px 0 0;
+    }
+  
+    /* Main container and scheduler width */
+    main,
+    .scheduler {
+      width: 90% !important;
+      margin: 0 auto;
+      padding: 0;
+    }
+  
+    /* Universal container adjustments */
+    .container,
+    .page-container,
+    .calendar-container,
+    .time-slots-container,
+    #booking-form,
+    .about-content,
+    .rooms {
+      width: 100% !important;
+      padding: 10px;
+      margin: 0 0;
+    }
+  
+    /* Calendar grid sizing */
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      height: 250px;
+      font-size: 0.7em;
+      overflow-y: auto;
+      overflow-x: visible;
+      scrollbar-gutter: stable;
+    }
+  
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #4F81BC;
+      color: white;
+      padding: 8px;
+      border-radius: 5px;
+      font-size: 0.9em;
+    }
+  
+    .calendar-day {
+      padding: 5px;
+      font-size: 0.8em;
+    }
+  
+    /* Time slots */
+    .time-slot {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 5px;
+      background: #e0e0e0;
+      border-radius: 5px;
+      cursor: pointer;
+      text-align: center;
+      font-size: 0.9em;
+    }
+  
+    .time-slot:hover,
+    .time-slot.selected {
+      background: #4F81BC;
+      color: white;
+    }
+  
+    /* Booking form */
+    #booking-form {
+      width: 100% !important;
+      max-width: none;
+      margin: 20px auto;
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+  
+    #booking-form h2 {
+      font-size: 1.3em;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+  
+    #booking-form label {
+      width: 100%;
+      font-weight: bold;
+      margin-bottom: 5px;
+      font-size: 0.9em;
+    }
+  
+    #booking-form input,
+    #booking-form textarea {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 0.9em;
+    }
+  
+    button,
+    .button-tray button {
+      width: 100%;
+      padding: 8px;
+      font-size: 0.9em;
+      border-radius: 5px;
+      margin-bottom: 10px;
+    }
+  
+    .button-tray {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+  
+    /* Rooms list */
+    .rooms {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+  
+    .room {
+      background-color: white;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 15px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      transition: transform 0.2s;
+    }
+  
+    .room h2 {
+      font-size: 1.2em;
+      color: #4F81BC;
+      margin: 0 0 10px;
+    }
+  
+    .room p {
+      font-size: 0.9em;
+      color: #555;
+      margin: 0;
+    }
+  
+    .room:hover {
+      transform: scale(1.02);
+    }
+  
+    /* Footer */
+    footer {
+      background-color: #004781;
+      color: white;
+      text-align: center;
+      padding: 8px;
+      font-size: 0.8em;
+      margin-top: auto;
+    }
+  }
+  

@@ -1,11 +1,25 @@
-import { LoaderFunction, LoaderFunctionArgs } from "@remix-run/node";
+import { ActionFunction, ActionFunctionArgs, LoaderFunction, LoaderFunctionArgs } from "@remix-run/node";
 import { Link, useLoaderData, useSubmit } from "@remix-run/react";
 import { useEffect, useState } from "react";
-import { getReservationById } from "~/api/reservation";
+import { deleteReservation, getReservationById } from "~/api/reservation";
 import { getRoom } from "~/api/room";
 import { Reservation } from "~/models/reservation";
 import { Room } from "~/models/room";
 import { loginRequired } from "~/services/auth";
+
+
+export const action: ActionFunction = async ({request}: ActionFunctionArgs) => {
+    const user = await loginRequired(request)
+    const data = await request.formData().then(d => d.get("reservation"))
+    console.log(data)
+    if (data === null) {
+        return {"response": new Response("invalid form data")}
+    }
+    const r = Reservation.fromJSON(data)
+    const resp = await deleteReservation(r, user);
+    console.log(resp)
+    return {"response": resp}
+}
 
 
 //this view is just for looking at details about one reservation
@@ -14,7 +28,7 @@ import { loginRequired } from "~/services/auth";
 export const loader: LoaderFunction = async ({ params, request }: LoaderFunctionArgs) => {
     //get the reservation with the id params.id
     const user = await loginRequired(request);
-    const res = await getReservationById(params.id || "-1", request);
+    const res = await getReservationById(params.id || "-1", user);
     if (res == undefined) {
         console.error("No reservation found");
         return {"reservationID": undefined, "getError": "No reservation found", user:user};
@@ -62,8 +76,9 @@ export default function reservationDetail() {
     return <main>
         <h1 key="title">Reservation Details</h1>
         <h2>{reservation.name}</h2>
-        {(reservation.userID === user.id || user.isAdmin) && <span className='button-tray'><Link to={`/reservation/${reservation.id}/edit`}><button className='edit'>&#9998;</button></Link><button className='delete' type='button' onClick={(e)=>handleDelete(reservation)}>X</button></span>}
+        {(reservation.userID === user.id || user.isAdmin) && <span className='button-tray'><Link to={`/reservation/${reservation.id}/edit`}><button className='edit'>&#9998; Edit</button></Link><button className='delete' type='button' onClick={(e)=>handleDelete(reservation)}>X Delete</button></span>}
         <p>Room: {room.name}</p>
+        <p>Title: {reservation.name}</p>
         <p>User: {reservation.userID}</p>
         <p>Start: {reservation.start.toLocaleString()}</p>
         <p>End: {reservation.end.toLocaleString()}</p>

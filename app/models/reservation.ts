@@ -108,9 +108,9 @@ export class Reservation {
     isValid() {
         let valid = true;
         let message = "Reservation is valid";
-        if (this.name == "") {
+        if (this.name.trim() == "") {
             valid = false;
-            message = "Name is required";
+            message = "Name is Required.";
         }
         else if (this.roomID == "") {
             valid = false;
@@ -127,6 +127,10 @@ export class Reservation {
         else if (this.start >= this.end) {
             valid = false;
             message = "Start time must be before end time";
+        }
+        else if (this.name.length > 100) {
+            valid = false;
+            message = "Reservation name has a maximum length of 100 characters";
         }
         return {valid, message: message};
     }

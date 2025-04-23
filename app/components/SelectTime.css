@@ -5,13 +5,14 @@
 }
 
 .time-picker__input {
-  width: 80px;
+  width: 70px;
   padding: 6px 8px;
   border: 1px solid #ccc;
   border-radius: 4px;
   cursor: pointer;
   background: #fff;
   color: #333;
+  text-align: center;
 }
 
 .time-picker__popover {
@@ -40,7 +41,7 @@
 .time-picker__list {
   position: relative;        /* for the arrows */
   overflow-y: auto;
-  max-height: 120px;
+  max-height: 160px;
   scrollbar-width: none;     /* Firefox */
 }
 .time-picker__list::-webkit-scrollbar {
@@ -89,6 +90,7 @@
   width: 100%;
   padding: 4px 8px;
   margin-bottom: 4px;
+  font-size: 1.25em;
   border: 1px solid #ccc;
   border-radius: 4px;
   background: #fff;
@@ -105,4 +107,15 @@
 .time-picker__list button:focus {
   outline: none;
   box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+}
+
+@media screen and (max-width: 600px) {
+  .time-picker__input {
+    width: 100%;
+    font-size: 1.2em;
+  }
+  .time-picker__popover {
+    width: 100%;
+  }
+  
 }

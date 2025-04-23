@@ -11,6 +11,8 @@ interface SelectTimeProps {
     setTime: (time: Time) => void;
 }
 
+const timeFrame = 30; // minutes
+
 export function SelectTime({ date, time, reservations, setTime }: SelectTimeProps) {
     const [PM, setPM] = useState(true);
     const [minuteList, setMinList] = useState<string[]>(["00", "15", "30", "45"]);
@@ -69,7 +71,7 @@ export function SelectTime({ date, time, reservations, setTime }: SelectTimeProp
 
     // Recompute openAM/openPM whenever reservations change
     useEffect(() => {
-        const all = FullDayOpen(date, reservations, 15);
+        const all = FullDayOpen(date, reservations, timeFrame).filter((v)=> v.start.getTime() > Date.now());
         setPeriods(all);
         setHour(time.hour);
         setMinute(time.minute.toString().padStart(2, "0"));
@@ -80,7 +82,7 @@ export function SelectTime({ date, time, reservations, setTime }: SelectTimeProp
             (PM? openPM : openAM).filter((p) => 
                 p.start.getHours() === hour
         ).map((p) => p.start.getMinutes().toString().padStart(2, "0")));
-    }, [date, reservations]);
+    }, [date, reservations, time, PM]);
     useLayoutEffect(() => {
         if (!dropped) {
             return
@@ -100,7 +102,7 @@ export function SelectTime({ date, time, reservations, setTime }: SelectTimeProp
             // grab one item to measure
             const itemEl = node.querySelector('button');
             if (!itemEl) return;
-            const itemH = itemEl.clientHeight + 5;
+            const itemH = itemEl.clientHeight + 5; // +5 for margin/border
             const containerH = node.clientHeight;
             const len = values.length;
         
@@ -128,7 +130,7 @@ export function SelectTime({ date, time, reservations, setTime }: SelectTimeProp
             hour
             );
         
-            // MINUTES — you already have the unique minuteList: string[]
+            // MINUTES — minuteList: string[]
             centerOn(minutesRef, minuteList, minute);
         });
 
@@ -226,9 +228,9 @@ export function SelectTime({ date, time, reservations, setTime }: SelectTimeProp
                     <div
                         className="time-picker__list"
                         ref={minutesRef}
-                        onScroll={minuteList.length !== 0?(e) => infiniteScroll(e, minuteList.length) : undefined}
+                        onScroll={(e) => minuteList.length > 2  && infiniteScroll(e, minuteList.length)}
                     >
-                        {(minuteList.length === 3 ? [...minuteList, ...minuteList, ...minuteList] : minuteList).map((m, idx) => (
+                        {(minuteList.length > 2 ? [...minuteList, ...minuteList, ...minuteList] : minuteList).map((m, idx) => (
                             <button
                                 key={`m-${m}-${idx}`}
                                 className={minute === m ? "selected" : ""}

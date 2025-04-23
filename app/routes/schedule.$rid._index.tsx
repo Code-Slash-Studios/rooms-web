@@ -62,8 +62,11 @@ export default function ScheduleRoom() {
     const {roomData, reservationsData, user} = useLoaderData<typeof loader>();
     const response = useActionData<typeof action>();
     const formRef = useRef<HTMLFormElement>(null);
+    //const customDurationRef = useRef<HTMLInputElement>(null);
 
     const [actionResponse, setActionResponse] = useState(response);
+    const [formStatus, setFormStatus] = useState<string | null>(null);
+    const [isValid, setIsValid] = useState(false);
 
     const [room, setRoom] = useState<Room | undefined>(undefined);
     const [reservations, setReservations] = useState<Reservation[]>([]);
@@ -77,7 +80,7 @@ export default function ScheduleRoom() {
     const [title, setTitle] = useState("");
     const [selectedReservations, setSelectedReservations] = useState<Reservation[]>([]);
     const [currentWeek, setCurrentWeek] = useState<{past:boolean,date:Date,rs:Reservation[]}[]>([]);
-    const [minutesAvailable, setMinutesAvailable] = useState<number[]>([]);
+    const durationList = [30, 60, 90, 120]
     // selectedDate.setHours(0,0,0,0);
     const startOfSelected = new Date(selectedDate.getTime());
     startOfSelected.setHours(0,0,0,0);
@@ -113,11 +116,13 @@ export default function ScheduleRoom() {
                 alert("Reservation created successfully!");
                 resetForm();
                 setActionResponse(undefined);
+                setFormStatus("Reservation created successfully!");
             } else {
                 alert(actionResponse.message);
+                setFormStatus(actionResponse.message);
             }
         }
-    }, [actionResponse,response]);
+    }, [actionResponse]);
 
     useEffect(() => {
         // occurs when week is changed
@@ -134,16 +139,8 @@ export default function ScheduleRoom() {
         setSelectedReservations(reservations.filter((r) => sameDay(r.start, selectedDate)));
     },[selectedDate])
 
-    //time till next reservation (with currently selected date and time)
     useEffect(() => {
-        const start = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate(), selectedTime.hour, selectedTime.minute);
-        const end = new Date(start.getTime() + (60 * 60 * 1000));
-        //check up to the next hour:
-        const next = reservations.filter((r) => {
-            return (r.start < end && start < r.end) || (r.start > start && r.start < end) || (start > r.start && end < r.end)
-        })
-        const nextMinutes = next[0]?.start.getMinutes() || 60;
-        setMinutesAvailable([15, 30, 45, 60].filter((v => {v <= nextMinutes})))
+        checkIsValid();
     }, [selectedDate, selectedTime, reservations])
 
     const resetForm = () => {
@@ -160,7 +157,6 @@ export default function ScheduleRoom() {
         console.log("selectDateTime", datetime)
         setSelectedDate(datetime);
         setSelectedTime({hour: genHour(datetime), minute: datetime.getMinutes()});
-        setDuration(60);
     }
 
     //button actions
@@ -174,51 +170,70 @@ export default function ScheduleRoom() {
     const nextWeek = () => {
         setWeekStart(new Date(startOfWeek.getTime() + 7 * MILLIS_IN_DAY));
     }
+    const isOverlappingDuration = (_duration: number) => {
+        const start = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate(), selectedTime.hour, selectedTime.minute);
+        const end = new Date(start.getTime() + (_duration * 60 * 1000));
+        return isOverlapping(start, end).length !== 0;
+    }
     const isOverlapping = (start: Date, _end: Date) => {
         return reservations.filter((r) => {
             return (r.start < _end && start < r.end) || (r.start > start && r.start < _end) || (start > r.start && _end < r.end)
         })
     }
-    const isValid = () => {
+    const checkIsValid = () => {
+        setFormStatus(null);
         const start = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate(), selectedTime.hour, selectedTime.minute);
         const end = new Date(start.getTime() + (duration * 60 * 1000));
         let save = new Reservation(-1, title, room?.id || "-1", user.id, start, end);
         const isValid = save.isValid();
         if (!isValid.valid) {
+            setFormStatus(isValid.message);
+            setIsValid(false);
             return false;
         }
-        const state = isOverlapping(start, end).length === 0 && end.getTime() > Date.now()
-        return state;
+        if (isOverlapping(start, end).length !== 0) {
+            setFormStatus("Reservation overlaps with existing reservations.");
+            setIsValid(false);
+            return false;
+        }
+        if (start.getTime() < Date.now()) {
+            setFormStatus("Reservation start time or date cannot be in the past.");
+            setIsValid(false);
+            return false;
+        }
+        setIsValid(true);
+
+        return save;
     }
 
     const handleSubmit = (e: any) => {
-        console.log("submitSchedule")
         e.preventDefault();
-        const roomID = room?.id || "-1";
-        const start = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate(), selectedTime.hour, selectedTime.minute);
-        const end = new Date(start.getTime() + (duration * 60 * 1000));
-        let save = new Reservation(-1, title, roomID, user.id, start, end);
-        const isValid = save.isValid();
-        if (!isValid.valid) {
-            alert("Invalid reservation data:" + isValid.message);
+        const save = checkIsValid();
+        if (!save) {
+            setFormStatus("Reservation Failed");
+            alert("Reservation Failed: " + formStatus);
             return;
         }
-        if (start.getTime() < Date.now()) {
-            alert("You cannot reserve a room in the past. Please choose a different time.");
-            return;
-        }
-        //check if this period exists in periods:
-
-        if (isOverlapping(start, end).length > 0) {
-            alert("This reservation overlaps with an existing reservation. Please choose a different time or duration.");
-            return;
-        }
-
         submit(
-            { "title": title, "room": roomID, "start": start.toISOString(), "end": end.toISOString() },
+            { "title": save.name, "room": save.roomID, "start": save.start.toISOString(), "end": save.end.toISOString()},
             {method: "POST", action: "", replace: true}
         )
     } 
+
+    const durationShortHand = (duration: number) => {
+        switch (duration) {
+            case 30:
+                return "30 min"
+            case 60:
+                return "1 hr"
+            case 90:
+                return "90 min"
+            case 120:
+                return "2 hrs"
+            default:
+                return duration + " min"
+        }
+    }
 
     // error states
     if (!roomData || roomData === undefined) {
@@ -232,19 +247,24 @@ export default function ScheduleRoom() {
     return <main>
         <div className="scheduler">
             <div className="calendar-container">
-            <h2>{room.department} - {room.name}</h2>
+            <h2>{room.department} {room.id} - {room.name}</h2>
                 <div className="calendar">
                     <div className={"calendar-header " + (inThePast? "past" : "")}>
                         <button className="prev" onClick={e => backWeek()}>&#x276E;</button>
-                        <span id="calendar-week">Week of {startOfWeek.toLocaleDateString("en-US", {timeZone:"America/New_York","month":"long","day":"numeric", "year":isEndOfYear?"numeric":undefined})} - {endOfWeek.toLocaleDateString("en-US", {"month":isEndOfMonth? "long" : undefined,"day":"numeric","year":isEndOfYear? "numeric" : undefined})} 
+                        <span id="calendar-week">
+                            {startOfWeek.toLocaleDateString("en-US", {timeZone:"America/New_York","month":"long","day":"numeric", "year":isEndOfYear?"numeric":undefined})} - {endOfWeek.toLocaleDateString("en-US", {"month":isEndOfMonth? "long" : undefined,"day":"numeric","year":isEndOfYear? "numeric" : undefined})}
                         </span>
                         <button className="next" onClick={e => nextWeek()}>&#x276F;</button>
                     </div>
-                    <div className="calendar-grid" id="calendar-days">
+                    <div className="calender-grid-header" id="calender-grid-header">
+                        {currentWeek.map(({past, date}) =>
+                            <CalendarDayHeader endOfMonth={isEndOfMonth} date={date} past={past} selected={sameDay(date, selectedDate)} trigger={selectDate} key={date.toLocaleDateString()}></CalendarDayHeader>
+                        )}
+                    </div>
+                    <div className="calendar-grid" id="calendar-grid">
                         {currentWeek.map(({past, date, rs}) =>
                             <div className="calendar-grid-col" key={date.toLocaleDateString()}>
-                                <CalendarDayHeader date={date} past={past} selected={sameDay(date, selectedDate)} trigger={selectDate}></CalendarDayHeader>
-                                <CalendarDay date={date} reservations={rs} setDateTime={selectDateTime}></CalendarDay>
+                                <CalendarDay past={past} date={date} reservations={rs} setDateTime={selectDateTime} user={user}></CalendarDay>
                             </div>
                         )}
                     </div>
@@ -252,27 +272,26 @@ export default function ScheduleRoom() {
                 <Form ref={formRef} className="time-slots-container" onSubmit={(e) => handleSubmit(e)} method="post" action="" id="time-slots-form">
                     <h4 key={"today-label"} className="today-label" style={{float:"right"}}>{selectedDate.toLocaleDateString("en-US", {"timeZone":"America/New_York", "month":"short","day":"numeric","year":isEndOfYear? "numeric" : undefined})}</h4>
                     <label htmlFor="name">Reservation Name: </label>
-                    <input type="text" id="name" name="name" className="long" required={true} onChange={(e) => setTitle(e.target.value)} value={title}></input>
+                    <input type="text" id="name" name="name" className="long" required={true} onChange={(e) => {setTitle(e.target.value);checkIsValid()}} value={title} placeholder="E.g. CIS Project Meeting, mx 100" maxLength={100}></input>
                     <h4 key={"available-label"} className="available-label">Available Time Slots:</h4>
                     <div id="time-slots">
                         <SelectTime date={selectedDate} reservations={selectedReservations} time={selectedTime} setTime={setSelectedTime} ></SelectTime>
-                    
                         <div id="duration-container" className="duration-container">
-                            {[15, 30, 45, 60].map(((v)=>
-                                <button className={(duration === v)? "duration selected" : "duration"} key={v} type="button" onClick={(e) => setDuration(v)}>{v} min</button>
+                            {durationList.map(((v)=>
+                                <button className={(duration === v)? "duration selected" : "duration"} key={v} type="button" onClick={(e) => {setDuration(v)}} disabled={isOverlappingDuration(v)}>{durationShortHand(v)}</button>
                             ))}
+                            {/* CUSTOM DURATION IMPLEMENTATION: <button title="custom-duration-button" type="button" className={"duration input" + (durationList.find((v) => v === duration)? "" : " selected")} key="custom" onClick={(e) => setDuration(parseInt(customDurationRef.current?.value || "60"))}><input ref={customDurationRef} title="custom-duration-input" type="number" onChange={(e)=> setDuration(parseInt(e.target.value))} value={duration} step={15} max={180} min={0}></input></button> */}
                         </div>
                     </div>
-                    <button type="submit" className="full-width" style={{display:(isValid()? "inline-block" : "none")}}>Submit</button>
-                    {!isValid() && <p>Please select a valid time slot, name, and duration. (then you can submit this form)</p>}
+                    <button type="submit" className="full-width" disabled={!isValid}>Submit</button>
+                    {!isValid && <div className={"form-status"}>&gt;{formStatus}</div>}
                 </Form>
             </div>
         </div>
         <h3>Help Text:</h3>
         <p>Select a date, choose a time slot, and select the duration of your reservation.</p>
-        <p>Also make sure to input a reservation name {room.department}-{room.name}.</p>
-        <p>Please include the reason you are reserving the room.<br></br>(ex. Studying for CS-330, Software Engineering group work, Senior Project meeting)</p>
-        
-
+        <p>Also make sure to input a reservation name.</p>
+        <hr/>
+        <p>Your Reservations appear in green.</p>
     </main>
 }
