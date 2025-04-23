@@ -143,7 +143,7 @@ export default function EditReservation() {
                 </select>
                 <input title="start-date" name="start-date" type="date" defaultValue={toDatetimeLocal(start).split("T")[0]}/>
                 <input title="start-time" name="start-time" type="time" defaultValue={toDatetimeLocal(start).split("T")[1]}/>
-                <input title="duration" name="duration" type="number" max={240} min={15} defaultValue={duration}/>
+                <input title="duration" name="duration" type="number" max={240} min={15} defaultValue={duration} step={15}/>
                 <button type="submit">Submit</button>
             </Form>
         </main>

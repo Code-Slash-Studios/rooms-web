@@ -138,15 +138,8 @@ export default function ScheduleRoom() {
         setSelectedReservations(reservations.filter((r) => sameDay(r.start, selectedDate)));
     },[selectedDate])
 
-    //time till next reservation (with currently selected date and time)
     useEffect(() => {
-        const start = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate(), selectedTime.hour, selectedTime.minute);
-        const end = new Date(start.getTime() + (60 * 60 * 1000));
-        //check up to the next hour:
-        const next = reservations.filter((r) => {
-            return (r.start < end && start < r.end) || (r.start > start && r.start < end) || (start > r.start && end < r.end)
-        })
-        //setMinutesAvailable([15, 30, 45, 60].filter((v => {v <= nextMinutes})))
+        checkIsValid();
     }, [selectedDate, selectedTime, reservations])
 
     const resetForm = () => {
@@ -187,22 +180,25 @@ export default function ScheduleRoom() {
         })
     }
     const checkIsValid = () => {
+        setFormStatus(null);
         const start = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate(), selectedTime.hour, selectedTime.minute);
         const end = new Date(start.getTime() + (duration * 60 * 1000));
         let save = new Reservation(-1, title, room?.id || "-1", user.id, start, end);
         const isValid = save.isValid();
         if (!isValid.valid) {
             setFormStatus(isValid.message);
-            return false;
+            setIsValid(false);
         }
         if (isOverlapping(start, end).length !== 0) {
             setFormStatus("Reservation overlaps with existing reservations");
-            return false;
+            setIsValid(false);
         }
         if (start.getTime() < Date.now()) {
             setFormStatus("Reservation start time cannot be in the past");
-            return false;
+            setIsValid(false);
         }
+        setIsValid(true);
+        
         return save;
     }
 
@@ -272,13 +268,13 @@ export default function ScheduleRoom() {
                 <Form ref={formRef} className="time-slots-container" onSubmit={(e) => handleSubmit(e)} method="post" action="" id="time-slots-form">
                     <h4 key={"today-label"} className="today-label" style={{float:"right"}}>{selectedDate.toLocaleDateString("en-US", {"timeZone":"America/New_York", "month":"short","day":"numeric","year":isEndOfYear? "numeric" : undefined})}</h4>
                     <label htmlFor="name">Reservation Name: </label>
-                    <input type="text" id="name" name="name" className="long" required={true} onChange={(e) => setTitle(e.target.value)} value={title} placeholder="E.g. CIS Project Meeting, mx 100" maxLength={100}></input>
+                    <input type="text" id="name" name="name" className="long" required={true} onBlur={() => checkIsValid()} onChange={(e) => setTitle(e.target.value)} value={title} placeholder="E.g. CIS Project Meeting, mx 100" maxLength={100}></input>
                     <h4 key={"available-label"} className="available-label">Available Time Slots:</h4>
                     <div id="time-slots">
                         <SelectTime date={selectedDate} reservations={selectedReservations} time={selectedTime} setTime={setSelectedTime} ></SelectTime>
                         <div id="duration-container" className="duration-container">
                             {durationList.map(((v)=>
-                                <button className={(duration === v)? "duration selected" : "duration"} key={v} type="button" onClick={(e) => setDuration(v)} disabled={isOverlappingDuration(v)}>{durationShortHand(v)}</button>
+                                <button className={(duration === v)? "duration selected" : "duration"} key={v} type="button" onClick={(e) => {setDuration(v)}} disabled={isOverlappingDuration(v)}>{durationShortHand(v)}</button>
                             ))}
                             {/* CUSTOM DURATION IMPLEMENTATION: <button title="custom-duration-button" type="button" className={"duration input" + (durationList.find((v) => v === duration)? "" : " selected")} key="custom" onClick={(e) => setDuration(parseInt(customDurationRef.current?.value || "60"))}><input ref={customDurationRef} title="custom-duration-input" type="number" onChange={(e)=> setDuration(parseInt(e.target.value))} value={duration} step={15} max={180} min={0}></input></button> */}
                         </div>
