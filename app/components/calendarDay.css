@@ -1,0 +1,17 @@
+.float-time {
+    z-index: 2;
+    display:inline-block;
+    width: 100%;
+}
+.period .name {
+    width:100%;
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+    font-weight: bold;
+    font-size: 1em;
+    color: black;
+    text-overflow: ellipsis;
+    word-break:normal;
+    overflow: hidden;
+    white-space: wrap;
+    padding-bottom: 0.5em;
+}

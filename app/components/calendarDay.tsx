@@ -3,6 +3,7 @@ import { useEffect, useState } from "react"
 import { FullDay, percentOfDay } from "~/models/period"
 import { Reservation } from "~/models/reservation"
 import { genDate, genTime } from "~/utils/datetime"
+import "./calendarDay.css"
 
 interface CalendarDayProps {
     date: Date,
@@ -49,13 +50,14 @@ export const CalendarDay = ({date, reservations, setDateTime, past}: CalendarDay
                 if (p.isEmpty())
                     return <div className="period blank" key={"blank" + "." + key + "." + genTime(p.start, false)} title={genTime(p.start) + "-" + genTime(p.end)} style={{height: `${percentOfDay(p.start, p.end)}%`}}>
                     <a onClick={(e) => {e.preventDefault();setDateTime(p.start)}} href="" className="fill">
-                        {p.start.getDay() === 0 && genTime(p.start)}
+                        <div className="float-time">{p.start.getDay() === 0 && genTime(p.start)}</div>
                     </a>
                     </div>
                 else
                     return <div className={"period"+(past? " past" : "")} key={key + "." + genTime(p.start, false)} title={p.name + " " + genTime(p.start) + "-" + genTime(p.end)} style={{height: `${percentOfDay(p.start, p.end)}%`}}>
                     <Link to={"/reservation/" + p.id} className="fill">
-                        {p.start.getDay() === 0 && genTime(p.start)}
+                        {p.start.getDay() === 0 && <div className="float-time">{genTime(p.start)}</div>}
+                        <div className="name">{p.name}</div>
                     </Link>
                     </div>
             })}

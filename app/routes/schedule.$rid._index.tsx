@@ -116,6 +116,7 @@ export default function ScheduleRoom() {
                 alert("Reservation created successfully!");
                 resetForm();
                 setActionResponse(undefined);
+                setFormStatus("Reservation created successfully!");
             } else {
                 alert(actionResponse.message);
                 setFormStatus(actionResponse.message);
@@ -198,7 +199,7 @@ export default function ScheduleRoom() {
             setIsValid(false);
         }
         setIsValid(true);
-        
+
         return save;
     }
 
