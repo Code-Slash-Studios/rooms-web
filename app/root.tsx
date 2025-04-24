@@ -23,10 +23,6 @@ export const loader: LoaderFunction = async ({ request }: { request: Request }) 
 
 export default function App() {
   const {userData} = useLoaderData<typeof loader>()
-  const [user, setUser] = useState<SessionUser | undefined>()
-  useEffect(()=>{
-    setUser(userData)
-  }, [userData])
 
   return (
     <html>
@@ -39,7 +35,7 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <Navbar user={user}  _signout={() => null}/>
+        <Navbar user={userData}  _signout={() => null}/>
         <Outlet />
         <Scripts />
       </body>
