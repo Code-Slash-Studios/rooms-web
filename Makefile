@@ -7,6 +7,10 @@ build:
 
 podman:
 	podman build . -t rooms-web-image
+	podman run --name rooms-web -p 8080:8080 rooms-web-image
+
+podman-detached:
+	podman build . -t rooms-web-image
 	podman run --name rooms-web -p 8080:8080 -d rooms-web-image
 
 stop:
