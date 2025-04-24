@@ -1,30 +1,19 @@
 init:
 	npm install
+	mkfile .env
 
-build-l:
-	podman build . -t rooms-web
+build:
+	podman build . -t rooms-web-image
 
-run-l:
-	make build-l
-	podman run --name rooms-web-container -p 8081:8080 -d rooms-web
-
-build-prod:
-	podman build . -t rooms-web-prod
-
-run-prod:
-	make build-prod
-	podman run --name rooms-web-container-prod -p 8080:8080 -d rooms-web-prod
+podman:
+	podman build . -t rooms-web-image
+	podman run --name rooms-web -p 8080:8080 -d rooms-web-image
 
 stop:
-	podman stop rooms-web-container
+	podman stop rooms-web
 kill:
-	podman stop rooms-web-container
-	podman rm rooms-web-container
-stop-prod:
-	podman stop rooms-web-container-prod
-kill-prod:
-	podman stop rooms-web-container-prod
-	podman rm rooms-web-container-prod
+	podman stop rooms-web
+	podman rm rooms-web
 
 prod:
 	npm run build
