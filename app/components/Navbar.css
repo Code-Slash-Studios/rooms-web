@@ -1,6 +1,6 @@
 nav {
     width: 100%;
-    background-color: #004781;
+    background-color: white;
 }
 
 .navbar {
@@ -26,7 +26,7 @@ nav {
 }
 
 .navbar-links li a {
-    color: white;
+    color: #4F81BC;
     text-decoration: none;
 }
 .navbar-links li {
@@ -37,7 +37,7 @@ nav {
 }
 
 .navbar-links li a:hover {
-    color: #c9d2d4;
+    color: #004781;
 }
 .userdrop {
   position: absolute;
