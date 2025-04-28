@@ -1,0 +1,31 @@
+.button-tray {
+    position:relative;
+    display: inline-flex;
+}
+.button-tray button * {
+    height: 100%;
+    font-size: 100%;
+    padding: 2px 4px;
+}
+button.delete {
+    background-color: rgb(220, 50, 50);
+}
+button.edit {
+    color:#333;
+    background-color: #fcdf64;
+}
+.confirm-delete {
+    position: static;
+    display: block;
+    top: calc(50%);
+    left: calc(50%);
+    width: 100px;
+    height: 100px;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.confirm-delete.hidden {
+    display: none;
+}

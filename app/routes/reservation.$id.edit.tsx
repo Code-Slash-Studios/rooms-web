@@ -134,7 +134,7 @@ export default function EditReservation() {
             <Form method="put" onChange={handleChange} className="reservationForm" onSubmit={(e) => {console.log(roomID)}}>
                 <input type="hidden" name="id" value={id}/>
                 <input type="hidden" name="userID" value={userID}></input>
-                <input title="title" name="title" type="text" defaultValue={title}/>
+                <input title="title" name="title" type="text" defaultValue={title} maxLength={30}/>
                 <select title="room" name="room" onChange={(e) => {handleSelect(e)}}>
                     <option value={-1}>Select a room</option>
                     {rooms.map((room) => (

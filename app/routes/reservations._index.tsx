@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { loginRequired } from '~/services/auth';
 import { ActionFunction, ActionFunctionArgs, LoaderFunction, LoaderFunctionArgs } from '@remix-run/node';
 import { startOfDay } from '~/utils/datetime';
+import EditDeleteTray from '~/components/editDeleteTray';
 
 export const action: ActionFunction = async ({request}: ActionFunctionArgs) => {
     const user = await loginRequired(request)
@@ -65,41 +66,55 @@ export default function ReservationIndex() {
         return <p>{getError}</p>;
     }
 
-    const handleDelete = (r: Reservation) => {
-        let cnf = confirm(`Are you sure you want to delete the ${r.name} reservation?`)
-        console.log(cnf)
-        if (cnf)
-            submit({reservation: r.toJSON()}, {"encType":"multipart/form-data", method:"POST", action:""})
-    }
-
     return <>
         <h1 key="title">All Reservations</h1>
-        <ul key="reservations">
-            {reservations.map((r) => 
-                <li key={r.id}>
-                    <h2>{r.name}</h2>
-                    {(r.userID === user.id || user.isAdmin) && <span className='button-tray'><Link to={`/reservation/${r.id}/edit`}><button className='edit'>&#9998;</button></Link><button className='delete' type='button' onClick={(e)=>handleDelete(r)}>X Delete</button></span>}
-                    <p>Room: {r.roomID}</p>
-                    <p>User: {r.userID}</p>
-                    <p>Start: {r.start.toLocaleString()}</p>
-                    <p>End: {r.end.toLocaleString()}</p>
-                    <p>Duration: {(r.end.getTime() - r.start.getTime()) / (60 * 1000)} minutes</p>
-                </li>
-            )}
-        </ul>
+        <table key="reservations" className='reservations'>
+            <thead>
+                <tr>
+                    <th>Room</th>
+                    <th>User</th>
+                    <th>Start</th>
+                    <th>End</th>
+                    <th>Duration</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody key="reservations">
+                {reservations.map((r) => 
+                    <tr key={r.id}>
+                        <td>{r.roomID}</td>
+                        <td>{r.userID}</td>
+                        <td>{r.start.toLocaleString()}</td>
+                        <td>{r.end.toLocaleString()}</td>
+                        <td>{(r.end.getTime() - r.start.getTime()) / (60 * 1000)} minutes</td>
+                        {(r.userID === user.id || user.isAdmin) && <td><EditDeleteTray reservation={r}></EditDeleteTray></td>}
+                    </tr>
+                )}
+            </tbody>
+        </table>
         {oldReservations.length > 0 && reservations.length > 0 && <h2>Archive:</h2>}
-        <ul key="archive archive-reservations reservations">
-            {oldReservations.map((r) => 
-                <li key={r.id}>
-                    <h2>{r.name}</h2>
-                    {(r.userID === user.id || user.isAdmin) && <span className='button-tray'><Link to={`/reservation/${r.id}/edit`}><button className='edit'>&#9998;</button></Link><button className='delete' type='button' onClick={(e)=>handleDelete(r)}>X Delete</button></span>}
-                    <p>Room: {r.roomID}</p>
-                    <p>User: {r.userID}</p>
-                    <p>Start: {r.start.toLocaleString()}</p>
-                    <p>End: {r.end.toLocaleString()}</p>
-                    <p>Duration: {(r.end.getTime() - r.start.getTime()) / (60 * 1000)} minutes</p>
-                </li>
-            )}
-        </ul>
+        <table key="old-reservations" className='reservations'>
+            <thead>
+                <tr>
+                    <th>Room</th>
+                    <th>User</th>
+                    <th>Start</th>
+                    <th>End</th>
+                    <th>Duration</th>
+                </tr>
+            </thead>
+            <tbody key="old-reservations">
+                {oldReservations.map((r) => 
+                    <tr key={r.id}>
+                        <td>{r.roomID}</td>
+                        <td>{r.userID}</td>
+                        <td>{r.start.toLocaleString()}</td>
+                        <td>{r.end.toLocaleString()}</td>
+                        <td>{(r.end.getTime() - r.start.getTime()) / (60 * 1000)} minutes</td>
+                    </tr>
+                )}
+            </tbody>
+        </table>
+        {reservations.length == 0 && <p>No reservations found</p>}
     </>
 }

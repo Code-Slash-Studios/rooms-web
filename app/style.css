@@ -347,18 +347,7 @@ button:hover {
     margin:3px;
     font-size: 1em;
 }
-.button-tray button * {
-    height: 100%;
-    font-size: 100%;
-    padding: 2px 4px;
-}
-button.delete {
-    background-color: rgb(220, 50, 50);
-}
-button.edit {
-    color:#333;
-    background-color: #fcdf64;
-}
+
 button:disabled {
     background-color: #ddd;
     cursor:default;
