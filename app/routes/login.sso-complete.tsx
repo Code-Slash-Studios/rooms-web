@@ -41,14 +41,15 @@ export const action = async ({ request } : { request: Request }) => {
         authenticated: parseInt(token.iat),
         expiresAt: parseInt(token.exp),
     }
+    try {
     const userInstance = await newUserInstance(user);
     if (userInstance) {
         user.isAdmin = userInstance.isAdmin;
     } else {
         console.log("User not found, creating new user", user);
-        return redirect("/login/error?e=user_not_found;d=User not found in API;");
+    }} catch (error) {
+        console.error("Error creating user", error);
     }
-    user.isAdmin = userInstance.isAdmin;
     session.set("user", user);
     console.log(user)
     return redirect("/", {headers: {"Set-Cookie": await sessionStorage.commitSession(session)}});
