@@ -87,7 +87,7 @@ export default function ReservationIndex() {
                         <td>{r.start.toLocaleString()}</td>
                         <td>{r.end.toLocaleString()}</td>
                         <td>{(r.end.getTime() - r.start.getTime()) / (60 * 1000)} minutes</td>
-                        {(r.userID === user.id || user.isAdmin) && <td><EditDeleteTray reservation={r}></EditDeleteTray></td>}
+                        {(r.userID === user.id || user.isAdmin) && <td><EditDeleteTray reservation={r} allowDelete={true}></EditDeleteTray></td>}
                     </tr>
                 )}
             </tbody>
@@ -111,6 +111,7 @@ export default function ReservationIndex() {
                         <td>{r.start.toLocaleString()}</td>
                         <td>{r.end.toLocaleString()}</td>
                         <td>{(r.end.getTime() - r.start.getTime()) / (60 * 1000)} minutes</td>
+                        {(user.isAdmin) && <td><EditDeleteTray reservation={r} allowDelete={true}></EditDeleteTray></td>}
                     </tr>
                 )}
             </tbody>
