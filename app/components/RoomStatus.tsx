@@ -36,7 +36,7 @@ export const RoomStatus = ({index, room, reservations, user}: RoomStatusProps) =
         <a className="room-status-container" key={room.id} onClickCapture={(e) => onClick(e)} href={`/schedule/${room.id}/general`}>
             <hr key={"hr1"}></hr>
             <div className="room-status">
-                <div className="room-status-info">
+                <div className="room-status-info" key={"room-info"}>
                 <h2 key={"header"} className="status-title">{room.id} - {room.name}</h2>
                 {isNow ? (
                         <h1 key={"status"} className={"closed"}>IN-USE</h1>
@@ -53,7 +53,7 @@ export const RoomStatus = ({index, room, reservations, user}: RoomStatusProps) =
                     </div>
                 )}
                 </div>
-                <div className="next-info" onClick={onClick}>
+                <div className="next-info" onClick={onClick} key={"next-info"}>
                     {/* displays info of next reservation */}
                     {nextReservation ? (
                         <div className="next-reservation-info">

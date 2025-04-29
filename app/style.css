@@ -33,22 +33,6 @@ hr.vr::before {
 }
 
 /* Header Styles */
-header {
-    text-align: center;
-    background-color: #004781;
-    color: white;
-    padding: 30px 0;
-}
-
-.header-logo {
-    max-width: 100%;
-    height: auto;
-    max-height: 80px;
-}
-
-header h1, header p {
-    margin: 0;
-}
 
 /* Navbar Styles */
 
