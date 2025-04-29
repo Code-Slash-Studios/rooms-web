@@ -3,23 +3,12 @@ import { Link, useLoaderData, useSubmit } from "@remix-run/react";
 import { useEffect, useState } from "react";
 import { deleteReservation, getReservationById } from "~/api/reservation";
 import { getRoom } from "~/api/room";
+import EditDeleteTray from "~/components/editDeleteTray";
 import { Reservation } from "~/models/reservation";
 import { Room } from "~/models/room";
 import { loginRequired } from "~/services/auth";
 
 
-export const action: ActionFunction = async ({request}: ActionFunctionArgs) => {
-    const user = await loginRequired(request)
-    const data = await request.formData().then(d => d.get("reservation"))
-    console.log(data)
-    if (data === null) {
-        return {"response": new Response("invalid form data")}
-    }
-    const r = Reservation.fromJSON(data)
-    const resp = await deleteReservation(r, user);
-    console.log(resp)
-    return {"response": resp}
-}
 
 
 //this view is just for looking at details about one reservation
@@ -67,16 +56,11 @@ export default function reservationDetail() {
     if (error != undefined) {
         return <p>{error}</p>;
     }
-    const handleDelete = (r: Reservation) => {
-        let cnf = confirm(`Are you sure you want to delete the ${r.name} reservation?`)
-        console.log(cnf)
-        if (cnf)
-            submit({reservation: r.toJSON()}, {"encType":"multipart/form-data", method:"POST", action:"/reservations"})
-    }
+    
     return <main>
         <h1 key="title">Reservation Details</h1>
         <h2>{reservation.name}</h2>
-        {(reservation.userID === user.id || user.isAdmin) && <span className='button-tray'><Link to={`/reservation/${reservation.id}/edit`}><button className='edit'>&#9998; Edit</button></Link><button className='delete' type='button' onClick={(e)=>handleDelete(reservation)}>X Delete</button></span>}
+        {(reservation.userID === user.id || user.isAdmin) && <EditDeleteTray reservation={reservation}></EditDeleteTray>}
         <p>Room: {room.name}</p>
         <p>Title: {reservation.name}</p>
         <p>User: {reservation.userID}</p>

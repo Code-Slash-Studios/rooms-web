@@ -160,9 +160,9 @@ export class Reservation {
             valid = false;
             message = "Start time must be between 8:00 AM and 11:00 PM";
         }
-        else if (this.name.length > 100) {
+        else if (this.name.length > 30) {
             valid = false;
-            message = "Reservation name has a maximum length of 100 characters";
+            message = "Reservation name has a maximum length of 30 characters";
         }
         return {valid, message: message};
     }
