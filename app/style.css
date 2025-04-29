@@ -10,23 +10,29 @@ body {
     flex-direction: column;
 }
 
-/* Header Styles */
-header {
-    text-align: center;
-    background-color: #004781;
-    color: white;
-    padding: 30px 0;
-}
-
-.header-logo {
-    max-width: 100%;
-    height: auto;
-    max-height: 80px;
-}
-
-header h1, header p {
+hr {
+    border: none;
+    height: 35px;
+    padding: 10px;                   
     margin: 0;
+    background: 
+        url('Spacer.png') 
+        center center repeat-x;       /* repeat horizontally */
 }
+
+/* Vertical Rule Styles */
+hr.vr {
+    width: 10px;
+    height: 100%;
+    background-image: url('Spacer.png') center center repeat-y; /* repeat vertically */
+}
+hr.vr::before {
+    position: absolute;
+    transform: rotate(90deg);
+    content: '';
+}
+
+/* Header Styles */
 
 /* Navbar Styles */
 
@@ -48,17 +54,39 @@ header h1, header p {
 }
 
 .scheduler {
+    flex: 3;
+    display: block;
+    width: 80%;
+}
+.help-container {
+    flex: 1;
+    background: white;
+    width: 100%;
+    min-width: 200px;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
     display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.calendar {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
     max-width: 900px;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 40px;
+    margin: 0 auto;
+    background: white;
 }
 
 .calendar-container {
     background: white;
     width: 100%;
     padding: 15px;
+    box-sizing: border-box;
     border-radius: 8px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
 }
@@ -102,6 +130,7 @@ header h1, header p {
     position: sticky;
     display: grid;
     width: 100%;
+    max-width: 900px;
     grid-template-columns: repeat(7, 1fr);
     height: fit-content;
     overflow-y: scroll;
@@ -110,7 +139,7 @@ header h1, header p {
 
 .calendar-grid {
     display: grid;
-    width: 100%;
+    max-width: 900px;
     font-size: smaller;
     grid-template-columns: repeat(7, minmax(0, 1fr));
     resize:vertical;
@@ -242,8 +271,12 @@ input.long {
 
 /* Main Content Styles */
 main {
-    padding: 10px;
-    flex: 1;
+    flex-grow: 4;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    gap: 20px;
 }
 
 /* About Page Styles */
@@ -292,22 +325,9 @@ footer p {
 .rooms {
     display: flex;
     flex-direction: column;
-    gap: 50px;
+    gap: 5px;
     max-width: 600px;
     margin: 0 auto;
-}
-
-.room {
-    background-color: white;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s;
-}
-
-.room:hover {
-    transform: scale(1.05);
 }
 
 .room h2 {
@@ -404,14 +424,6 @@ a.fill {
     header p {
       font-size: 0.9em;
       margin: 5px 0 0;
-    }
-  
-    /* Main container and scheduler width */
-    main,
-    .scheduler {
-      width: 90% !important;
-      margin: 0 auto;
-      padding: 0;
     }
   
     /* Universal container adjustments */
@@ -524,7 +536,7 @@ a.fill {
     .rooms {
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 10px;
     }
   
     .room {

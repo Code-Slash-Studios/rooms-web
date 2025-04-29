@@ -1,3 +1,10 @@
+import { Reservation } from "./reservation";
+
+export interface RoomAndReservations {
+    room: Room;
+    reservations: Reservation[];
+}
+
 export class Room {
     id: string;
     name: string;

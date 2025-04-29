@@ -1,4 +1,5 @@
 import { ReservationComp, ReservationProps } from "~/components/Reservation";
+import { endOfDay, genHour } from "~/utils/datetime";
 
 /**
  * Defines a reservation object.
@@ -42,6 +43,11 @@ export class Reservation {
     isEmpty() {
         return this.id == -1 && this.name == "" && this.roomID == "" && this.start == null && this.end == null;
     }
+    isNow() {
+        const now = new Date();
+        return this.start <= now && this.end >= now;
+    }
+
     static fromJSON(json: any): Reservation {
         //for processing single reservation
         if (typeof json === "string") {
@@ -58,7 +64,7 @@ export class Reservation {
 
     static factory(json: any[]): Reservation[] {
         //for processing multiple reservations
-        const reservations = json.map((r: any) => {
+        const reservations = json.filter((j: any) => j).map((r: any) => { //filter was added to remove null values
             if (typeof r === "string") {
                 r = JSON.parse(r);
             }
@@ -101,9 +107,31 @@ export class Reservation {
         }
     }
     static validateObject(obj: any) {
-        if (!obj.id || !obj.name || !obj.room_id || !obj.user_id || !obj.start || !obj.end) {
-            throw new Error("Invalid reservation data");
+        let errors = [];
+        //split up the above if statement into multiple if statements to get better error messages.
+        if (!obj.id) {
+            errors.push("id is required");
         }
+        if (!obj.name) {
+            errors.push("name is required");
+        }
+        if (!obj.room_id && !obj.roomID) {
+            errors.push("roomID is required");
+        }
+        if (!obj.user_id && !obj.userID) {
+            errors.push("userID is required");
+        }
+        if (!obj.start) {
+            errors.push("start is required");
+        }
+        if (!obj.end) {
+            errors.push("end is required");
+        }
+        if (errors.length > 0) {
+            console.error("Invalid reservation data", errors.join(", "), "recieved:", obj);
+            throw new Error("Invalid reservation data: " + errors.join(", "));
+        }
+
     }
     isValid() {
         let valid = true;
@@ -128,10 +156,26 @@ export class Reservation {
             valid = false;
             message = "Start time must be before end time";
         }
+        else if (genHour(this.start) < 8 || genHour(this.start) > 23) {
+            valid = false;
+            message = "Start time must be between 8:00 AM and 11:00 PM";
+        }
         else if (this.name.length > 30) {
             valid = false;
             message = "Reservation name has a maximum length of 30 characters";
         }
         return {valid, message: message};
+    }
+    static getNext(reservations: Reservation[]): Reservation | null {
+        const now = new Date();
+        
+        const next = reservations.filter((r) => {
+            return r.end >= now && r.start <= endOfDay(now);
+        });
+        if (next.length == 0) {
+            return null;
+        }
+        return next[0];
+
     }
 }

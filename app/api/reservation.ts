@@ -63,12 +63,11 @@ export async function createReservation(reservation: Reservation, actor?: any) {
             body: reservation.toJSON()
         }
     ).then((response) => {
-        console.log(response)
+        console.log("Response", response)
         return response.json();
     }).catch((error) => {
         console.error(error); return undefined
     });
-    console.log(resp)
     return resp
 }
 
@@ -97,7 +96,7 @@ export async function updateReservation(reservation: Reservation, actor?: any) {
 
 export async function deleteReservation(reservation: Reservation, actor?: any) {
     if (actor !== undefined) {
-        console.log("is deleting", actor.id, reservation.userID, actor.isAdmin)
+        console.log(actor.id,"is deleting", reservation.userID, actor.isAdmin)
         if (actor.id !== reservation.userID && !actor.isAdmin) {
             return new Response("PermissionDenied",{status: 403})
         }   

@@ -7,11 +7,11 @@ import { CalendarDay, CalendarDayHeader } from "~/components/calendarDay";
 import { SelectTime } from "~/components/SelectTime";
 import { Reservation } from "~/models/reservation";
 import { Room } from "~/models/room";
-import { getUser, loginRequired } from "~/services/auth";
+import { getRequestUser, loginRequired } from "~/services/auth";
 import { genHour, sameDay, shiftTime, Time } from "~/utils/datetime";
 
 export const loader = async ({ params, request }: ClientLoaderFunctionArgs) => {
-    const user = await getUser(request);
+    const user = await getRequestUser(request);
     const roomID = params.rid
     if (!roomID) {
         throw new Response("Room ID not found", {status: 404});
@@ -117,7 +117,6 @@ export default function ScheduleRoom() {
     }
     // error states
     if (!roomData || roomData === undefined) {
-        console.log(roomData)
         return <main><div>Room not found or Loading...</div></main>
     }
     if (room == undefined) {
