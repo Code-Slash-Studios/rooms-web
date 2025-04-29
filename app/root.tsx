@@ -9,14 +9,14 @@ import Navbar from "./components/Navbar";
 import "./style.css";
 import "./favicon.ico";
 import { sessionStorage } from "./services/session";
-import { getUser } from "./services/auth";
+import { getRequestUser } from "./services/auth";
 import { useEffect, useState } from "react";
 import { SessionUser } from "./models/auth";
 import { LoaderFunction } from "@remix-run/node";
 
 export const loader: LoaderFunction = async ({ request }: { request: Request }) => {
     //load user from session
-    const user = await getUser(request)
+    const user = await getRequestUser(request)
     console.log("Path", request.url.slice(request.url.indexOf(":80") + 5, request.url.length));
     return { userData: user };
 }
@@ -35,7 +35,7 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <Navbar user={userData}  _signout={() => null}/>
+        <Navbar user={userData}/>
         <Outlet />
         <Scripts />
       </body>

@@ -108,6 +108,12 @@
   color: #fff;
   border-color: #007bff;
 }
+.time-picker__list button.disabled {
+  background: #eee;
+  color: #aaa;
+  cursor: not-allowed;
+  border-color: #ccc;
+}
 
 .time-picker__list button:focus {
   outline: none;

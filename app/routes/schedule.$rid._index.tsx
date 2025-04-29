@@ -32,6 +32,7 @@ export const action = async ({request}: ActionFunctionArgs) => {
     }
     let save = new Reservation(-1, title, roomID, user.id, startDate, endDate);
     const isValid = save.isValid();
+    console.log("isValid", isValid)
     if (isValid.valid) {
         return createReservation(save).then((res) => {
             return {message: "Reservation created"}
@@ -44,6 +45,7 @@ export const action = async ({request}: ActionFunctionArgs) => {
 export const loader = async ({ params, request }: ClientLoaderFunctionArgs) => {
     const user = await loginRequired(request);
     const roomID = params.rid
+
     if (!roomID) {
         throw new Response("Room ID not found", {status: 404});
     }
@@ -210,6 +212,7 @@ export default function ScheduleRoom() {
     const handleSubmit = (e: any) => {
         e.preventDefault();
         const save = checkIsValid();
+        console.log("save", save)
         if (!save) {
             setFormStatus("Reservation Failed");
             alert("Reservation Failed: " + formStatus);
@@ -270,7 +273,7 @@ export default function ScheduleRoom() {
                         )}
                     </div>
                 </div>
-                <Form ref={formRef} className="time-slots-container" onSubmit={(e) => handleSubmit(e)} method="post" action="" id="time-slots-form">
+                <Form ref={formRef} className="time-slots-container" onSubmit={(e) => {e.preventDefault();handleSubmit(e);}} method="post" action="" id="time-slots-form">
                     <h4 key={"today-label"} className="today-label" style={{float:"right"}}>{selectedDate.toLocaleDateString("en-US", {"timeZone":"America/New_York", "month":"short","day":"numeric","year":isEndOfYear? "numeric" : undefined})}</h4>
                     <label htmlFor="name">Reservation Name: </label>
                     <input type="text" id="name" name="name" className="long" required={true} onChange={(e) => {setTitle(e.target.value);checkIsValid()}} value={title} placeholder="E.g. CIS Project Meeting, mx 100" maxLength={100}></input>
@@ -289,10 +292,12 @@ export default function ScheduleRoom() {
                 </Form>
             </div>
         </div>
+        <div className="help-container">
         <h3>Help Text:</h3>
         <p>Select a date, choose a time slot, and select the duration of your reservation.</p>
         <p>Also make sure to input a reservation name.</p>
         <hr/>
         <p>Your Reservations appear in green.</p>
+        </div>
     </main>
 }
