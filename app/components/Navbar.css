@@ -71,6 +71,13 @@ nav h1, nav p {
 .navbar-logo img {
     height: 40px;
 }
+.navbar-logo {
+  transition: ease 0.3s;
+}
+.navbar-logo:hover {
+    cursor: pointer;
+    transform: scale(1.05);
+}
 
 .navbar-links {
     list-style-type: none;
