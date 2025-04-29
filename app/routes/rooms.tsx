@@ -1,33 +1,42 @@
-import { LoaderFunctionArgs } from "@remix-run/node";
+import { LoaderFunction, LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { useEffect, useState } from "react";
 import { getNextReservationByRoomId } from "~/api/reservation";
-import { getRooms } from "~/api/room";
-import { Room } from "~/models/room";
-import { getUser } from "~/services/auth";
+import { getRooms, getRoomsAndReservations } from "~/api/room";
+import { RoomStatus } from "~/components/RoomStatus";
+import { SessionUser, SessionUserFromJSON } from "~/models/auth";
+import { Reservation } from "~/models/reservation";
+import { Room, RoomAndReservations } from "~/models/room";
+import { getRequestUser } from "~/services/auth";
 
 export const loader = async ({request}: LoaderFunctionArgs) => {
-    const user = await getUser(request);
-    const roomData = await getRooms();
+    const user = await getRequestUser(request);
+    const roomAndResData = await getRoomsAndReservations();
     let getError: undefined | string = undefined
-    if (roomData.length === 0) {
+    if (roomAndResData.length === 0) {
         getError = "No Rooms Found. The API may be down, check back again later."
     }
-    return {roomsData: roomData.map((r) => r.toJSON()), getError: getError, user:user};
+    return {roomsData: roomAndResData, getError: getError, userData:user};
+    //return {roomsData: roomAndResData.map((rnr) => {return {"room": rnr.room.toJSON(), "reservations": rnr.reservations.map((r)=> r.toJSON())}}), getError: getError, user:user};
 }
 
 export default function Rooms() {
-    const {roomsData, user, getError} = useLoaderData<typeof loader>();
-    const [rooms, setRooms] = useState<Room[]>([]);
+    const {roomsData, userData, getError} = useLoaderData<typeof loader>();
+    const [rooms, setRooms] = useState<RoomAndReservations[]>([]);
+    const [user, setUser] = useState<SessionUser | undefined>(undefined);
     useEffect(() => {
         // set rooms data to the state
-        if (roomsData != undefined) {
-            setRooms(
-                Room.factory(roomsData),
-            );
+        setRooms(roomsData.map((data: any) => {
+            data.room = Room.fromJSON(data.room);
+            data.reservations = Reservation.factory(data.reservations);
+            return data;
+        }));
+        if (userData) {
+            console.log(userData)
+            setUser(SessionUserFromJSON(userData));
         }
     }
-    , [roomsData]);
+    , [roomsData, userData]);
     if (getError) {
         return <p>getError</p>
     }
@@ -40,12 +49,8 @@ export default function Rooms() {
     return (
         <main>
         <section className="rooms">
-            {rooms.map((room) =>
-                <div className="room" key={room.id}>
-                    <h2>Dupre {room.id} - {room.name}</h2>
-                    <p>Placeholder for status integration</p>
-                    <a href={"schedule/" + room.id + (user? "" : "/general")}><button>Schedule</button></a>
-                </div>
+            {rooms.map(({room, reservations}, index, array) =>
+                <RoomStatus index={array.length-index} room={room} reservations={reservations} user={user}/>
             )}
         </section>
         </main>

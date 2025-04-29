@@ -9,7 +9,7 @@ export const action = async ({ request } : { request: Request }) => {
     console.log("~~Login Request~~")
     const session = await sessionStorage.getSession(request.headers.get("Cookie"));
     const nonce = `CISRooms`
-    if (!nonce) {
+    if (!nonce) { //TODO: rolling nonces
         console.log("Nonce not found in session");
         return redirect("/login/error?e=nonce_not_found;d=Nonce not found in session;");
     }
@@ -27,11 +27,8 @@ export const action = async ({ request } : { request: Request }) => {
     const encoded_token = formData.get("id_token") as string;
     const token = JSON.parse(atob(encoded_token.split(".")[1]));
     console.log("Login from", token.name, token.email, token.sub);
-    
-    if (token.nonce !== "CISRooms") { //TODO make an algorithm for securing nonce
-        console.log("Nonce does not match");
-        return redirect("/login/error?e=nonce_mismatch&d=Nonce does not match;");
-    }
+    //try to get user from API
+
     const user: SessionUser = {
         isAdmin: false,
         id: token.oid,

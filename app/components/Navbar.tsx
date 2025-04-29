@@ -12,13 +12,11 @@ import { signout } from "~/services/auth";
 // }
 
 interface NavbarProps {
-    _signout: () => null
     user: SessionUser | undefined
 }
 
-export default function Navbar({_signout, user}: NavbarProps) {
+export default function Navbar({user}: NavbarProps) {
     const [dropped, setDrop] = useState(false)
-    console.log(dropped)
     return <nav className="navbar">
         <div className="navbar-logo">
             <Link to="/"><img alt="CIS Rooms" src="/CISRooms.png"></img></Link>

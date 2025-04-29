@@ -2,7 +2,7 @@ import { redirect } from "@remix-run/react";
 import { sessionStorage } from "./session";
 import { SessionUser } from "~/models/auth";
 
-export const getUser = async (request:Request) => {
+export const getRequestUser = async (request:Request) => {
   const session = await sessionStorage.getSession(request.headers.get("Cookie"));
   const user: SessionUser | undefined = session.get("user");
   // Check if user is logged in and the token is not expired
@@ -30,7 +30,7 @@ export const getUser = async (request:Request) => {
 }
 
 export const loginRequired = async (request:Request) => {
-  const user = await getUser(request)
+  const user = await getRequestUser(request)
   
   if (user === undefined) {
     console.log("User not logged in");

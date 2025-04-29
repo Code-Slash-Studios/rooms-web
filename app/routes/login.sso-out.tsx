@@ -1,12 +1,11 @@
-import { redirect } from "@remix-run/node";
-import { ClientLoaderFunction } from "@remix-run/react";
+import { LoaderFunction, redirect } from "@remix-run/node";
 import { sessionStorage } from "~/services/session";
 
 // This is the login route for Microsoft SSO
 // It redirects the user to the Microsoft login page
 // See: https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-auth-code-flow
 
-export const loader: ClientLoaderFunction = async ({request}) => {
+export const loader: LoaderFunction = async ({request}) => {
     const nonce = Math.random().toString(36).substring(2, 15);
     const params = new URLSearchParams({
         client_id: process.env.CLIENT_ID!,
