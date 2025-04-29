@@ -10,9 +10,10 @@ export default function EditDeleteTray({reservation, allowDelete}: EditDeleteTra
     const submit = useSubmit()
     const [comfirmDelete, setConfirmDelete] = useState(false)
 
+    const navigate = useNavigate();
     const handleEdit = () => {
-        //redirect to the edit page for the reservation
-        redirect(`/reservations/${reservation.id}/edit`)
+        // Navigate to the edit page for the reservation
+        navigate(`/reservations/${reservation.id}/edit`);
     }
     const handleDelete = () => {
         if (comfirmDelete) {
