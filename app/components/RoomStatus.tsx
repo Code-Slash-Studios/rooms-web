@@ -3,7 +3,7 @@ import { SessionUser } from "~/models/auth";
 import { Reservation } from "~/models/reservation";
 import { Room } from "~/models/room";
 import { genTime } from "~/utils/datetime";
-import "./roomStatus.css";
+import "./RoomStatus.css";
 
 interface RoomStatusProps {
     index: number;
