@@ -57,10 +57,7 @@ export async function newUserInstance(user: SessionUser) {
                     console.log("User created", json);
                     return User.fromJSON(json);
                 })
-            }).catch((error) => {
-                console.error(error);
-                return undefined;
-            });
+            })
 
         }
     );

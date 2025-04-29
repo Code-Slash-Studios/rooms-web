@@ -18,7 +18,6 @@ export const RoomStatus = ({index, room, reservations, user}: RoomStatusProps) =
     const isNow = nextReservation?.isNow() || false;
     const onClick = (e: any) => {
         e.stopPropagation();
-        console.log("Room clicked: ", room.name);
         if (user) {
             return redirect(`/rooms/${room.id}`, {
                 headers: {

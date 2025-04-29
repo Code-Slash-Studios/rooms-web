@@ -3,6 +3,7 @@ import { sessionStorage } from "~/services/session";
 import { useEffect } from "react";
 import { useLoaderData } from "@remix-run/react";
 import { SessionUser } from "~/models/auth";
+import { newUserInstance } from "~/api/auth";
 
 export const action = async ({ request } : { request: Request }) => {
     //get nonce from session
@@ -28,8 +29,7 @@ export const action = async ({ request } : { request: Request }) => {
     const token = JSON.parse(atob(encoded_token.split(".")[1]));
     console.log("Login from", token.name, token.email, token.sub);
     //try to get user from API
-
-    const user: SessionUser = {
+    let user: SessionUser = {
         isAdmin: false,
         id: token.oid,
         firstName: token.name.split(", ")[1],
@@ -41,6 +41,14 @@ export const action = async ({ request } : { request: Request }) => {
         authenticated: parseInt(token.iat),
         expiresAt: parseInt(token.exp),
     }
+    const userInstance = await newUserInstance(user);
+    if (userInstance) {
+        user.isAdmin = userInstance.isAdmin;
+    } else {
+        console.log("User not found, creating new user", user);
+        return redirect("/login/error?e=user_not_found;d=User not found in API;");
+    }
+    user.isAdmin = userInstance.isAdmin;
     session.set("user", user);
     console.log(user)
     return redirect("/", {headers: {"Set-Cookie": await sessionStorage.commitSession(session)}});

@@ -40,8 +40,10 @@ export class User {
     firstName: string;
     lastName: string;
     name: string;
+    isAdmin: boolean = false;
 
-    constructor(id: string, firstName: string, lastName: string, name: string) {
+    constructor(id: string, firstName: string, lastName: string, name: string, isAdmin: boolean = false) {
+        this.isAdmin = isAdmin;
         this.id = id;
         this.name = name;
         this.firstName = firstName;
@@ -57,10 +59,10 @@ export class User {
         if (Array.isArray(json)) {
             throw new Error("Expected a single user object, but got an array");
         }
-        return new User(json.id, json.fname, json.lname, json.name);
+        return new User(json.id, json.fname, json.lname, json.name, json.isAdmin);
     }
     static fromSessionUser(user: SessionUser) {
-        return new User(user.id, user.firstName, user.lastName, user.name);
+        return new User(user.id, user.firstName, user.lastName, user.name, user.isAdmin);
     }
     toJSON() {
         return {
@@ -68,6 +70,7 @@ export class User {
             fname: this.firstName,
             lname: this.lastName,
             name: this.name,
+            isAdmin: this.isAdmin,
         };
     }
 }
