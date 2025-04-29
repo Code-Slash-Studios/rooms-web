@@ -40,7 +40,7 @@ export async function newUserInstance(user: SessionUser) {
                 return User.fromJSON(json);
             })
         }).catch((error) => {
-            console.error(error);
+            console.error("Failed:", error);
             console.log("User not found, creating new user", user);
             //try to create the user
             return fetch(
@@ -53,6 +53,7 @@ export async function newUserInstance(user: SessionUser) {
                     body: JSON.stringify(User.fromSessionUser(user).toJSON()),
                 }
             ).then((response) => {
+                console.log("Response", response)
                 return response.json().then((json) => {
                     console.log("User created", json);
                     return User.fromJSON(json);
