@@ -6,9 +6,24 @@ nav {
   box-sizing: border-box;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
   margin-bottom: 20px;
-  width: 100%;
 }
 
+.nav-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.navbar {
+  width: 100%;
+  flex-grow: 1;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-right: 50px;
+}
 
 .navbar-links {
   list-style-type: none;
@@ -43,10 +58,13 @@ nav {
 
 nav h1, nav p {
   margin: 0;
+}
 
+/*Note that navbar's flexbox is overwritten on most smaller screens*/
 .navbar {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    justify-content: space-evenly;
     align-items: center;
     padding: 10px 20px;
     box-sizing: border-box;
@@ -72,7 +90,6 @@ nav h1, nav p {
     justify-content: center;
 }
 .navbar-links li a.userdrop  {
-
   position: absolute;
   left: calc(50%);
   top: calc(100%);
@@ -90,4 +107,12 @@ nav h1, nav p {
   display: flex;
   height: fit-content;
   z-index: 10;
+}
+
+@media (max-width: 900px) {
+  .navbar {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+  
 }

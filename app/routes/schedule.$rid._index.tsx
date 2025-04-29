@@ -292,10 +292,12 @@ export default function ScheduleRoom() {
                 </Form>
             </div>
         </div>
+        <div className="help-container">
         <h3>Help Text:</h3>
         <p>Select a date, choose a time slot, and select the duration of your reservation.</p>
         <p>Also make sure to input a reservation name.</p>
         <hr/>
         <p>Your Reservations appear in green.</p>
+        </div>
     </main>
 }
