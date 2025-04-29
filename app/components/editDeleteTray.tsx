@@ -28,8 +28,8 @@ export default function EditDeleteTray({reservation, allowDelete}: EditDeleteTra
         }
     }
     return <span className='button-tray'>
-        {comfirmDelete && <span className="confirm-delete" onClick={(e) => e.stopPropagation()}>Are you sure?<div><button className="delete" onClick={() => handleDelete()}>Yes</button> <button className="disabled" onClick={() => setConfirmDelete(false)}>No</button></div></span>}
         <button className="edit" onClick={() => handleEdit()}>Edit</button>
         {allowDelete && <button className="delete" onClick={() => handleDelete()}>Delete</button>}
+        {comfirmDelete && <span className="confirm-delete" onClick={(e) => e.stopPropagation()}><b className="error">DELETE</b>{reservation.name.slice(0, 20)}?<div><button className="delete" onClick={() => handleDelete()}>Yes</button> <button className="disabled" onClick={() => setConfirmDelete(false)}>No</button></div></span>}
     </span>
 }

@@ -27,8 +27,7 @@ button.edit {
     position: absolute;
     z-index: 100;
     display: block;
-    top: calc(-50%);
-    left: calc(-50%);
+    top: calc(-80%);
     width: 100px;
     height: 100px;
     background-color: white;

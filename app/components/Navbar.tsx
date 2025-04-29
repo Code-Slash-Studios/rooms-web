@@ -23,7 +23,7 @@ export default function Navbar({user}: NavbarProps) {
         </div>
         <ul className="navbar-links">
             <li key="rooms_link"><Link to="/">Rooms</Link></li>
-            {/* <li key="reservations_link"><Link to="/reservations">Reservations</Link></li> */}
+            {user?.isAdmin && <li key="reservations_link"><Link to="/reservations">Reservations</Link></li> }
             {(user && <li key="welcome" onClick={()=>setDrop(!dropped)}>Welcome {user.firstName}!<a className={"userdrop"+ (dropped? " dropped" : "")} href="/logout">Signout</a></li>) || (<li key="login_link"><Link to="/login/sso-out">Login</Link></li>)}
         </ul>
     </nav>

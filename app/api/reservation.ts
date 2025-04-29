@@ -105,13 +105,9 @@ export async function deleteReservation(reservation: Reservation, actor?: any) {
         `${process.env.API_URL!}/reservations/${reservation.id}`,
         {
             method: "DELETE",
-            body: reservation.toJSON(),
-            headers: {
-                'Content-Type': 'application/json'
-            },
         }
     ).then((response) => {
-        return response.json();
+        return new Response(JSON.stringify({success: true}),{status: 200});
     }).catch((error) => {
         console.error(error); return undefined
     });
