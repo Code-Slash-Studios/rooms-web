@@ -63,8 +63,8 @@ nav h1, nav p {
 /*Note that navbar's flexbox is overwritten on most smaller screens*/
 .navbar {
     display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
+    flex-direction: row;
+    justify-content: space-between;
     align-items: center;
     padding: 10px 20px;
     box-sizing: border-box;
@@ -109,10 +109,11 @@ nav h1, nav p {
   z-index: 10;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 465px) {
   .navbar {
-    flex-direction: row;
-    justify-content: space-between;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   }
   
 }

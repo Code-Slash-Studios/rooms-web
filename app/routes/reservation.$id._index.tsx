@@ -15,6 +15,7 @@ import { loginRequired } from "~/services/auth";
 //it should have a button to edit the reservation
 
 export const loader: LoaderFunction = async ({ params, request }: LoaderFunctionArgs) => {
+    console.log("~~Reservation Detail Loader~~")
     //get the reservation with the id params.id
     const user = await loginRequired(request);
     const res = await getReservationById(params.id || "-1", user);
@@ -57,7 +58,7 @@ export default function reservationDetail() {
         return <p>{error}</p>;
     }
     
-    return <main>
+    return <main><section><div className="content">
         <h1 key="title">Reservation Details</h1>
         <h2>{reservation.name}</h2>
         {(reservation.userID === user.id || user.isAdmin) && <EditDeleteTray reservation={reservation}></EditDeleteTray>}
@@ -67,5 +68,6 @@ export default function reservationDetail() {
         <p>Start: {reservation.start.toLocaleString()}</p>
         <p>End: {reservation.end.toLocaleString()}</p>
         <p>Department: {room.department}</p>
+        </div></section>
     </main>;
 }

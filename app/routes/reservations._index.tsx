@@ -4,7 +4,7 @@ import { Link, redirect, useActionData, useLoaderData, useSubmit } from '@remix-
 import { useEffect, useState } from 'react';
 import { loginRequired } from '~/services/auth';
 import { ActionFunction, ActionFunctionArgs, LoaderFunction, LoaderFunctionArgs } from '@remix-run/node';
-import { startOfDay } from '~/utils/datetime';
+import { genDate, genTime, startOfDay } from '~/utils/datetime';
 import EditDeleteTray from '~/components/editDeleteTray';
 
 export const action: ActionFunction = async ({request}: ActionFunctionArgs) => {
@@ -66,15 +66,15 @@ export default function ReservationIndex() {
         return <p>{getError}</p>;
     }
 
-    return <>
+    return <main>
         <h1 key="title">All Reservations</h1>
-        <table key="reservations" className='reservations'>
+        <table key="reservations" className='res-table'>
             <thead>
                 <tr>
                     <th>Room</th>
+                    <th>Title</th>
                     <th>User</th>
                     <th>Start</th>
-                    <th>End</th>
                     <th>Duration</th>
                     <th></th>
                 </tr>
@@ -83,39 +83,40 @@ export default function ReservationIndex() {
                 {reservations.map((r) => 
                     <tr key={r.id}>
                         <td>{r.roomID}</td>
+                        <td className='name'>{r.name}</td>
                         <td>{r.userID}</td>
-                        <td>{r.start.toLocaleString()}</td>
-                        <td>{r.end.toLocaleString()}</td>
+                        <td>{genDate(r.start) + " " + genTime(r.start)}</td>
                         <td>{(r.end.getTime() - r.start.getTime()) / (60 * 1000)} minutes</td>
                         {(r.userID === user.id || user.isAdmin) && <td><EditDeleteTray reservation={r} allowDelete={true}></EditDeleteTray></td>}
                     </tr>
                 )}
             </tbody>
         </table>
-        {oldReservations.length > 0 && reservations.length > 0 && <h2>Archive:</h2>}
-        <table key="old-reservations" className='reservations'>
+        {oldReservations.length > 0 && reservations.length > 0 && <h2 key={"title2"}>Archive: (past reservations)</h2>}
+        <table key="old-reservations" className='res-table'>
             <thead>
                 <tr>
                     <th>Room</th>
+                    <th>Title</th>
                     <th>User</th>
                     <th>Start</th>
-                    <th>End</th>
                     <th>Duration</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody key="old-reservations">
                 {oldReservations.map((r) => 
                     <tr key={r.id}>
-                        <td>{r.roomID}</td>
-                        <td>{r.userID}</td>
-                        <td>{r.start.toLocaleString()}</td>
-                        <td>{r.end.toLocaleString()}</td>
-                        <td>{(r.end.getTime() - r.start.getTime()) / (60 * 1000)} minutes</td>
-                        {(user.isAdmin) && <td><EditDeleteTray reservation={r} allowDelete={true}></EditDeleteTray></td>}
+                    <td>{r.roomID}</td>
+                    <td className='name'>{r.name}</td>
+                    <td>{r.userID}</td>
+                    <td>{genDate(r.start) + " " + genTime(r.start)}</td>
+                    <td>{(r.end.getTime() - r.start.getTime()) / (60 * 1000)} minutes</td>
+                    {(user.isAdmin) && <td><EditDeleteTray reservation={r} allowDelete={true}></EditDeleteTray></td>}
                     </tr>
                 )}
             </tbody>
         </table>
         {reservations.length == 0 && <p>No reservations found</p>}
-    </>
+    </main>
 }

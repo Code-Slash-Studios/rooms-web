@@ -249,7 +249,7 @@ export default function ScheduleRoom() {
     }
 
     return <main>
-        <div className="scheduler">
+        <section className="scheduler">
             <div className="calendar-container">
             <h2>{room.department} {room.id} - {room.name}</h2>
                 <div className="calendar">
@@ -291,13 +291,13 @@ export default function ScheduleRoom() {
                     {!isValid && <div className={"form-status"}>&gt;{formStatus}</div>}
                 </Form>
             </div>
-        </div>
-        <div className="help-container">
+        </section>
+        <section className="help-container">
         <h3>Help Text:</h3>
         <p>Select a date, choose a time slot, and select the duration of your reservation.</p>
         <p>Also make sure to input a reservation name.</p>
         <hr/>
         <p>Your Reservations appear in green.</p>
-        </div>
+        </section>
     </main>
 }
