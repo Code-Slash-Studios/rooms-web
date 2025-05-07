@@ -36,7 +36,7 @@ export async function newUserInstance(user: SessionUser) {
         }
         ).then((response) => {
             console.log("Response1", response)
-            if (response.status === 500) {
+            if (response.status === 404 || response.status === 500) {
                 throw new Error(response.statusText)
             }
             return response.json().then((json) => {
