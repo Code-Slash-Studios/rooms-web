@@ -56,13 +56,16 @@ export async function newUserInstance(user: SessionUser) {
                     },
                     body: JSON.stringify(User.fromSessionUser(user).toJSON()),
                 }
-            ).then((response) => {
+            ).then(async (response) => {
                 console.log("Response2", response)
-                if (response.type === "basic") {
-
-                    throw new Error("Failed to reach server")
+                if (response.status === 404 || response.status === 500) {
+                    console.log("Failed to create user", response.statusText)
+                    //decode body
+                    throw new Error(await response.bytes().then((bytes) => {
+                        const decoder = new TextDecoder("utf-8");
+                        return decoder.decode(bytes);
+                    }))
                 }
-                if (response.)
                 return response.json().then((json) => {
                     console.log("User created", json);
                     return User.fromJSON(json);
