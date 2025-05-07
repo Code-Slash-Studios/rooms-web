@@ -44,6 +44,7 @@ export const action = async ({ request } : { request: Request }) => {
     try {
     const userInstance = await newUserInstance(user);
     if (userInstance) {
+        console.log("User Aquired", userInstance)
         user.isAdmin = userInstance.isAdmin;
     } else {
         console.log("User not found, creating new user", user);

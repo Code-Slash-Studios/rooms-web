@@ -35,6 +35,9 @@ export async function newUserInstance(user: SessionUser) {
             },
         }
         ).then((response) => {
+            if (response.status === 500) {
+                throw new Error(response.statusText)
+            }
             return response.json().then((json) => {
                 console.log("User found", json);
                 return User.fromJSON(json);
