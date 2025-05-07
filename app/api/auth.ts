@@ -35,6 +35,7 @@ export async function newUserInstance(user: SessionUser) {
             },
         }
         ).then((response) => {
+            console.log("Response1", response)
             if (response.status === 500) {
                 throw new Error(response.statusText)
             }
@@ -56,7 +57,7 @@ export async function newUserInstance(user: SessionUser) {
                     body: JSON.stringify(User.fromSessionUser(user).toJSON()),
                 }
             ).then((response) => {
-                console.log("Response", response)
+                console.log("Response2", response)
                 return response.json().then((json) => {
                     console.log("User created", json);
                     return User.fromJSON(json);
