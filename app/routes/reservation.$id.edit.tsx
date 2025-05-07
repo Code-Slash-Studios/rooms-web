@@ -141,8 +141,8 @@ export default function EditReservation() {
                         <option key={room.id} value={room.id} selected={roomID === room.id}>{room.name} ({room.department})</option>
                     ))}
                 </select>
-                <input title="start-date" name="start-date" type="date" defaultValue={toDatetimeLocal(start).split("T")[0]}/>
-                <input title="start-time" name="start-time" type="time" defaultValue={toDatetimeLocal(start).split("T")[1]}/>
+                <input title="start-date" name="start-date" type="date" defaultValue={start.toDateString()}/>
+                <input title="start-time" name="start-time" type="time" defaultValue={start.toLocaleTimeString("en-US", {minute:"2-digit",hour12:false,timeStyle:"short"})}/>
                 <input title="duration" name="duration" type="number" max={240} min={15} defaultValue={duration} step={15}/>
                 <button type="submit">Submit</button>
             </Form>
