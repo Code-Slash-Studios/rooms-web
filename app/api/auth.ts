@@ -44,7 +44,7 @@ export async function newUserInstance(user: SessionUser) {
                 return User.fromJSON(json);
             })
         }).catch((error) => {
-            console.error("Failed:", error);
+            console.error("Failed: to get user, try create");
             console.log("User not found, creating new user", user);
             //try to create the user
             return fetch(
@@ -58,12 +58,18 @@ export async function newUserInstance(user: SessionUser) {
                 }
             ).then((response) => {
                 console.log("Response2", response)
+                if (response.type === "basic") {
+
+                    throw new Error("Failed to reach server")
+                }
+                if (response.)
                 return response.json().then((json) => {
                     console.log("User created", json);
                     return User.fromJSON(json);
                 })
-            })
+            }).catch(
 
+            )
         }
     );
 }
