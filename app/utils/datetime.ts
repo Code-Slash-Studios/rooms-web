@@ -20,21 +20,31 @@ export function endOfDay(date?: Date) {
     return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59, 59, 999)
 }
 
-export function toDatetimeLocal(date: Date) {
-    const pad = (num: number) => num.toString().padStart(2, '0');
+export function toDateISO(date: Date) {
     if (date == undefined) {
         return "";
     }
-    date = new Date(date);
-    const year = date.getFullYear();
-    const month = pad(date.getMonth() + 1); // Months are 0-indexed.
-    const day = pad(date.getDate());
-    const hours = pad(date.getHours());
-    const minutes = pad(date.getMinutes());
+    const [month, day, year] = date.toLocaleDateString("en-US", {timeZone:"America/New_York", year:"numeric", month:"2-digit", day:"2-digit"}).split('/');
+    return `${year}-${month}-${day}`;
+}
 
+export function toTimeISO(date: Date) {
+    if (date == undefined) {
+        return "";
+    }
+    const [hours, minutes] = date.toLocaleTimeString("en-US", {timeZone:"America/New_York", hour12: false, hour: "2-digit", minute: "2-digit"}).split(':');
+    return `${hours}:${minutes}`;
+}
+
+export function toDatetimeISO(date: Date) {
+    if (date == undefined) {
+        return "";
+    }
+    const [month, day, year] = date.toLocaleDateString("en-US", {timeZone:"America/New_York", year:"numeric", month:"2-digit", day:"2-digit"}).split('/');
+    const [hours, minutes] = date.toLocaleTimeString("en-US", {timeZone:"America/New_York", hour12: false, hour: "2-digit", minute: "2-digit"}).split(':');
     return `${year}-${month}-${day}T${hours}:${minutes}`;
 }
-export function fromDatetimeLocal(datetimeLocal: string) {
+export function fromDatetimeISO(datetimeLocal: string) {
     const [date, time] = datetimeLocal.split('T');
     const [year, month, day] = date.split('-').map(Number);
     const [hours, minutes] = time.split(':').map(Number);

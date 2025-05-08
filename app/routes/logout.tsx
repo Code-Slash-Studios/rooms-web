@@ -13,7 +13,6 @@ export const action = async ({request}: {request: Request}) => {
     });
 }
 export const loader = async ({request}: {request: Request}) => {
-    console.log("signout")
     const cookieHeader = request.headers.get("Cookie") || "";
     const session = await sessionStorage.getSession(cookieHeader);
     session.unset("user");

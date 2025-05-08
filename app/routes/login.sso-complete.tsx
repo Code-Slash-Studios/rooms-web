@@ -16,7 +16,6 @@ export const action = async ({ request } : { request: Request }) => {
     }
     //get form data
     const formData = await request.formData();
-    console.log(formData)
     //check for errors
     const error = formData.get("error") as string;
     if (error) {
@@ -27,7 +26,7 @@ export const action = async ({ request } : { request: Request }) => {
     // see https://learn.microsoft.com/en-us/entra/identity-platform/id-token-claims-reference for refrence of fields
     const encoded_token = formData.get("id_token") as string;
     const token = JSON.parse(atob(encoded_token.split(".")[1]));
-    console.log("Login from", token.name, token.email, token.sub);
+    console.log("Login from", token.name, token.email, token.sub, token.iat);
     //try to get user from API
     let user: SessionUser = {
         isAdmin: false,
@@ -42,23 +41,22 @@ export const action = async ({ request } : { request: Request }) => {
         expiresAt: parseInt(token.exp),
     }
     try {
-    const userInstance = await newUserInstance(user);
-    if (userInstance) {
-        user.isAdmin = userInstance.isAdmin;
-    } else {
-        console.log("User not found, creating new user", user);
-    }} catch (error) {
+        //Get or create user, catch error because we still want to login the user even if the API fails
+        const userInstance = await newUserInstance(user);
+        if (userInstance) {
+            console.log("User Aquired")
+            user.isAdmin = userInstance.isAdmin;
+        }
+    } catch (error) {
         console.error("Error creating user", error);
     }
     session.set("user", user);
-    console.log(user)
     return redirect("/", {headers: {"Set-Cookie": await sessionStorage.commitSession(session)}});
 }    
 
 export const loader = async ({ request } : { request: Request }) => {
     const session = await sessionStorage.getSession(request.headers.get("Cookie"));
     const user = session.get("user") || null;
-    console.log("User", user);
     return { user };
 }
 

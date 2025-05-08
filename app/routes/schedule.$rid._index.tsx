@@ -13,7 +13,6 @@ import { genHour, sameDay, shiftTime, Time } from "~/utils/datetime";
 export const action = async ({request}: ActionFunctionArgs) => {
     const user = await loginRequired(request);
     const formData = await request.formData();
-    console.log(formData)
     const title = formData.get("title")?.toString() || "";
     const roomID = formData.get("room")?.toString() || "";
     let start = formData.get("start")?.toString() || undefined;
@@ -32,7 +31,6 @@ export const action = async ({request}: ActionFunctionArgs) => {
     }
     let save = new Reservation(-1, title, roomID, user.id, startDate, endDate);
     const isValid = save.isValid();
-    console.log("isValid", isValid)
     if (isValid.valid) {
         return createReservation(save).then((res) => {
             return {message: "Reservation created"}
@@ -138,7 +136,6 @@ export default function ScheduleRoom() {
         setCurrentWeek(currentWeek)
     }, [startOfWeek, reservations])
     useEffect(() => {
-        console.log("selectedDate")
         setSelectedReservations(reservations.filter((r) => sameDay(r.start, selectedDate)));
     },[selectedDate])
 
@@ -157,7 +154,6 @@ export default function ScheduleRoom() {
 
     //used to fill form from calendarDay
     const selectDateTime = (datetime: Date) => {
-        console.log("selectDateTime", datetime)
         setSelectedDate(datetime);
         setSelectedTime({hour: genHour(datetime), minute: datetime.getMinutes()});
     }
@@ -212,7 +208,6 @@ export default function ScheduleRoom() {
     const handleSubmit = (e: any) => {
         e.preventDefault();
         const save = checkIsValid();
-        console.log("save", save)
         if (!save) {
             setFormStatus("Reservation Failed");
             alert("Reservation Failed: " + formStatus);
@@ -241,7 +236,6 @@ export default function ScheduleRoom() {
 
     // error states
     if (!roomData || roomData === undefined) {
-        console.log(roomData)
         return <main><div>Room not found or Loading...</div></main>
     }
     if (room == undefined) {
@@ -249,7 +243,7 @@ export default function ScheduleRoom() {
     }
 
     return <main>
-        <div className="scheduler">
+        <section className="scheduler">
             <div className="calendar-container">
             <h2>{room.department} {room.id} - {room.name}</h2>
                 <div className="calendar">
@@ -291,13 +285,13 @@ export default function ScheduleRoom() {
                     {!isValid && <div className={"form-status"}>&gt;{formStatus}</div>}
                 </Form>
             </div>
-        </div>
-        <div className="help-container">
+        </section>
+        <section className="help-container">
         <h3>Help Text:</h3>
         <p>Select a date, choose a time slot, and select the duration of your reservation.</p>
         <p>Also make sure to input a reservation name.</p>
         <hr/>
         <p>Your Reservations appear in green.</p>
-        </div>
+        </section>
     </main>
 }

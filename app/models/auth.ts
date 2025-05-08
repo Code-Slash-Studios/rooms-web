@@ -42,14 +42,14 @@ export class User {
     name: string;
     isAdmin: boolean = false;
 
-    constructor(id: string, firstName: string, lastName: string, name: string, isAdmin: boolean = false) {
+    constructor(id: string, firstName: string, lastName: string, isAdmin: boolean = false) {
         this.isAdmin = isAdmin;
         this.id = id;
-        this.name = name;
+        this.name = `${lastName}, ${firstName}`
         this.firstName = firstName;
         this.lastName = lastName;
     }
-    static empty = () => new User("", "", "", "");
+    static empty = () => new User("", "", "");
     static fromJSON(json: any) {
         //for processing single user
         if (typeof json === "string") {
@@ -59,17 +59,16 @@ export class User {
         if (Array.isArray(json)) {
             throw new Error("Expected a single user object, but got an array");
         }
-        return new User(json.id, json.fname, json.lname, json.name, json.isAdmin);
+        return new User(json.id, json.fname, json.lname, json.isAdmin);
     }
     static fromSessionUser(user: SessionUser) {
-        return new User(user.id, user.firstName, user.lastName, user.name, user.isAdmin);
+        return new User(user.id, user.firstName, user.lastName, user.isAdmin);
     }
     toJSON() {
         return {
             id: this.id,
             fname: this.firstName,
             lname: this.lastName,
-            name: this.name,
             isAdmin: this.isAdmin,
         };
     }

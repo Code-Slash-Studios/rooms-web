@@ -39,7 +39,7 @@ export const loginRequired = async (request:Request) => {
   if (user.expiresAt < Date.now()/1000) { //Date.now() returns milliseconds, token expiresAt is in seconds
     console.log(user, user.expiresAt, Date.now())
     console.log("Token expired");
-    throw redirect("/login/error?e=token_expired&d=Token expired;");
+    throw redirect("/login/sso-out");
   }
   return user || "";
 }

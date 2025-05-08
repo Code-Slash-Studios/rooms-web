@@ -83,13 +83,11 @@ export default function ScheduleRoom() {
         setCurrentWeek(currentWeek)
     }, [startOfWeek, reservations])
     useEffect(() => {
-        console.log("selectedDate")
         setSelectedReservations(reservations.filter((r) => sameDay(r.start, selectedDate)));
     },[selectedDate])
 
     //used to fill form from calendarDay
     const selectDateTime = (datetime: Date) => {
-        console.log("selectDateTime", datetime)
         setSelectedDate(datetime);
         setSelectedTime({hour: genHour(datetime), minute: datetime.getMinutes()});
     }
@@ -104,16 +102,6 @@ export default function ScheduleRoom() {
     }
     const nextWeek = () => {
         setWeekStart(new Date(startOfWeek.getTime() + 7 * MILLIS_IN_DAY));
-    }
-    const isOverlappingDuration = (_duration: number) => {
-        const start = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate(), selectedTime.hour, selectedTime.minute);
-        const end = new Date(start.getTime() + (_duration * 60 * 1000));
-        return isOverlapping(start, end).length !== 0;
-    }
-    const isOverlapping = (start: Date, _end: Date) => {
-        return reservations.filter((r) => {
-            return (r.start < _end && start < r.end) || (r.start > start && r.start < _end) || (start > r.start && _end < r.end)
-        })
     }
     // error states
     if (!roomData || roomData === undefined) {

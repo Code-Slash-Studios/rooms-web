@@ -35,13 +35,16 @@ export async function newUserInstance(user: SessionUser) {
             },
         }
         ).then((response) => {
+            if (response.status === 404 || response.status === 500) {
+                throw new Error(response.statusText)
+            }
             return response.json().then((json) => {
-                console.log("User found", json);
+                console.log("User found");
                 return User.fromJSON(json);
             })
         }).catch((error) => {
-            console.error("Failed:", error);
-            console.log("User not found, creating new user", user);
+            console.error("Failed: to get user, try create");
+            console.log("User not found, creating new user", user.id);
             //try to create the user
             return fetch(
                 `${process.env.API_URL}/users`,
@@ -52,14 +55,22 @@ export async function newUserInstance(user: SessionUser) {
                     },
                     body: JSON.stringify(User.fromSessionUser(user).toJSON()),
                 }
-            ).then((response) => {
-                console.log("Response", response)
+            ).then(async (response) => {
+                if (response.status === 404 || response.status === 500) {
+                    console.log("Failed to create user", response.statusText)
+                    //decode body
+                    throw new Error(await response.bytes().then((bytes) => {
+                        const decoder = new TextDecoder("utf-8");
+                        return decoder.decode(bytes);
+                    }))
+                }
                 return response.json().then((json) => {
                     console.log("User created", json);
                     return User.fromJSON(json);
                 })
-            })
+            }).catch(
 
+            )
         }
     );
 }

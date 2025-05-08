@@ -32,7 +32,6 @@ export default function Rooms() {
             return data;
         }));
         if (userData) {
-            console.log(userData)
             setUser(SessionUserFromJSON(userData));
         }
     }

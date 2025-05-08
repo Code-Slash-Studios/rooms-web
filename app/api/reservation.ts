@@ -1,4 +1,5 @@
 import { Reservation } from "~/models/reservation";
+import { DecodeBody } from "~/utils/responseDecode";
 
 /**
  * "/reservations"      # GET all reservations
@@ -41,6 +42,10 @@ export async function getReservationById(id: string, actor?: any): Promise<Reser
             }
         }
         ).then((response) => {
+            if (response.status === 404 || response.status === 403 || response.ok === false) {
+                console.error("Error fetching reservation", response.status, response.statusText)
+                throw new Response("Reservation not found", {status: 404});
+            }
             return response.json().then((json:any) => {
                 return Reservation.fromJSON(json);
             })
@@ -63,7 +68,6 @@ export async function createReservation(reservation: Reservation, actor?: any) {
             body: reservation.toJSON()
         }
     ).then((response) => {
-        console.log("Response", response)
         return response.json();
     }).catch((error) => {
         console.error(error); return undefined
@@ -71,11 +75,11 @@ export async function createReservation(reservation: Reservation, actor?: any) {
     return resp
 }
 
-export async function updateReservation(reservation: Reservation, actor?: any) {
+export async function updateReservation(reservation: Reservation, actor?: any): Promise<string | undefined> {
     if (actor !== undefined) {
         if (actor.id !== reservation.userID && !actor.isAdmin) {
-            return new Response(JSON.stringify({error: "permission denied"}),{status: 403})
-        }   
+            throw new Response(JSON.stringify({error: "permission denied"}),{status: 403})
+        }
     }
     const resp: any | undefined = await fetch(
         `${process.env.API_URL!}/reservations/${reservation.id}`,
@@ -86,10 +90,15 @@ export async function updateReservation(reservation: Reservation, actor?: any) {
             },
             body: reservation.toJSON()
         }
-    ).then((response) => {
-        return response.json();
+    ).then(async (response) => {
+        if (response.status === 400 || response.status === 409 || response.ok === false) {
+            console.error("Error updating reservation", response.status, response.statusText)
+            throw Error("<Update Error> " + await DecodeBody(response));
+        }
+        return "Reservation updated successfully: #" + reservation.id + " " + reservation.name;
     }).catch((error) => {
-        console.error(error); return undefined
+        console.error(error.message);
+        return error.message
     });
     return resp
 }
@@ -105,13 +114,9 @@ export async function deleteReservation(reservation: Reservation, actor?: any) {
         `${process.env.API_URL!}/reservations/${reservation.id}`,
         {
             method: "DELETE",
-            body: reservation.toJSON(),
-            headers: {
-                'Content-Type': 'application/json'
-            },
         }
     ).then((response) => {
-        return response.json();
+        return new Response(JSON.stringify({success: true}),{status: 200});
     }).catch((error) => {
         console.error(error); return undefined
     });

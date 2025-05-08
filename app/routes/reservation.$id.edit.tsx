@@ -1,11 +1,11 @@
-import { ClientLoaderFunctionArgs, Form, useActionData, useLoaderData } from "@remix-run/react";
+import { ClientLoaderFunctionArgs, Form, useActionData, useLoaderData, useSubmit } from "@remix-run/react";
 import { ChangeEventHandler, FormEventHandler, useEffect, useState } from "react";
 import { getReservationById, updateReservation } from "~/api/reservation";
 import { getRooms } from "~/api/room";
 import { Reservation } from "~/models/reservation";
 import { Room } from "~/models/room";
 import { LoaderFunctionArgs } from "@remix-run/node";
-import { toDatetimeLocal } from "~/utils/datetime";
+import { toDateISO, toTimeISO } from "~/utils/datetime";
 import { loginRequired } from "~/services/auth";
 
 export const action = async ({request}: LoaderFunctionArgs) => {
@@ -29,10 +29,10 @@ export const action = async ({request}: LoaderFunctionArgs) => {
     const isValid = save.isValid();
     if (isValid.valid && id !== -1) {
         return updateReservation(save, user).then((res) => {
-            return {message: "Reservation updated successfully: #" + res.id + " " + res.name};
+            return {message: res};
         });
     } else {
-        return {message: "Invalid reservation data:" + isValid.message};
+        return {message: "Update Failed:" + isValid.message};
     }
 }
 
@@ -64,13 +64,15 @@ export default function EditReservation() {
     //displays a react component that allows the user to edit a reservation
     const {reservationData, getError, roomsData, userData} = useLoaderData<typeof loader>();
     const response = useActionData<typeof action>();
+    const submit = useSubmit();
     const [rooms, setRooms] = useState<Room[]>([]);
     const [id, setId] = useState(-1);
     const [userID, setUserID] = useState(userData.id);
     const [title, setTitle] = useState("");
     const [roomID, setRoomID] = useState("");
-    const [start, setStart] = useState<Date>(new Date());
-    const [end, setEnd] = useState<Date>(new Date());
+    const [hours, setHours] = useState(0);
+    const [minutes, setMinutes] = useState(0);
+    const [start, setStart] = useState(new Date());
     const [duration, setDuration] = useState(60); //in minutes
 
     useEffect(() => {
@@ -86,14 +88,15 @@ export default function EditReservation() {
             setUserID(r.userID);
             setRoomID(r.roomID);
             setStart(r.start);
-            setEnd(r.end);
+            setHours(r.start.getHours());
+            setMinutes(r.start.getMinutes());
             setDuration((r.end.getTime() - r.start.getTime()) / (60 * 1000));
         }
     }, [reservationData, roomsData]);
 
     const handleChange: FormEventHandler<HTMLFormElement> = (event: any) => {
         const val = event.target.value;
-        let new_start = new Date(start.getFullYear(), start.getMonth(), start.getDate(), start.getHours(), start.getMinutes());
+        let new_start: Date = new Date(start.getTime());
         switch(event.target.title) {
             case "title":
                 setTitle(val);
@@ -103,20 +106,16 @@ export default function EditReservation() {
                 break;
             case "start-date":
                 new_start = new Date(val.split("-")[0], val.split("-")[1], val.split("-")[2], start.getHours(), start.getMinutes());
-                setEnd(new Date(new_start.getTime() + (duration * 60 * 1000)));
                 setStart(new_start);
                 break;
             case "start-time":
                 new_start = new Date(start.getFullYear(), start.getMonth(), start.getDate(), event.target.value.split(":")[0], event.target.value.split(":")[1]);
-                setEnd(new Date(new_start.getTime() + (duration * 60 * 1000)));
                 setStart(new_start);
                 break;
             case "duration":
                 if (parseInt(val) < 15) {
-                    alert("Duration must be at least 15 minutes");
                     return;
                 }
-                setEnd(new Date(start.getTime() + (parseInt(val) * 60 * 1000)));
                 setDuration(parseInt(val));
                 break;
             default:
@@ -126,23 +125,28 @@ export default function EditReservation() {
     const handleSelect: ChangeEventHandler<HTMLSelectElement> = (event: any) => {
         setRoomID(event.target.value);
     }
+    const handleSubmit: FormEventHandler<HTMLFormElement> = (event: any) => {
+        event.preventDefault();
+        const formData = new FormData(event.currentTarget);
+        formData.append("id", id.toString());
+        formData.append("userID", userID.toString());
+        submit(formData, {method: "PUT"});
+    }
 
     return (
             <main>
             {response != undefined ? <p key="responseSpace">{response.message}</p> : <></>}
             <h1 key="title">Edit Reservation</h1>
-            <Form method="put" onChange={handleChange} className="reservationForm" onSubmit={(e) => {console.log(roomID)}}>
-                <input type="hidden" name="id" value={id}/>
-                <input type="hidden" name="userID" value={userID}></input>
+            <Form method="put" onChange={handleChange} className="reservationForm" onSubmit={handleSubmit}>
                 <input title="title" name="title" type="text" defaultValue={title} maxLength={30}/>
-                <select title="room" name="room" onChange={(e) => {handleSelect(e)}}>
+                <select title="room" name="room" onChange={(e) => {handleSelect(e)}} value={roomID}>
                     <option value={-1}>Select a room</option>
                     {rooms.map((room) => (
-                        <option key={room.id} value={room.id} selected={roomID === room.id}>{room.name} ({room.department})</option>
+                        <option key={room.id} value={room.id}>{room.name} ({room.department})</option>
                     ))}
                 </select>
-                <input title="start-date" name="start-date" type="date" defaultValue={toDatetimeLocal(start).split("T")[0]}/>
-                <input title="start-time" name="start-time" type="time" defaultValue={toDatetimeLocal(start).split("T")[1]}/>
+                <input title="start-date" name="start-date" type="date" defaultValue={toDateISO(start)}/>
+                <input title="start-time" name="start-time" type="time" defaultValue={toTimeISO(start)}/>
                 <input title="duration" name="duration" type="number" max={240} min={15} defaultValue={duration} step={15}/>
                 <button type="submit">Submit</button>
             </Form>
