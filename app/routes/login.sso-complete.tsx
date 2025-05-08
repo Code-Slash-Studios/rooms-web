@@ -42,13 +42,13 @@ export const action = async ({ request } : { request: Request }) => {
         expiresAt: parseInt(token.exp),
     }
     try {
-    const userInstance = await newUserInstance(user);
-    if (userInstance) {
-        console.log("User Aquired", userInstance)
-        user.isAdmin = userInstance.isAdmin;
-    } else {
-        console.log("User not found, creating new user", user);
-    }} catch (error) {
+        //Get or create user, catch error because we still want to login the user even if the API fails
+        const userInstance = await newUserInstance(user);
+        if (userInstance) {
+            console.log("User Aquired", userInstance)
+            user.isAdmin = userInstance.isAdmin;
+        }
+    } catch (error) {
         console.error("Error creating user", error);
     }
     session.set("user", user);
