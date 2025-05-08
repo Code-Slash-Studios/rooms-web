@@ -1,4 +1,4 @@
-import { fromDatetimeLocal, toDatetimeLocal } from "~/utils/datetime";
+import { fromDatetimeISO, toDatetimeISO } from "~/utils/datetime";
 import "./Reservation.css";
 import { Form, Link } from "@remix-run/react";
 import { ChangeEventHandler, FormEventHandler } from "react";
@@ -53,8 +53,8 @@ export const ReservationFormComp = (props: ReservationFormProps) => {
                     <option key={room.id} value={room.id}>{room.name} ({room.department})</option>
                 ))}
             </select>
-            <input title="start-date" name="start-date" type="date" defaultValue={toDatetimeLocal(props.start).split("T")[0]}/>
-            <input title="start-time" name="start-time" type="time" defaultValue={toDatetimeLocal(props.start).split("T")[1]}/>
+            <input title="start-date" name="start-date" type="date" defaultValue={toDatetimeISO(props.start).split("T")[0]}/>
+            <input title="start-time" name="start-time" type="time" defaultValue={toDatetimeISO(props.start).split("T")[1]}/>
             <input title="duration" name="duration" type="number" max={240} min={15} defaultValue={props.duration}/>
             <button type="submit">Submit</button>
         </Form>
