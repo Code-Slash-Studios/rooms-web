@@ -5,7 +5,7 @@ import { getRooms } from "~/api/room";
 import { Reservation } from "~/models/reservation";
 import { Room } from "~/models/room";
 import { LoaderFunctionArgs } from "@remix-run/node";
-import { shiftDate, toDateISO, toDatetimeISO, toTimeISO } from "~/utils/datetime";
+import { toDateISO, toTimeISO } from "~/utils/datetime";
 import { loginRequired } from "~/services/auth";
 
 export const action = async ({request}: LoaderFunctionArgs) => {

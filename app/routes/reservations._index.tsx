@@ -10,13 +10,11 @@ import EditDeleteTray from '~/components/editDeleteTray';
 export const action: ActionFunction = async ({request}: ActionFunctionArgs) => {
     const user = await loginRequired(request)
     const data = await request.formData().then(d => d.get("reservation"))
-    console.log(data)
     if (data === null) {
         return {"response": new Response("invalid form data")}
     }
     const r = Reservation.fromJSON(data)
     const resp = await deleteReservation(r, user);
-    console.log(resp)
     return redirect(`/schedule/${r.roomID}`)
     return {"response": resp}
 }
@@ -46,7 +44,6 @@ export default function ReservationIndex() {
     const DAY_START = startOfDay()
 
     useEffect(() => {
-        console.log("Reservation Data", reservationData);
         if (reservationData != undefined) {
             const rs = Reservation.factory(reservationData)
             setReservations(

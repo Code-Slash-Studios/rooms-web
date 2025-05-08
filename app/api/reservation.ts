@@ -68,7 +68,6 @@ export async function createReservation(reservation: Reservation, actor?: any) {
             body: reservation.toJSON()
         }
     ).then((response) => {
-        console.log("Response", response)
         return response.json();
     }).catch((error) => {
         console.error(error); return undefined
@@ -92,7 +91,6 @@ export async function updateReservation(reservation: Reservation, actor?: any): 
             body: reservation.toJSON()
         }
     ).then(async (response) => {
-        console.log("Response", response)
         if (response.status === 400 || response.status === 409 || response.ok === false) {
             console.error("Error updating reservation", response.status, response.statusText)
             throw Error("<Update Error> " + await DecodeBody(response));
